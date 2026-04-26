@@ -74,6 +74,7 @@ button:disabled {
 
 .field small {
   color: var(--muted);
+  line-height: 1.5;
 }
 
 .field input,
@@ -109,6 +110,12 @@ button:disabled {
 
 .error {
   color: var(--error);
+}
+
+.section-help {
+  color: var(--muted);
+  margin: 0.35rem 0 0;
+  line-height: 1.55;
 }
 
 pre {
