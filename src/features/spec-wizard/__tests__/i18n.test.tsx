@@ -59,3 +59,29 @@ describe("AI review prompt UI keys", () => {
     );
   });
 });
+
+describe("AI review prompt template", () => {
+  it("zh-TW template contains the 6 dimension headings and placeholders", () => {
+    const t = dictionaries["zh-TW"]["reviewPrompt.template"];
+    expect(t).toContain("目標清晰度");
+    expect(t).toContain("使用者故事完整性");
+    expect(t).toContain("驗收條件可測性");
+    expect(t).toContain("範例邊界涵蓋");
+    expect(t).toContain("Agent 邊界充分性");
+    expect(t).toContain("區段間一致性");
+    expect(t).toContain("{{summary_markdown}}");
+    expect(t).toContain("{{yaml_content}}");
+  });
+
+  it("en template contains the 6 dimension headings and placeholders", () => {
+    const t = dictionaries.en["reviewPrompt.template"];
+    expect(t).toContain("Goal clarity");
+    expect(t).toContain("Story completeness");
+    expect(t).toContain("Acceptance criteria testability");
+    expect(t).toContain("Example coverage");
+    expect(t).toContain("Agent boundary sufficiency");
+    expect(t).toContain("Cross-section consistency");
+    expect(t).toContain("{{summary_markdown}}");
+    expect(t).toContain("{{yaml_content}}");
+  });
+});

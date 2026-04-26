@@ -93,7 +93,8 @@ export type MessageKey =
   | "reviewPrompt.button.idle"
   | "reviewPrompt.button.copied"
   | "reviewPrompt.button.failed"
-  | "reviewPrompt.fallback.label";
+  | "reviewPrompt.fallback.label"
+  | "reviewPrompt.template";
 
 export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
   "zh-TW": {
@@ -189,7 +190,51 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "reviewPrompt.button.idle": "複製 AI 審閱 prompt",
     "reviewPrompt.button.copied": "已複製 ✓",
     "reviewPrompt.button.failed": "複製失敗，請手動複製",
-    "reviewPrompt.fallback.label": "Prompt 內容（可手動全選複製）"
+    "reviewPrompt.fallback.label": "Prompt 內容（可手動全選複製）",
+    "reviewPrompt.template": `# 規格審閱請求
+
+你是一位資深產品/工程顧問，專長是為 AI coding agent 撰寫的功能規格做品質審閱。
+
+## 任務
+
+請針對下方功能規格給出改良建議。請**只給審閱回饋**，不要直接撰寫程式碼或重新撰寫規格。所有建議都要對應到下方 checklist 中的某個維度，並指出 spec 中具體位置（例如 \`productSpec.goal.statement\`、\`epics[0].stories[0].acceptanceCriteria\`）以利原作者回到編輯器修正對應欄位。
+
+## 審閱維度（請對每一項給出「評估」與「具體建議」）
+
+1. **目標清晰度（Goal clarity）**：\`goal.statement\` 是否清楚描述「為誰、解決什麼問題、達到什麼狀態」？\`successSignals\` 是否實際可量測？
+2. **使用者故事完整性（Story completeness）**：每個 story 的 \`userStory\` 是否包含角色、想做什麼、為什麼？標題與內文是否一致？
+3. **驗收條件可測性（Acceptance criteria testability）**：每條 AC 是否可直接轉成自動化測試？是否避免主觀字眼（「好用」、「合理」、「順暢」）？
+4. **範例邊界涵蓋（Example coverage）**：examples 是否涵蓋 happy path、邊界情況、錯誤情境？given/when/then 是否完整？
+5. **Agent 邊界充分性（Agent boundary sufficiency）**：\`agentSpec\` 中的 \`nonGoals\`、\`constraints\`、\`risks\` 是否足以避免 AI coding agent 過度實作、超出範圍、或產生不安全行為？
+6. **區段間一致性（Cross-section consistency）**：\`goal\` 與 \`stories\` 是否對齊？\`impacts\` 中提到的 actor 是否在 \`stories\` 或 \`userActivities\` 中也有出現？\`constraints\` 是否與任何 story 互相抵觸？
+
+## 回應格式
+
+請依下列格式回覆，每個維度一段：
+
+### 1. 目標清晰度
+- 評估：（一兩句）
+- 建議：（條列，每條附 spec 位置）
+
+（依此類推到第 6 項）
+
+### 整體優先順序
+最後請列出你認為最該優先修正的 3 項。
+
+---
+
+## Spec 內容
+
+### 人類摘要
+
+{{summary_markdown}}
+
+### YAML
+
+\`\`\`yaml
+{{yaml_content}}
+\`\`\`
+`
   },
   en: {
     "wizard.title": "Agile Roadmap Wizard",
@@ -284,6 +329,50 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "reviewPrompt.button.idle": "Copy AI Review Prompt",
     "reviewPrompt.button.copied": "Copied ✓",
     "reviewPrompt.button.failed": "Copy failed, please copy manually",
-    "reviewPrompt.fallback.label": "Prompt content (select all to copy manually)"
+    "reviewPrompt.fallback.label": "Prompt content (select all to copy manually)",
+    "reviewPrompt.template": `# Spec Review Request
+
+You are a senior product/engineering reviewer specializing in feature specifications written for AI coding agents.
+
+## Task
+
+Review the feature spec below and provide improvement suggestions. Provide **review feedback only** — do not write code or rewrite the spec yourself. Every suggestion must map to one of the dimensions in the checklist and reference the exact spec location (e.g., \`productSpec.goal.statement\`, \`epics[0].stories[0].acceptanceCriteria\`) so the author can edit the corresponding field.
+
+## Review dimensions (provide an "assessment" and "concrete suggestions" for each)
+
+1. **Goal clarity**: Does \`goal.statement\` clearly describe who, what problem, and what end state? Are \`successSignals\` actually measurable?
+2. **Story completeness**: Does each story's \`userStory\` include role, want, and reason? Are title and body aligned?
+3. **Acceptance criteria testability**: Can each AC be directly translated into an automated test? Does it avoid subjective wording ("good", "reasonable", "smooth")?
+4. **Example coverage**: Do examples cover happy path, boundaries, and error cases? Are given/when/then complete?
+5. **Agent boundary sufficiency**: Are \`agentSpec.nonGoals\`, \`constraints\`, and \`risks\` enough to prevent over-implementation, scope creep, or unsafe behavior by AI coding agents?
+6. **Cross-section consistency**: Do \`goal\` and \`stories\` align? Do actors mentioned in \`impacts\` also appear in \`stories\` or \`userActivities\`? Do \`constraints\` conflict with any story?
+
+## Response format
+
+Reply in the following structure, one section per dimension:
+
+### 1. Goal clarity
+- Assessment: (one or two sentences)
+- Suggestions: (bullet list, each with spec location)
+
+(Repeat for items 2-6.)
+
+### Overall priorities
+At the end, list the top 3 items you would prioritize fixing.
+
+---
+
+## Spec content
+
+### Human-readable summary
+
+{{summary_markdown}}
+
+### YAML
+
+\`\`\`yaml
+{{yaml_content}}
+\`\`\`
+`
   }
 };
