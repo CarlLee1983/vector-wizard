@@ -25,6 +25,25 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
     [yaml, summary, draft.metadata.locale]
   );
 
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+
+  async function handleCopyReviewPrompt() {
+    try {
+      await navigator.clipboard.writeText(reviewPrompt);
+      setCopyState("copied");
+      setTimeout(() => setCopyState("idle"), 2000);
+    } catch {
+      setCopyState("failed");
+    }
+  }
+
+  const reviewButtonLabel =
+    copyState === "copied"
+      ? t("reviewPrompt.button.copied")
+      : copyState === "failed"
+        ? t("reviewPrompt.button.failed")
+        : t("reviewPrompt.button.idle");
+
   return (
     <section className="panel stack">
       <div>
@@ -69,8 +88,8 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
       <div className="ai-review-section">
         <h3>{t("reviewPrompt.section.title")}</h3>
         <p className="section-help">{t("reviewPrompt.section.description")}</p>
-        <button type="button">
-          {t("reviewPrompt.button.idle")}
+        <button type="button" onClick={handleCopyReviewPrompt}>
+          {reviewButtonLabel}
         </button>
       </div>
     </section>
