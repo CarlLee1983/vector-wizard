@@ -105,3 +105,25 @@ describe("ReviewPanel — clipboard failure flow", () => {
     expect(screen.queryByLabelText("Prompt 內容（可手動全選複製）")).not.toBeInTheDocument();
   });
 });
+
+describe("ReviewPanel — dual-locale separation", () => {
+  it("uses the draft locale for prompt content even when UI locale differs", async () => {
+    const user = userEvent.setup();
+    const draft = minimalValidDraft();
+    draft.metadata.locale = "en";
+
+    render(
+      <I18nProvider>
+        <ReviewPanel draft={draft} />
+      </I18nProvider>
+    );
+
+    expect(screen.getByRole("heading", { name: "AI 審閱協助" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "複製 AI 審閱 prompt" }));
+
+    const sentText = await navigator.clipboard.readText();
+    expect(sentText).toContain("# Spec Review Request");
+    expect(sentText).not.toContain("# 規格審閱請求");
+  });
+});
