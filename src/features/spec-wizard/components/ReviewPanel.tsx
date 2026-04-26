@@ -91,6 +91,12 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
         <button type="button" onClick={handleCopyReviewPrompt}>
           {reviewButtonLabel}
         </button>
+        {copyState === "failed" ? (
+          <label className="stack">
+            <span>{t("reviewPrompt.fallback.label")}</span>
+            <textarea readOnly value={reviewPrompt} rows={10} />
+          </label>
+        ) : null}
       </div>
     </section>
   );
