@@ -1,0 +1,24 @@
+# Worktrees
+.worktrees/
+
+# Tooling
+.omx/
+
+# Node
+node_modules/
+.next/
+out/
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
