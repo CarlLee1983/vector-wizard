@@ -8,6 +8,38 @@ function nonBlankItems(items: string[]): string[] {
   return items.filter((item) => item.trim().length > 0);
 }
 
+function hasHanText(value: string | undefined): boolean {
+  return /[\u3400-\u9fff]/u.test(value ?? "");
+}
+
+function draftTextValues(draft: FeatureDraft): string[] {
+  return [
+    draft.metadata.title,
+    draft.metadata.owner,
+    draft.summary.problem,
+    draft.summary.desiredOutcome,
+    draft.goal.statement,
+    ...draft.goal.successSignals,
+    ...draft.impacts.flatMap((impact) => [impact.actor, impact.impact]),
+    ...draft.deliverables.flatMap((deliverable) => [deliverable.name, deliverable.description]),
+    ...draft.userActivities.flatMap((activity) => [activity.actor, activity.activity]),
+    ...draft.epics.flatMap((epic) => [
+      epic.title,
+      ...epic.stories.flatMap((story) => [
+        story.title,
+        story.userStory,
+        ...story.acceptanceCriteria.map((criterion) => criterion.statement),
+        ...story.examples.flatMap((example) => [example.given, example.when, example.then, example.scenario])
+      ])
+    ]),
+    ...draft.agentBoundaries.nonGoals,
+    ...draft.agentBoundaries.constraints,
+    ...draft.agentBoundaries.testExpectations,
+    ...draft.agentBoundaries.risks,
+    ...draft.agentBoundaries.openQuestions
+  ].filter((value): value is string => typeof value === "string");
+}
+
 export function getStories(draft: FeatureDraft): UserStory[] {
   return draft.epics.flatMap((epic) => epic.stories);
 }
@@ -32,6 +64,38 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
     });
   }
 
+  if (nonBlankItems(draft.goal.successSignals).length === 0) {
+    warnings.push({
+      code: "missing_success_signals",
+      fieldPath: "goal.successSignals",
+      messageKey: "validation.missingSuccessSignals"
+    });
+  }
+
+  if (draft.impacts.filter((impact) => !isBlank(impact.actor) || !isBlank(impact.impact)).length === 0) {
+    warnings.push({
+      code: "missing_impacts",
+      fieldPath: "impacts",
+      messageKey: "validation.missingImpacts"
+    });
+  }
+
+  if (draft.deliverables.filter((deliverable) => !isBlank(deliverable.name) || !isBlank(deliverable.description)).length === 0) {
+    warnings.push({
+      code: "missing_deliverables",
+      fieldPath: "deliverables",
+      messageKey: "validation.missingDeliverables"
+    });
+  }
+
+  if (draft.userActivities.filter((activity) => !isBlank(activity.actor) || !isBlank(activity.activity)).length === 0) {
+    warnings.push({
+      code: "missing_user_activities",
+      fieldPath: "userActivities",
+      messageKey: "validation.missingUserActivities"
+    });
+  }
+
   const stories = getStories(draft).filter((story) => !isBlank(story.title) || !isBlank(story.userStory));
   if (stories.length === 0) {
     blockingErrors.push({
@@ -41,8 +105,23 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
     });
   }
 
+  for (const epic of draft.epics) {
+    if (epic.stories.some((story) => !isBlank(story.title) || !isBlank(story.userStory)) && isBlank(epic.title)) {
+      warnings.push({
+        code: "missing_epic_title",
+        fieldPath: `epics.${epic.id}.title`,
+        messageKey: "validation.missingEpicTitle"
+      });
+    }
+  }
+
   for (const story of stories) {
-    if (story.acceptanceCriteria.length === 0) {
+    const hasAcceptanceCriteria = story.acceptanceCriteria.some((criterion) => !isBlank(criterion.statement));
+    const hasExamples = story.examples.some(
+      (example) => !isBlank(example.given) || !isBlank(example.when) || !isBlank(example.then) || !isBlank(example.scenario)
+    );
+
+    if (!hasAcceptanceCriteria) {
       warnings.push({
         code: "story_missing_acceptance_criteria",
         fieldPath: `stories.${story.id}.acceptanceCriteria`,
@@ -50,7 +129,7 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
       });
     }
 
-    if (story.examples.length === 0) {
+    if (!hasExamples) {
       warnings.push({
         code: "story_missing_examples",
         fieldPath: `stories.${story.id}.examples`,
@@ -64,6 +143,22 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
       code: "missing_constraints",
       fieldPath: "agentBoundaries.constraints",
       messageKey: "validation.missingConstraints"
+    });
+  }
+
+  if (nonBlankItems(draft.agentBoundaries.testExpectations).length === 0) {
+    warnings.push({
+      code: "missing_test_expectations",
+      fieldPath: "agentBoundaries.testExpectations",
+      messageKey: "validation.missingTestExpectations"
+    });
+  }
+
+  if (draft.metadata.locale === "en" && draftTextValues(draft).some(hasHanText)) {
+    warnings.push({
+      code: "locale_content_mismatch",
+      fieldPath: "metadata.locale",
+      messageKey: "validation.localeContentMismatch"
     });
   }
 
