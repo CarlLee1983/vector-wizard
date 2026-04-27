@@ -5,45 +5,45 @@ description: Analyze source code and generate Vector-compatible JSON feature spe
 
 # Vector Analyzer Skill
 
-這個技能允許 AI Agent 分析現有的程式碼庫，並自動產出符合「Vector」架構的規格書 JSON。這有助於將現有的實作邏輯轉化為結構化的敏捷開發路線圖。
+This skill enables AI agents to analyze existing codebases and automatically generate feature specification JSONs that align with the "Vector" architecture. It helps transform current implementation logic into structured agile development roadmaps.
 
-## 指令
+## Commands
 
 ### `vector:analyze`
-分析當前目錄下的程式碼，並產出功能規格 JSON。
+Analyze the code in the current directory and generate a feature specification JSON.
 
-**使用流程：**
-1. AI 掃描目標目錄以識別核心模組。
-2. AI 將模組映射為「Epics」與「User Stories」。
-3. AI 產出符合 Vector Schema 的 JSON 草稿。
-4. 使用者將 JSON 貼上至 Vector Wizard 介面進行審閱與匯出。
+**Workflow:**
+1. AI scans the target directory to identify core modules.
+2. AI maps modules to "Epics" and "User Stories".
+3. AI generates a JSON draft matching the Vector Schema.
+4. The user pastes the JSON into the Vector Wizard interface for review and export.
 
-## 工作流 (Workflow)
+## Workflow
 
-1. **探索階段 (Discovery)**：
-   - 使用 `ls` 或 `gsd-map-codebase` 理解檔案結構。
-   - 讀取核心檔案（如：Service, Controller, API 定義）。
+1. **Discovery Phase**:
+   - Use `ls` or `gsd-map-codebase` to understand the file structure.
+   - Read core files (e.g., Services, Controllers, API definitions).
 
-2. **分析階段 (Analysis)**：
-   - 針對每個功能模組，識別以下資訊：
-     - **目標 (Goal)**：這段程式碼解決了什麼問題？
-     - **影響 (Impact)**：誰是使用者？他們如何從中受益？
-     - **使用者故事 (User Stories)**：將實作邏輯轉化為「作為 [角色]，我想要 [操作]，以便 [效益]」。
-     - **驗證準則 (Acceptance Criteria)**：從程式碼邏輯中提取規則。
-     - **範例 (Examples)**：將測試案例或邏輯流程轉化為 Given/When/Then 情境。
+2. **Analysis Phase**:
+   - For each functional module, identify the following information:
+     - **Goal**: What problem does this code solve?
+     - **Impact**: Who are the users? How do they benefit?
+     - **User Stories**: Convert implementation logic into "As a [role], I want to [action], so that [benefit]".
+     - **Acceptance Criteria**: Extract rules from the code logic.
+     - **Examples**: Convert test cases or logic flows into Given/When/Then scenarios.
 
-3. **產出階段 (Generation)**：
-   - 產出符合 `FeatureDraft` Schema 的 JSON 物件。
-   - 語系：預設為繁體中文（台灣）。
+3. **Generation Phase**:
+   - Output a JSON object matching the `FeatureDraft` Schema.
+   - Locale: Default to Traditional Chinese (Taiwan) unless otherwise specified.
 
-## Schema 參考
+## Schema Reference
 
-生成的 JSON 必須包含：
-- `metadata`: 標題、作者、語系。
-- `summary`: 問題描述、預期結果。
-- `goal`: 目標聲明、成功指標。
-- `impacts`: 受影響的角色與程度。
-- `deliverables`: 交付物清單。
-- `userActivities`: 使用者活動流程。
-- `epics`: 功能集，包含多個 User Stories (AC & Examples)。
-- `agentBoundaries`: 非目標、限制條件、風險、開放問題。
+The generated JSON must include:
+- `metadata`: Title, owner, locale.
+- `summary`: Problem description, desired outcome.
+- `goal`: Goal statement, success signals.
+- `impacts`: Affected actors and the nature of the impact.
+- `deliverables`: List of deliverables.
+- `userActivities`: User activity flows.
+- `epics`: Feature sets containing multiple User Stories (AC & Examples).
+- `agentBoundaries`: Non-goals, constraints, risks, and open questions.
