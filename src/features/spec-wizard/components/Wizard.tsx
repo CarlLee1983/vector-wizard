@@ -8,6 +8,7 @@ import { draftFromJson, loadDraft, saveDraft } from "../persistence/draftStorage
 import { FieldArray } from "./FieldArray"
 import { ReviewPanel } from "./ReviewPanel"
 import { WizardStep } from "./WizardStep"
+import { AssistButton } from "./AssistButton"
 
 const steps = [
   "basic",
@@ -144,6 +145,13 @@ export function Wizard() {
               value={draft.goal.statement}
               onChange={(event) => setDraft({ ...draft, goal: { ...draft.goal, statement: event.target.value } })}
             />
+            <div className="field-actions">
+              <AssistButton
+                mode="rewrite"
+                text={draft.goal.statement}
+                onApply={(suggestedText) => setDraft({ ...draft, goal: { ...draft.goal, statement: suggestedText } })}
+              />
+            </div>
           </div>
           <FieldArray
             label={t("field.successSignals")}
@@ -283,6 +291,13 @@ export function Wizard() {
               value={firstStory.userStory}
               onChange={(event) => setDraft(updateStory(draft, { userStory: event.target.value }))}
             />
+            <div className="field-actions">
+              <AssistButton
+                mode="rewrite"
+                text={firstStory.userStory}
+                onApply={(suggestedText) => setDraft(updateStory(draft, { userStory: suggestedText }))}
+              />
+            </div>
           </div>
         </WizardStep>
       )
@@ -313,9 +328,60 @@ export function Wizard() {
     }
 
     if (step === "examples") {
-      const firstExample = firstStory.examples[0] ?? { id: "EX-001", format: "natural-language" as const, scenario: "" }
+      const firstExample = firstStory.examples[0] ?? { id: "EX-001", format: "given-when-then" as const, scenario: "" }
       return (
         <WizardStep title={t("step.examples")} method="Specification by Example">
+          <div className="field">
+            <label htmlFor="exampleGiven">{t("field.given")}</label>
+            <small id="example-given-help">{t("field.givenHelp")}</small>
+            <textarea
+              id="exampleGiven"
+              aria-describedby="example-given-help"
+              placeholder={t("field.givenPlaceholder")}
+              value={firstExample.given ?? ""}
+              onChange={(event) =>
+                setDraft(
+                  updateStory(draft, {
+                    examples: [{ ...firstExample, given: event.target.value, format: "given-when-then" }]
+                  })
+                )
+              }
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="exampleWhen">{t("field.when")}</label>
+            <small id="example-when-help">{t("field.whenHelp")}</small>
+            <textarea
+              id="exampleWhen"
+              aria-describedby="example-when-help"
+              placeholder={t("field.whenPlaceholder")}
+              value={firstExample.when ?? ""}
+              onChange={(event) =>
+                setDraft(
+                  updateStory(draft, {
+                    examples: [{ ...firstExample, when: event.target.value, format: "given-when-then" }]
+                  })
+                )
+              }
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="exampleThen">{t("field.then")}</label>
+            <small id="example-then-help">{t("field.thenHelp")}</small>
+            <textarea
+              id="exampleThen"
+              aria-describedby="example-then-help"
+              placeholder={t("field.thenPlaceholder")}
+              value={firstExample.then ?? ""}
+              onChange={(event) =>
+                setDraft(
+                  updateStory(draft, {
+                    examples: [{ ...firstExample, then: event.target.value, format: "given-when-then" }]
+                  })
+                )
+              }
+            />
+          </div>
           <div className="field">
             <label htmlFor="exampleScenario">{t("field.exampleScenario")}</label>
             <small id="example-scenario-help">{t("field.exampleScenarioHelp")}</small>

@@ -322,3 +322,30 @@ a.disabled {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px var(--primary-faded);
 }
+
+/* AI Assist UI */
+.field-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.ai-assist-button {
+  font-size: 11px !important;
+  padding: 6px 10px !important;
+  border-radius: var(--radius) !important;
+  text-transform: none !important;
+  letter-spacing: 0.02em !important;
+  font-family: var(--font-sans) !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ai-assist-button::before {
+  content: "✨";
+}
+
+.field textarea + .field-actions {
+  margin-top: 4px;
+}

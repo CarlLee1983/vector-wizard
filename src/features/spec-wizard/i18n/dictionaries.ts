@@ -13,6 +13,9 @@ export type MessageKey =
   | "wizard.importDraft"
   | "wizard.exportDraft"
   | "wizard.addItem"
+  | "wizard.aiAssist"
+  | "wizard.aiAssisting"
+  | "wizard.aiAssistDone"
   | "review.summary"
   | "review.yaml"
   | "step.basic"
@@ -75,6 +78,15 @@ export type MessageKey =
   | "field.exampleScenario"
   | "field.exampleScenarioHelp"
   | "field.exampleScenarioPlaceholder"
+  | "field.given"
+  | "field.givenHelp"
+  | "field.givenPlaceholder"
+  | "field.when"
+  | "field.whenHelp"
+  | "field.whenPlaceholder"
+  | "field.then"
+  | "field.thenHelp"
+  | "field.thenPlaceholder"
   | "field.testExpectations"
   | "field.testExpectationsHelp"
   | "field.testExpectationsPlaceholder"
@@ -122,6 +134,9 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "wizard.importDraft": "匯入草稿 JSON",
     "wizard.exportDraft": "匯出草稿 JSON",
     "wizard.addItem": "新增項目",
+    "wizard.aiAssist": "AI 輔助優化",
+    "wizard.aiAssisting": "AI 思考中...",
+    "wizard.aiAssistDone": "優化完成 ✨",
     "review.summary": "摘要內容",
     "review.yaml": "YAML 源碼",
     "step.basic": "基本資訊",
@@ -184,6 +199,15 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "field.exampleScenario": "範例情境",
     "field.exampleScenarioHelp": "用一個具體情境說明輸入、行為與預期結果。",
     "field.exampleScenarioPlaceholder": "例：當管理人員新增刀具並輸入財產編號後，系統會顯示該刀具為可使用。",
+    "field.given": "假設 (Given)",
+    "field.givenHelp": "描述測試開始前的系統狀態或前提條件。",
+    "field.givenPlaceholder": "例：系統中已有一把編號為 T001 的刀具",
+    "field.when": "當...時 (When)",
+    "field.whenHelp": "觸發此情境的關鍵動作或事件。",
+    "field.whenPlaceholder": "例：管理人員將該刀具標記為「報廢」",
+    "field.then": "接著 (Then)",
+    "field.thenHelp": "預期發生的結果或狀態變遷。",
+    "field.thenPlaceholder": "例：該刀具狀態變更為 Retired，且成本分攤至該機台專案",
     "field.testExpectations": "測試期望",
     "field.testExpectationsHelp": "列出 AI coding agent 應補上的測試或驗證方式。",
     "field.testExpectationsPlaceholder": "例：新增重複財產編號的驗證測試",
@@ -275,6 +299,9 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "wizard.importDraft": "Import Draft JSON",
     "wizard.exportDraft": "Export Draft JSON",
     "wizard.addItem": "Add Item",
+    "wizard.aiAssist": "AI Assist",
+    "wizard.aiAssisting": "AI Thinking...",
+    "wizard.aiAssistDone": "Optimized ✨",
     "review.summary": "Summary",
     "review.yaml": "YAML Source",
     "step.basic": "Basic",
@@ -339,6 +366,15 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "field.exampleScenarioHelp": "Describe one concrete input, behavior, and expected result.",
     "field.exampleScenarioPlaceholder":
       "e.g. When a manager creates a tool with an asset number, the system shows it as available.",
+    "field.given": "Given",
+    "field.givenHelp": "Describe the initial state or preconditions before the action.",
+    "field.givenPlaceholder": "e.g. A tool with ID T001 exists in the system",
+    "field.when": "When",
+    "field.whenHelp": "The key action or event that triggers the scenario.",
+    "field.whenPlaceholder": "e.g. The manager marks the tool as 'Retired'",
+    "field.then": "Then",
+    "field.thenHelp": "The expected outcome or state change.",
+    "field.thenPlaceholder": "e.g. Tool status changes to Retired and cost is allocated to the project",
     "field.testExpectations": "Test expectations",
     "field.testExpectationsHelp": "List tests or checks the AI coding agent should add.",
     "field.testExpectationsPlaceholder": "e.g. Add validation tests for duplicate asset numbers",
