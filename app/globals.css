@@ -493,3 +493,17 @@ a.disabled {
 .report-view li {
   margin-bottom: 4px;
 }
+
+button.success {
+  background: #6D8C7D; /* 莫蘭迪綠，符合暖紙色調 */
+  border-color: #6D8C7D;
+  color: var(--surface);
+}
+
+button.success:hover {
+  filter: brightness(1.05);
+}
+
+.panel-ai-highlight {
+  border-left: 4px solid var(--primary);
+}

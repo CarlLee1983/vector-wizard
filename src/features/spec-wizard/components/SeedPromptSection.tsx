@@ -28,48 +28,22 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
   if (!title) return null
 
   return (
-    <div className="ai-seed-section">
-      <h3>{t("seedPrompt.title")}</h3>
-      <p>{t("seedPrompt.help")}</p>
+    <div className="panel panel-ai-highlight" style={{ marginTop: "24px" }}>
+      <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", color: "var(--primary)" }}>
+        {t("seedPrompt.title")}
+      </h3>
+      <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "var(--text-muted)", lineHeight: "1.5" }}>
+        {t("seedPrompt.help")}
+      </p>
       <button
         type="button"
         className={copied ? "success" : "secondary"}
         onClick={handleCopy}
         disabled={!title}
+        style={{ width: "100%" }}
       >
         {copied ? t("seedPrompt.button.copied") : t("seedPrompt.button.idle")}
       </button>
-
-      <style jsx>{`
-        .ai-seed-section {
-          margin-top: 24px;
-          padding: 20px;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--radius);
-          border-left: 4px solid var(--primary);
-        }
-        h3 {
-          margin: 0 0 8px 0;
-          font-size: 16px;
-          color: var(--primary);
-        }
-        p {
-          margin: 0 0 16px 0;
-          font-size: 13px;
-          color: var(--text-muted);
-          line-height: 1.5;
-        }
-        button {
-          width: 100%;
-          justify-content: center;
-        }
-        button.success {
-          background: #4caf50;
-          color: white;
-          border-color: #4caf50;
-        }
-      `}</style>
     </div>
   )
 }
