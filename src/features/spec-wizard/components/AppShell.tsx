@@ -12,22 +12,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [managerOpen, setManagerOpen] = useState(false)
 
   return (
-    <div className="stack">
-      <header>
-        <div>
-          <h1>{t("wizard.title")}</h1>
-          <p>{t("wizard.subtitle")}</p>
-        </div>
-        <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-          <DraftSwitcher onOpenManager={() => setManagerOpen(true)} />
-          <LanguageSwitcher />
-        </div>
-      </header>
+    <div className="app-shell">
+      <div className="stack">
+        <header>
+          <div>
+            <h1>{t("wizard.title")}</h1>
+            <p>{t("wizard.subtitle")}</p>
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <DraftSwitcher onOpenManager={() => setManagerOpen(true)} />
+            <LanguageSwitcher />
+          </div>
+        </header>
 
-      <main>{children}</main>
+        <main>{children}</main>
 
-      <DraftManagerModal open={managerOpen} onClose={() => setManagerOpen(false)} />
-      <AutosaveErrorToast />
+        <DraftManagerModal open={managerOpen} onClose={() => setManagerOpen(false)} />
+        <AutosaveErrorToast />
+      </div>
     </div>
   )
 }

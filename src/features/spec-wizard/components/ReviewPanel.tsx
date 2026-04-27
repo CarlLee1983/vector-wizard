@@ -103,8 +103,77 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
           {t("wizard.exportDraft")}
         </a>
       </div>
-      <pre>{tab === "summary" ? summary : yaml}</pre>
+
+      {tab === "summary" ? (
+        <div className="report-view">
+          <div className="report-view-content">
+            <h1>{draft.metadata.title || "Untitled Feature"}</h1>
+            <p style={{ color: "var(--text-muted)", marginBottom: "32px" }}>
+              Owner: {draft.metadata.owner || "Unassigned"}
+            </p>
+
+            <section>
+              <h2>Problem</h2>
+              <p>{draft.summary.problem || "No problem statement provided."}</p>
+            </section>
+
+            <section>
+              <h2>Desired Outcome</h2>
+              <p>{draft.summary.desiredOutcome || "No desired outcome provided."}</p>
+            </section>
+
+            <section>
+              <h2>Goal</h2>
+              <p>{draft.goal.statement || "No goal provided."}</p>
+            </section>
+
+            <section>
+              <h2>Success Signals</h2>
+              <ul>
+                {draft.goal.successSignals.map((signal, i) => (
+                  <li key={i}>{signal}</li>
+                ))}
+                {draft.goal.successSignals.length === 0 && <li>No success signals provided</li>}
+              </ul>
+            </section>
+
+            <section>
+              <h2>Stories</h2>
+              <ul>
+                {draft.epics[0].stories.map((story, i) => (
+                  <li key={i}>{story.title || story.userStory || "Untitled Story"}</li>
+                ))}
+              </ul>
+            </section>
+
+            <section>
+              <h2>Constraints</h2>
+              <ul>
+                {draft.agentBoundaries.constraints.map((c, i) => (
+                  <li key={i}>{c}</li>
+                ))}
+                {draft.agentBoundaries.constraints.length === 0 && <li>No constraints provided</li>}
+              </ul>
+            </section>
+
+            <section>
+              <h2>Non-goals</h2>
+              <ul>
+                {draft.agentBoundaries.nonGoals.map((ng, i) => (
+                  <li key={i}>{ng}</li>
+                ))}
+                {draft.agentBoundaries.nonGoals.length === 0 && <li>No non-goals provided</li>}
+              </ul>
+            </section>
+          </div>
+        </div>
+
+      ) : (
+        <pre className="yaml-view">{yaml}</pre>
+      )}
+
       <div className="ai-review-section">
+
         <h3>{t("reviewPrompt.section.title")}</h3>
         <p className="section-help">{t("reviewPrompt.section.description")}</p>
         <button type="button" onClick={handleCopyReviewPrompt}>

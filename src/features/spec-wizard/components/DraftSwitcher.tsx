@@ -16,26 +16,22 @@ export function DraftSwitcher({ onOpenManager }: DraftSwitcherProps) {
   const currentLabel = activeDraft?.metadata.title?.trim() || t("draftSwitcher.untitled")
 
   return (
-    <div className="draft-switcher" style={{ position: "relative" }}>
-      <button type="button" aria-expanded={open} aria-haspopup="listbox" onClick={() => setOpen((v) => !v)}>
+    <div className="draft-switcher">
+      <button
+        className="secondary"
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+        onClick={() => setOpen((v) => !v)}
+      >
         {t("draftSwitcher.label")}：{currentLabel} ▼
       </button>
       {open && (
-        <div
-          role="listbox"
-          style={{
-            position: "absolute",
-            top: "100%",
-            right: 0,
-            background: "white",
-            border: "1px solid #ddd",
-            minWidth: "16rem",
-            zIndex: 10
-          }}
-        >
+        <div className="dropdown-menu" role="listbox">
           {drafts.map((entry) => (
             <button
               key={entry.id}
+              className={`dropdown-item ${entry.id === activeDraftId ? "active" : ""}`}
               role="option"
               aria-selected={entry.id === activeDraftId}
               type="button"
@@ -43,40 +39,35 @@ export function DraftSwitcher({ onOpenManager }: DraftSwitcherProps) {
                 selectDraft(entry.id)
                 setOpen(false)
               }}
-              style={{
-                display: "block",
-                width: "100%",
-                textAlign: "left",
-                padding: "0.5rem"
-              }}
             >
               {entry.id === activeDraftId ? "✓ " : "  "}
               {entry.draft.metadata.title?.trim() || t("draftSwitcher.untitled")}
             </button>
           ))}
-          <hr />
+          <div className="dropdown-divider" />
           <button
+            className="dropdown-item"
             type="button"
             onClick={() => {
               createDraft(locale)
               setOpen(false)
             }}
-            style={{ display: "block", width: "100%", padding: "0.5rem" }}
           >
-            {t("draftSwitcher.new")}
+            + {t("draftSwitcher.new")}
           </button>
           <button
+            className="dropdown-item"
             type="button"
             onClick={() => {
               setOpen(false)
               onOpenManager()
             }}
-            style={{ display: "block", width: "100%", padding: "0.5rem" }}
           >
-            {t("draftSwitcher.manage")}
+            ⚙ {t("draftSwitcher.manage")}
           </button>
         </div>
       )}
     </div>
+
   )
 }
