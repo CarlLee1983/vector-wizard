@@ -53,14 +53,14 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
       {validation.blockingErrors.length > 0 ? (
         <div className="error">
           {validation.blockingErrors.map((issue) => (
-            <p key={issue.code}>{t(issue.messageKey as never)}</p>
+            <p key={issue.code}>{issue.message || t(issue.messageKey as never)}</p>
           ))}
         </div>
       ) : null}
       {validation.warnings.length > 0 ? (
         <div className="warning">
           {validation.warnings.map((issue, index) => (
-            <p key={`${issue.code}-${index}`}>{t(issue.messageKey as never)}</p>
+            <p key={`${issue.code}-${index}`}>{issue.message || t(issue.messageKey as never)}</p>
           ))}
         </div>
       ) : null}

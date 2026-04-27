@@ -406,32 +406,44 @@ export function Wizard() {
     if (step === "boundaries") {
       return (
         <WizardStep title={t("step.boundaries")}>
-          <div className="field">
-            <label htmlFor="constraints">{t("field.constraints")}</label>
-            <small id="constraints-help">{t("field.constraintsHelp")}</small>
-            <textarea
-              id="constraints"
-              aria-describedby="constraints-help"
-              placeholder={t("field.constraintsPlaceholder")}
-              value={draft.agentBoundaries.constraints[0] ?? ""}
-              onChange={(event) =>
-                setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, constraints: [event.target.value] } })
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="nonGoals">{t("field.nonGoals")}</label>
-            <small id="non-goals-help">{t("field.nonGoalsHelp")}</small>
-            <textarea
-              id="nonGoals"
-              aria-describedby="non-goals-help"
-              placeholder={t("field.nonGoalsPlaceholder")}
-              value={draft.agentBoundaries.nonGoals[0] ?? ""}
-              onChange={(event) =>
-                setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, nonGoals: [event.target.value] } })
-              }
-            />
-          </div>
+          <FieldArray
+            id="constraints"
+            label={t("field.constraints")}
+            help={t("field.constraintsHelp")}
+            helpId="constraints-help"
+            placeholder={t("field.constraintsPlaceholder")}
+            values={draft.agentBoundaries.constraints}
+            onChange={(constraints) =>
+              setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, constraints } })
+            }
+          />
+          <FieldArray
+            id="nonGoals"
+            label={t("field.nonGoals")}
+            help={t("field.nonGoalsHelp")}
+            helpId="non-goals-help"
+            placeholder={t("field.nonGoalsPlaceholder")}
+            values={draft.agentBoundaries.nonGoals}
+            onChange={(nonGoals) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, nonGoals } })}
+          />
+          <FieldArray
+            label={t("field.risks")}
+            help={t("field.risksHelp")}
+            helpId="risks-help"
+            placeholder={t("field.risksPlaceholder")}
+            values={draft.agentBoundaries.risks}
+            onChange={(risks) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, risks } })}
+          />
+          <FieldArray
+            label={t("field.openQuestions")}
+            help={t("field.openQuestionsHelp")}
+            helpId="open-questions-help"
+            placeholder={t("field.openQuestionsPlaceholder")}
+            values={draft.agentBoundaries.openQuestions}
+            onChange={(openQuestions) =>
+              setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, openQuestions } })
+            }
+          />
           <FieldArray
             label={t("field.testExpectations")}
             help={t("field.testExpectationsHelp")}

@@ -96,6 +96,12 @@ export type MessageKey =
   | "field.nonGoals"
   | "field.nonGoalsHelp"
   | "field.nonGoalsPlaceholder"
+  | "field.risks"
+  | "field.risksHelp"
+  | "field.risksPlaceholder"
+  | "field.openQuestions"
+  | "field.openQuestionsHelp"
+  | "field.openQuestionsPlaceholder"
   | "validation.missingTitle"
   | "validation.missingGoal"
   | "validation.missingStory"
@@ -246,6 +252,12 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "field.nonGoals": "非目標",
     "field.nonGoalsHelp": "明確寫出這次不做什麼，避免需求範圍擴大。",
     "field.nonGoalsPlaceholder": "例：不重做整個登入頁、不新增社群登入",
+    "field.risks": "風險",
+    "field.risksHelp": "列出可能的技術挑戰或業務風險。",
+    "field.risksPlaceholder": "例：舊系統 API 可能不支援過於頻繁的請求。",
+    "field.openQuestions": "待釐清問題 (Open Questions)",
+    "field.openQuestionsHelp": "列出目前尚無定論、需要進一步確認的問題。",
+    "field.openQuestionsPlaceholder": "例：是否需要支援簡訊驗證碼作為備援？",
     "validation.missingTitle": "請填寫功能名稱。",
     "validation.missingGoal": "請填寫目標。",
     "validation.missingStory": "請至少填寫一個使用者故事。",
@@ -261,7 +273,7 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "validation.missingConstraints": "建議補充限制條件。",
     "validation.missingNonGoals": "建議補充非目標。",
     "validation.vagueSuccessSignal": "成功訊號可能過於模糊。",
-    "validation.openQuestionsPresent": "仍有未解問題。",
+    "validation.openQuestionsPresent": "在「限制與風險」分頁中仍有未解決的問題，請務必釐清。",
     "reviewPrompt.section.title": "AI 審閱協助",
     "reviewPrompt.section.description":
       "複製後可貼到 Claude Code、ChatGPT 等 AI agent，請其針對本 spec 提出改良建議。AI 不會直接修改本草稿。",
@@ -442,6 +454,12 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "field.nonGoals": "Non-goals",
     "field.nonGoalsHelp": "Write what is intentionally out of scope so the request does not expand.",
     "field.nonGoalsPlaceholder": "e.g. Do not rebuild the whole login page",
+    "field.risks": "Risks",
+    "field.risksHelp": "List potential technical challenges or business risks.",
+    "field.risksPlaceholder": "e.g. Legacy API might not support high-frequency requests.",
+    "field.openQuestions": "Open Questions",
+    "field.openQuestionsHelp": "List questions that are still undecided or need further clarification.",
+    "field.openQuestionsPlaceholder": "e.g. Should we support SMS OTP as a fallback?",
     "validation.missingTitle": "Enter a feature title.",
     "validation.missingGoal": "Enter a goal.",
     "validation.missingStory": "Enter at least one user story.",
@@ -458,7 +476,7 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "validation.missingConstraints": "Add constraints if any apply.",
     "validation.missingNonGoals": "Add non-goals if any apply.",
     "validation.vagueSuccessSignal": "Success signal may be too vague.",
-    "validation.openQuestionsPresent": "Open questions remain.",
+    "validation.openQuestionsPresent": "There are unresolved open questions in the 'Boundaries' tab.",
     "reviewPrompt.section.title": "AI Review Assistance",
     "reviewPrompt.section.description":
       "Copy and paste into any AI agent (Claude Code, ChatGPT, etc.) to request feedback on this spec. AI will not modify this draft directly.",

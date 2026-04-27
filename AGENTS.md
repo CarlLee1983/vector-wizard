@@ -25,14 +25,18 @@ bunx vitest run src/features/spec-wizard/__tests__/yamlSerializer.test.ts
 
 # Single test by name pattern
 bunx vitest run -t "minimal valid draft"
+
+# Run locally via npx (requires local source or npm link)
+npx vector
 ```
 
-There is no separate typecheck script — `next build` runs `tsc --noEmit` (the `tsconfig.json` has `noEmit: true`). Use `bunx tsc --noEmit` for a faster type-only check.
+There is no separate typecheck script — `next build` runs `tsc --noEmit` (the `tsconfig.json` has `noEmit: true`). Use `npx tsc --noEmit` for a faster type-only check.
 
 ## Architecture
 
 ### Two-layer split
 
+- `bin/cli.js` — CLI entry point for `npx` support.
 - `app/` — Next.js App Router shell. Two API routes only: `app/api/generate-spec/route.ts` (normalize draft → YAML + summary + validation) and `app/api/assist/route.ts` (mock LLM rewrite / quality-check). Routes are thin: parse, type-guard, delegate to services, return JSON.
 - `src/features/spec-wizard/` — All real logic. Feature is self-contained; nothing else in `src/` exists. Path alias `@/*` → `./src/*`.
 
@@ -70,6 +74,7 @@ These come from the design spec; tests in `__tests__/` enforce most of them:
 - **AI is non-authoritative.** `assistService` returns suggestions, warnings, assumptions, open questions — it must never directly mutate the draft, add stories/criteria/examples, or be required for Wizard completion. Any inferred requirement surfaces as an assumption/warning/open question.
 - **LLM keys are server-side only.** Real provider calls go through API routes, never from the client. Current code ships a mock provider; add new providers behind the same `AssistRequest`/`AssistResponse` contract.
 - **Immutable updates.** All draft updates use spread/copy patterns (see `Wizard.tsx#updateStory`). Never mutate state in place.
+- **Drafts are portable.** They can be exported/imported as JSON files or directly pasted into the Draft Manager UI as raw JSON strings.
 
 ### YAML serializer
 
@@ -90,3 +95,7 @@ Adding a UI string: extend the `MessageKey` union in `i18n/dictionaries.ts` and 
 
 - All commit messages, PR descriptions, code comments, and conversational responses default to **Traditional Chinese (Taiwan)**. Switch to English only on explicit request.
 - Commit format: `<type>: [<scope>] <subject>` (feat / fix / docs / refactor / test / chore / perf / ci).
+
+## Repository Skills
+
+- `.agents/skills/vector-analyzer/` — Tool-assisted deep feature analysis using the Vector schema. Use `vector:analyze` to reverse-engineer existing code into Roadmap specifications.

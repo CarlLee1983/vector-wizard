@@ -3,6 +3,7 @@
 import { useI18n } from "../i18n/I18nContext"
 
 type FieldArrayProps = {
+  id?: string
   label: string
   help?: string
   helpId?: string
@@ -11,17 +12,18 @@ type FieldArrayProps = {
   onChange: (values: string[]) => void
 }
 
-export function FieldArray({ label, help, helpId, placeholder, values, onChange }: FieldArrayProps) {
+export function FieldArray({ id, label, help, helpId, placeholder, values, onChange }: FieldArrayProps) {
   const { t } = useI18n()
   const normalizedValues = values.length > 0 ? values : [""]
   const describedBy = help ? helpId : undefined
 
   return (
     <div className="field">
-      <label>{label}</label>
+      <label htmlFor={id}>{label}</label>
       {help ? <small id={helpId}>{help}</small> : null}
       {normalizedValues.map((value, index) => (
         <input
+          id={index === 0 ? id : undefined}
           aria-describedby={describedBy}
           aria-label={`${label} ${index + 1}`}
           key={index}

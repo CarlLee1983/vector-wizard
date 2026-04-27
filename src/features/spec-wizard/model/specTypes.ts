@@ -74,25 +74,10 @@ export type FeatureDraft = {
 }
 
 export type ValidationIssue = {
-  code:
-    | "missing_title"
-    | "missing_goal"
-    | "missing_story"
-    | "story_missing_acceptance_criteria"
-    | "story_missing_examples"
-    | "missing_success_signals"
-    | "missing_impacts"
-    | "missing_deliverables"
-    | "missing_user_activities"
-    | "missing_epic_title"
-    | "missing_test_expectations"
-    | "locale_content_mismatch"
-    | "missing_constraints"
-    | "missing_non_goals"
-    | "vague_success_signal"
-    | "open_questions_present"
+  code: string
   fieldPath: string
-  messageKey: string
+  messageKey?: string
+  message?: string
 }
 
 export type ValidationResult = {

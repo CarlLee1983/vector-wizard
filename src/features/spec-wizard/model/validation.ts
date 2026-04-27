@@ -185,12 +185,18 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
     }
   }
 
-  if (nonBlankItems(draft.agentBoundaries.openQuestions).length > 0) {
-    warnings.push({
-      code: "open_questions_present",
-      fieldPath: "agentBoundaries.openQuestions",
-      messageKey: "validation.openQuestionsPresent"
-    })
+  const openQuestions = nonBlankItems(draft.agentBoundaries.openQuestions)
+  if (openQuestions.length > 0) {
+    for (const question of openQuestions) {
+      warnings.push({
+        code: `open_question_${question.slice(0, 10)}`,
+        fieldPath: "agentBoundaries.openQuestions",
+        message:
+          draft.metadata.locale === "zh-TW"
+            ? `待釐清問題：${question}`
+            : `Open Question: ${question}`
+      })
+    }
   }
 
   return { blockingErrors, warnings }
