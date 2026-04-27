@@ -1,5 +1,5 @@
-import { Wizard } from "@/features/spec-wizard/components/Wizard";
-import { I18nProvider } from "@/features/spec-wizard/i18n/I18nContext";
+import { Wizard } from "@/features/spec-wizard/components/Wizard"
+import { I18nProvider } from "@/features/spec-wizard/i18n/I18nContext"
 
 export default function Home() {
   return (
@@ -8,5 +8,5 @@ export default function Home() {
         <Wizard />
       </main>
     </I18nProvider>
-  );
+  )
 }

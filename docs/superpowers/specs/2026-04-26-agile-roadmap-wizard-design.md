@@ -175,23 +175,23 @@ The API should not bind directly to one provider. It should expose a provider in
 Conceptual interface:
 
 ```ts
-type AssistMode = "rewrite" | "quality_check";
+type AssistMode = "rewrite" | "quality_check"
 
 type AssistRequest = {
-  mode: AssistMode;
-  locale: "zh-TW" | "en";
-  fieldPath?: string;
-  text?: string;
-  draft?: FeatureDraft;
-};
+  mode: AssistMode
+  locale: "zh-TW" | "en"
+  fieldPath?: string
+  text?: string
+  draft?: FeatureDraft
+}
 
 type AssistResponse = {
-  suggestedText?: string;
-  rationale?: string;
-  warnings: string[];
-  assumptions: string[];
-  openQuestions: string[];
-};
+  suggestedText?: string
+  rationale?: string
+  warnings: string[]
+  assumptions: string[]
+  openQuestions: string[]
+}
 ```
 
 ## 5. Data Model
@@ -203,30 +203,30 @@ The frontend works with a structured draft model similar to:
 ```ts
 type FeatureDraft = {
   metadata: {
-    title: string;
-    owner?: string;
-    locale: "zh-TW" | "en";
-  };
+    title: string
+    owner?: string
+    locale: "zh-TW" | "en"
+  }
   summary: {
-    problem?: string;
-    desiredOutcome?: string;
-  };
+    problem?: string
+    desiredOutcome?: string
+  }
   goal: {
-    statement: string;
-    successSignals: string[];
-  };
-  impacts: Impact[];
-  deliverables: Deliverable[];
-  userActivities: UserActivity[];
-  epics: Epic[];
+    statement: string
+    successSignals: string[]
+  }
+  impacts: Impact[]
+  deliverables: Deliverable[]
+  userActivities: UserActivity[]
+  epics: Epic[]
   agentBoundaries: {
-    nonGoals: string[];
-    constraints: string[];
-    testExpectations: string[];
-    risks: string[];
-    openQuestions: string[];
-  };
-};
+    nonGoals: string[]
+    constraints: string[]
+    testExpectations: string[]
+    risks: string[]
+    openQuestions: string[]
+  }
+}
 ```
 
 The exact `Impact`, `Deliverable`, `UserActivity`, and `Epic` types can be defined during implementation planning, but each should remain small, serializable, and easy to validate.

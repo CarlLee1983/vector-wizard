@@ -38,15 +38,15 @@ There is no separate typecheck script — `next build` runs `tsc --noEmit` (the 
 
 ### Module layout inside `src/features/spec-wizard/`
 
-| Folder | Role |
-|---|---|
-| `model/` | `specTypes.ts` (canonical `FeatureDraft` and `ValidationIssue` types), `defaultDraft.ts` (empty draft factory), `validation.ts` (loose rules) |
-| `services/` | `yamlSerializer.ts` (custom YAML emitter — **no js-yaml dependency**), `summary.ts` (human-readable markdown), `assistService.ts` (mock LLM adapter) |
-| `persistence/draftStorage.ts` | `localStorage` autosave + JSON import/export |
-| `components/` | `Wizard.tsx` (state + step navigation), `WizardStep.tsx`, `FieldArray.tsx`, `ReviewPanel.tsx` |
-| `i18n/` | `I18nContext.tsx` (React context), `dictionaries.ts` (`zh-TW` + `en` flat key map) |
-| `api/contracts.ts` | Request/response types shared between the route handlers and the client |
-| `__tests__/` | Vitest specs, one per service/route/flow |
+| Folder                        | Role                                                                                                                                                 |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `model/`                      | `specTypes.ts` (canonical `FeatureDraft` and `ValidationIssue` types), `defaultDraft.ts` (empty draft factory), `validation.ts` (loose rules)        |
+| `services/`                   | `yamlSerializer.ts` (custom YAML emitter — **no js-yaml dependency**), `summary.ts` (human-readable markdown), `assistService.ts` (mock LLM adapter) |
+| `persistence/draftStorage.ts` | `localStorage` autosave + JSON import/export                                                                                                         |
+| `components/`                 | `Wizard.tsx` (state + step navigation), `WizardStep.tsx`, `FieldArray.tsx`, `ReviewPanel.tsx`                                                        |
+| `i18n/`                       | `I18nContext.tsx` (React context), `dictionaries.ts` (`zh-TW` + `en` flat key map)                                                                   |
+| `api/contracts.ts`            | Request/response types shared between the route handlers and the client                                                                              |
+| `__tests__/`                  | Vitest specs, one per service/route/flow                                                                                                             |
 
 ### Data flow
 

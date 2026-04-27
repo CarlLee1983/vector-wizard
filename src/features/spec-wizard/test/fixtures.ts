@@ -1,4 +1,4 @@
-import type { FeatureDraft } from "../model/specTypes";
+import type { FeatureDraft } from "../model/specTypes"
 
 export function minimalValidDraft(): FeatureDraft {
   return {
@@ -15,15 +15,11 @@ export function minimalValidDraft(): FeatureDraft {
       statement: "Help users understand what to do after a failed login.",
       successSignals: ["Support requests about failed login decrease"]
     },
-    impacts: [
-      { id: "IM-001", actor: "Member", impact: "Can recover from login failure without support" }
-    ],
+    impacts: [{ id: "IM-001", actor: "Member", impact: "Can recover from login failure without support" }],
     deliverables: [
       { id: "DE-001", name: "Login error messaging", description: "Clear safe messages for common failed-login states" }
     ],
-    userActivities: [
-      { id: "UA-001", actor: "Member", activity: "Enter credentials and submit the login form" }
-    ],
+    userActivities: [{ id: "UA-001", actor: "Member", activity: "Enter credentials and submit the login form" }],
     epics: [
       {
         id: "EP-001",
@@ -46,5 +42,5 @@ export function minimalValidDraft(): FeatureDraft {
       risks: [],
       openQuestions: []
     }
-  };
+  }
 }

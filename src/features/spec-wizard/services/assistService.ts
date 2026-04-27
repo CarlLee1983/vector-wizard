@@ -1,22 +1,22 @@
-import type { FeatureDraft, Locale } from "../model/specTypes";
+import type { FeatureDraft, Locale } from "../model/specTypes"
 
-type AssistMode = "rewrite" | "quality_check";
+type AssistMode = "rewrite" | "quality_check"
 
 export type AssistRequest = {
-  mode: AssistMode;
-  locale: Locale;
-  fieldPath?: string;
-  text?: string;
-  draft?: FeatureDraft;
-};
+  mode: AssistMode
+  locale: Locale
+  fieldPath?: string
+  text?: string
+  draft?: FeatureDraft
+}
 
 export type AssistResponse = {
-  suggestedText?: string;
-  rationale?: string;
-  warnings: string[];
-  assumptions: string[];
-  openQuestions: string[];
-};
+  suggestedText?: string
+  rationale?: string
+  warnings: string[]
+  assumptions: string[]
+  openQuestions: string[]
+}
 
 export async function assistDraft(request: AssistRequest): Promise<AssistResponse> {
   if (request.mode === "rewrite") {
@@ -32,24 +32,24 @@ export async function assistDraft(request: AssistRequest): Promise<AssistRespons
       warnings: [],
       assumptions: [],
       openQuestions: []
-    };
+    }
   }
 
-  const warnings: string[] = [];
-  const openQuestions: string[] = [];
-  const draft = request.draft;
+  const warnings: string[] = []
+  const openQuestions: string[] = []
+  const draft = request.draft
 
   if (draft && draft.agentBoundaries.constraints.filter((item) => item.trim()).length === 0) {
     warnings.push(
       request.locale === "zh-TW"
         ? "請加入限制條件，避免 coding agent 過度實作或暴露不安全行為。"
         : "Add constraints so the coding agent does not over-implement or expose unsafe behavior."
-    );
+    )
     openQuestions.push(
       request.locale === "zh-TW"
         ? "這個功能是否有資安、隱私或法遵限制？"
         : "Are there security, privacy, or compliance constraints for this feature?"
-    );
+    )
   }
 
   return {
@@ -60,5 +60,5 @@ export async function assistDraft(request: AssistRequest): Promise<AssistRespons
     warnings,
     assumptions: [],
     openQuestions
-  };
+  }
 }

@@ -1,25 +1,38 @@
-"use client";
+"use client"
 
-import { useEffect, useMemo, useState } from "react";
-import { useI18n } from "../i18n/I18nContext";
-import { createEmptyDraft } from "../model/defaultDraft";
-import type { FeatureDraft } from "../model/specTypes";
-import { draftFromJson, loadDraft, saveDraft } from "../persistence/draftStorage";
-import { FieldArray } from "./FieldArray";
-import { ReviewPanel } from "./ReviewPanel";
-import { WizardStep } from "./WizardStep";
+import { useEffect, useMemo, useState } from "react"
+import { useI18n } from "../i18n/I18nContext"
+import { createEmptyDraft } from "../model/defaultDraft"
+import type { FeatureDraft } from "../model/specTypes"
+import { draftFromJson, loadDraft, saveDraft } from "../persistence/draftStorage"
+import { FieldArray } from "./FieldArray"
+import { ReviewPanel } from "./ReviewPanel"
+import { WizardStep } from "./WizardStep"
 
-const steps = ["basic", "goal", "context", "deliverables", "stories", "criteria", "examples", "boundaries", "review"] as const;
-type Step = (typeof steps)[number];
+const steps = [
+  "basic",
+  "goal",
+  "context",
+  "deliverables",
+  "stories",
+  "criteria",
+  "examples",
+  "boundaries",
+  "review"
+] as const
+type Step = (typeof steps)[number]
 
 function updateFirstEpic(draft: FeatureDraft, patch: Partial<FeatureDraft["epics"][number]>): FeatureDraft {
   return {
     ...draft,
     epics: draft.epics.map((epic, epicIndex) => (epicIndex === 0 ? { ...epic, ...patch } : epic))
-  };
+  }
 }
 
-function updateStory(draft: FeatureDraft, patch: Partial<FeatureDraft["epics"][number]["stories"][number]>): FeatureDraft {
+function updateStory(
+  draft: FeatureDraft,
+  patch: Partial<FeatureDraft["epics"][number]["stories"][number]>
+): FeatureDraft {
   return {
     ...draft,
     epics: draft.epics.map((epic, epicIndex) =>
@@ -30,26 +43,26 @@ function updateStory(draft: FeatureDraft, patch: Partial<FeatureDraft["epics"][n
           }
         : epic
     )
-  };
+  }
 }
 
 export function Wizard() {
-  const { locale, setLocale, t } = useI18n();
-  const [stepIndex, setStepIndex] = useState(0);
-  const [draft, setDraft] = useState<FeatureDraft>(() => createEmptyDraft(locale));
+  const { locale, setLocale, t } = useI18n()
+  const [stepIndex, setStepIndex] = useState(0)
+  const [draft, setDraft] = useState<FeatureDraft>(() => createEmptyDraft(locale))
 
   useEffect(() => {
-    const stored = loadDraft();
-    if (stored) setDraft(stored);
-  }, []);
+    const stored = loadDraft()
+    if (stored) setDraft(stored)
+  }, [])
 
   useEffect(() => {
-    saveDraft(draft);
-  }, [draft]);
+    saveDraft(draft)
+  }, [draft])
 
-  const step = steps[stepIndex];
-  const firstEpic = draft.epics[0];
-  const firstStory = firstEpic.stories[0];
+  const step = steps[stepIndex]
+  const firstEpic = draft.epics[0]
+  const firstStory = firstEpic.stories[0]
 
   const content = useMemo(() => {
     if (step === "basic") {
@@ -83,9 +96,9 @@ export function Wizard() {
               id="locale"
               value={locale}
               onChange={(event) => {
-                const nextLocale = event.target.value as FeatureDraft["metadata"]["locale"];
-                setLocale(nextLocale);
-                setDraft({ ...draft, metadata: { ...draft.metadata, locale: nextLocale } });
+                const nextLocale = event.target.value as FeatureDraft["metadata"]["locale"]
+                setLocale(nextLocale)
+                setDraft({ ...draft, metadata: { ...draft.metadata, locale: nextLocale } })
               }}
             >
               <option value="zh-TW">繁體中文</option>
@@ -99,14 +112,14 @@ export function Wizard() {
               type="file"
               accept="application/json"
               onChange={async (event) => {
-                const file = event.target.files?.[0];
-                if (!file) return;
-                setDraft(draftFromJson(await file.text()));
+                const file = event.target.files?.[0]
+                if (!file) return
+                setDraft(draftFromJson(await file.text()))
               }}
             />
           </div>
         </WizardStep>
-      );
+      )
     }
 
     if (step === "goal") {
@@ -131,7 +144,9 @@ export function Wizard() {
               aria-describedby="desired-outcome-help"
               placeholder={t("field.desiredOutcomePlaceholder")}
               value={draft.summary.desiredOutcome}
-              onChange={(event) => setDraft({ ...draft, summary: { ...draft.summary, desiredOutcome: event.target.value } })}
+              onChange={(event) =>
+                setDraft({ ...draft, summary: { ...draft.summary, desiredOutcome: event.target.value } })
+              }
             />
           </div>
           <div className="field">
@@ -154,12 +169,12 @@ export function Wizard() {
             onChange={(successSignals) => setDraft({ ...draft, goal: { ...draft.goal, successSignals } })}
           />
         </WizardStep>
-      );
+      )
     }
 
     if (step === "context") {
-      const firstImpact = draft.impacts[0] ?? { id: "IM-001", actor: "", impact: "" };
-      const firstActivity = draft.userActivities[0] ?? { id: "UA-001", actor: "", activity: "" };
+      const firstImpact = draft.impacts[0] ?? { id: "IM-001", actor: "", impact: "" }
+      const firstActivity = draft.userActivities[0] ?? { id: "UA-001", actor: "", activity: "" }
 
       return (
         <WizardStep title="影響與活動" method="Impact Mapping">
@@ -193,7 +208,9 @@ export function Wizard() {
               aria-describedby="user-activity-actor-help"
               placeholder={t("field.userActivityActorPlaceholder")}
               value={firstActivity.actor}
-              onChange={(event) => setDraft({ ...draft, userActivities: [{ ...firstActivity, actor: event.target.value }] })}
+              onChange={(event) =>
+                setDraft({ ...draft, userActivities: [{ ...firstActivity, actor: event.target.value }] })
+              }
             />
           </div>
           <div className="field">
@@ -204,15 +221,17 @@ export function Wizard() {
               aria-describedby="user-activity-help"
               placeholder={t("field.userActivityPlaceholder")}
               value={firstActivity.activity}
-              onChange={(event) => setDraft({ ...draft, userActivities: [{ ...firstActivity, activity: event.target.value }] })}
+              onChange={(event) =>
+                setDraft({ ...draft, userActivities: [{ ...firstActivity, activity: event.target.value }] })
+              }
             />
           </div>
         </WizardStep>
-      );
+      )
     }
 
     if (step === "deliverables") {
-      const firstDeliverable = draft.deliverables[0] ?? { id: "DE-001", name: "", description: "" };
+      const firstDeliverable = draft.deliverables[0] ?? { id: "DE-001", name: "", description: "" }
 
       return (
         <WizardStep title="交付項目" method="Story Mapping">
@@ -224,7 +243,9 @@ export function Wizard() {
               aria-describedby="deliverable-name-help"
               placeholder={t("field.deliverableNamePlaceholder")}
               value={firstDeliverable.name}
-              onChange={(event) => setDraft({ ...draft, deliverables: [{ ...firstDeliverable, name: event.target.value }] })}
+              onChange={(event) =>
+                setDraft({ ...draft, deliverables: [{ ...firstDeliverable, name: event.target.value }] })
+              }
             />
           </div>
           <div className="field">
@@ -235,11 +256,13 @@ export function Wizard() {
               aria-describedby="deliverable-description-help"
               placeholder={t("field.deliverableDescriptionPlaceholder")}
               value={firstDeliverable.description}
-              onChange={(event) => setDraft({ ...draft, deliverables: [{ ...firstDeliverable, description: event.target.value }] })}
+              onChange={(event) =>
+                setDraft({ ...draft, deliverables: [{ ...firstDeliverable, description: event.target.value }] })
+              }
             />
           </div>
         </WizardStep>
-      );
+      )
     }
 
     if (step === "stories") {
@@ -279,7 +302,7 @@ export function Wizard() {
             />
           </div>
         </WizardStep>
-      );
+      )
     }
 
     if (step === "criteria") {
@@ -294,17 +317,20 @@ export function Wizard() {
             onChange={(statements) =>
               setDraft(
                 updateStory(draft, {
-                  acceptanceCriteria: statements.map((statement, index) => ({ id: `AC-${String(index + 1).padStart(3, "0")}`, statement }))
+                  acceptanceCriteria: statements.map((statement, index) => ({
+                    id: `AC-${String(index + 1).padStart(3, "0")}`,
+                    statement
+                  }))
                 })
               )
             }
           />
         </WizardStep>
-      );
+      )
     }
 
     if (step === "examples") {
-      const firstExample = firstStory.examples[0] ?? { id: "EX-001", format: "natural-language" as const, scenario: "" };
+      const firstExample = firstStory.examples[0] ?? { id: "EX-001", format: "natural-language" as const, scenario: "" }
 
       return (
         <WizardStep title="範例情境" method="Specification by Example">
@@ -326,7 +352,7 @@ export function Wizard() {
             />
           </div>
         </WizardStep>
-      );
+      )
     }
 
     if (step === "boundaries") {
@@ -340,7 +366,9 @@ export function Wizard() {
               aria-describedby="constraints-help"
               placeholder={t("field.constraintsPlaceholder")}
               value={draft.agentBoundaries.constraints[0] ?? ""}
-              onChange={(event) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, constraints: [event.target.value] } })}
+              onChange={(event) =>
+                setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, constraints: [event.target.value] } })
+              }
             />
           </div>
           <div className="field">
@@ -351,7 +379,9 @@ export function Wizard() {
               aria-describedby="non-goals-help"
               placeholder={t("field.nonGoalsPlaceholder")}
               value={draft.agentBoundaries.nonGoals[0] ?? ""}
-              onChange={(event) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, nonGoals: [event.target.value] } })}
+              onChange={(event) =>
+                setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, nonGoals: [event.target.value] } })
+              }
             />
           </div>
           <FieldArray
@@ -360,16 +390,29 @@ export function Wizard() {
             helpId="test-expectations-help"
             placeholder={t("field.testExpectationsPlaceholder")}
             values={draft.agentBoundaries.testExpectations}
-            onChange={(testExpectations) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, testExpectations } })}
+            onChange={(testExpectations) =>
+              setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, testExpectations } })
+            }
           />
         </WizardStep>
-      );
+      )
     }
 
-    if (step === "review") return <ReviewPanel draft={draft} />;
+    if (step === "review") return <ReviewPanel draft={draft} />
 
-    return null;
-  }, [draft, firstEpic.title, firstStory.acceptanceCriteria, firstStory.examples, firstStory.title, firstStory.userStory, locale, setLocale, step, t]);
+    return null
+  }, [
+    draft,
+    firstEpic.title,
+    firstStory.acceptanceCriteria,
+    firstStory.examples,
+    firstStory.title,
+    firstStory.userStory,
+    locale,
+    setLocale,
+    step,
+    t
+  ])
 
   return (
     <div className="stack">
@@ -377,17 +420,35 @@ export function Wizard() {
         <h1>{t("wizard.title")}</h1>
         <p>{t("wizard.subtitle")}</p>
       </header>
+
+      <nav className="step-nav">
+        {steps.map((s, index) => (
+          <div
+            key={s}
+            className={`step-nav-item ${index === stepIndex ? "active" : ""} ${index < stepIndex ? "completed" : ""}`}
+            onClick={() => setStepIndex(index)}
+          >
+            {String(index + 1).padStart(2, "0")} {t(`step.${s}` as any)}
+          </div>
+        ))}
+      </nav>
+
       {content}
       <nav className="button-row">
-        <button className="secondary" type="button" disabled={stepIndex === 0} onClick={() => setStepIndex((current) => Math.max(0, current - 1))}>
-          {t("wizard.previous")}
+        <button
+          className="secondary"
+          type="button"
+          disabled={stepIndex === 0}
+          onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
+        >
+          ← {t("wizard.previous")}
         </button>
         {stepIndex < steps.length - 1 ? (
           <button type="button" onClick={() => setStepIndex((current) => Math.min(steps.length - 1, current + 1))}>
-            {stepIndex === steps.length - 2 ? t("wizard.reviewCta") : t("wizard.next")}
+            {stepIndex === steps.length - 2 ? t("wizard.reviewCta") : t("wizard.next")} →
           </button>
         ) : null}
       </nav>
     </div>
-  );
+  )
 }

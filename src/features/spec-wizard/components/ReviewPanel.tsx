@@ -1,39 +1,39 @@
-"use client";
+"use client"
 
-import { useMemo, useState } from "react";
-import type { FeatureDraft } from "../model/specTypes";
-import { validateDraft } from "../model/validation";
-import { buildHumanSummary } from "../services/summary";
-import { draftToYaml } from "../services/yamlSerializer";
-import { draftToJson } from "../persistence/draftStorage";
-import { buildReviewPrompt } from "../services/reviewPromptBuilder";
-import { useI18n } from "../i18n/I18nContext";
+import { useMemo, useState } from "react"
+import type { FeatureDraft } from "../model/specTypes"
+import { validateDraft } from "../model/validation"
+import { buildHumanSummary } from "../services/summary"
+import { draftToYaml } from "../services/yamlSerializer"
+import { draftToJson } from "../persistence/draftStorage"
+import { buildReviewPrompt } from "../services/reviewPromptBuilder"
+import { useI18n } from "../i18n/I18nContext"
 
 type ReviewPanelProps = {
-  draft: FeatureDraft;
-};
+  draft: FeatureDraft
+}
 
 export function ReviewPanel({ draft }: ReviewPanelProps) {
-  const { t } = useI18n();
-  const [tab, setTab] = useState<"summary" | "yaml">("summary");
-  const validation = useMemo(() => validateDraft(draft), [draft]);
-  const canExportYaml = validation.blockingErrors.length === 0;
-  const summary = useMemo(() => buildHumanSummary(draft), [draft]);
-  const yaml = useMemo(() => draftToYaml(draft), [draft]);
+  const { t } = useI18n()
+  const [tab, setTab] = useState<"summary" | "yaml">("summary")
+  const validation = useMemo(() => validateDraft(draft), [draft])
+  const canExportYaml = validation.blockingErrors.length === 0
+  const summary = useMemo(() => buildHumanSummary(draft), [draft])
+  const yaml = useMemo(() => draftToYaml(draft), [draft])
   const reviewPrompt = useMemo(
     () => buildReviewPrompt({ yaml, summary, locale: draft.metadata.locale }),
     [yaml, summary, draft.metadata.locale]
-  );
+  )
 
-  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle");
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle")
 
   async function handleCopyReviewPrompt() {
     try {
-      await navigator.clipboard.writeText(reviewPrompt);
-      setCopyState("copied");
-      setTimeout(() => setCopyState("idle"), 2000);
+      await navigator.clipboard.writeText(reviewPrompt)
+      setCopyState("copied")
+      setTimeout(() => setCopyState("idle"), 2000)
     } catch {
-      setCopyState("failed");
+      setCopyState("failed")
     }
   }
 
@@ -42,7 +42,7 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
       ? t("reviewPrompt.button.copied")
       : copyState === "failed"
         ? t("reviewPrompt.button.failed")
-        : t("reviewPrompt.button.idle");
+        : t("reviewPrompt.button.idle")
 
   return (
     <section className="panel stack">
@@ -65,22 +65,35 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
         </div>
       ) : null}
       <div className="button-row">
-        <button className="secondary" type="button" onClick={() => setTab("summary")}>Summary</button>
-        <button className="secondary" type="button" onClick={() => setTab("yaml")}>YAML</button>
+        <button
+          className={`secondary ${tab === "summary" ? "active" : ""}`}
+          type="button"
+          onClick={() => setTab("summary")}
+        >
+          Summary
+        </button>
+        <button className={`secondary ${tab === "yaml" ? "active" : ""}`} type="button" onClick={() => setTab("yaml")}>
+          YAML
+        </button>
+        <div style={{ flex: 1 }} />
         <button type="button" disabled={!canExportYaml} onClick={() => navigator.clipboard?.writeText(yaml)}>
           {t("wizard.copyYaml")}
         </button>
         <a
-          aria-disabled={!canExportYaml}
+          className={!canExportYaml ? "disabled" : ""}
           href={canExportYaml ? `data:text/yaml;charset=utf-8,${encodeURIComponent(yaml)}` : undefined}
           download={canExportYaml ? `${draft.metadata.title || "feature-spec"}.yaml` : undefined}
           onClick={(event) => {
-            if (!canExportYaml) event.preventDefault();
+            if (!canExportYaml) event.preventDefault()
           }}
         >
           {t("wizard.exportYaml")}
         </a>
-        <a href={`data:application/json;charset=utf-8,${encodeURIComponent(draftToJson(draft))}`} download={`${draft.metadata.title || "feature-draft"}.json`}>
+        <a
+          className="secondary"
+          href={`data:application/json;charset=utf-8,${encodeURIComponent(draftToJson(draft))}`}
+          download={`${draft.metadata.title || "feature-draft"}.json`}
+        >
           {t("wizard.exportDraft")}
         </a>
       </div>
@@ -99,5 +112,5 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
         ) : null}
       </div>
     </section>
-  );
+  )
 }

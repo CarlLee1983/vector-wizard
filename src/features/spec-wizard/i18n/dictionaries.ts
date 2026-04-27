@@ -1,4 +1,4 @@
-import type { Locale } from "../model/specTypes";
+import type { Locale } from "../model/specTypes"
 
 export type MessageKey =
   | "wizard.title"
@@ -12,6 +12,16 @@ export type MessageKey =
   | "wizard.copyYaml"
   | "wizard.importDraft"
   | "wizard.exportDraft"
+  | "wizard.addItem"
+  | "step.basic"
+  | "step.goal"
+  | "step.context"
+  | "step.deliverables"
+  | "step.stories"
+  | "step.criteria"
+  | "step.examples"
+  | "step.boundaries"
+  | "step.review"
   | "field.title"
   | "field.titleHelp"
   | "field.titlePlaceholder"
@@ -94,7 +104,7 @@ export type MessageKey =
   | "reviewPrompt.button.copied"
   | "reviewPrompt.button.failed"
   | "reviewPrompt.fallback.label"
-  | "reviewPrompt.template";
+  | "reviewPrompt.template"
 
 export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
   "zh-TW": {
@@ -109,6 +119,16 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "wizard.copyYaml": "複製 YAML",
     "wizard.importDraft": "匯入草稿 JSON",
     "wizard.exportDraft": "匯出草稿 JSON",
+    "wizard.addItem": "新增項目",
+    "step.basic": "基本資訊",
+    "step.goal": "目標與影響",
+    "step.context": "影響與活動",
+    "step.deliverables": "交付項目",
+    "step.stories": "使用者故事",
+    "step.criteria": "驗收條件",
+    "step.examples": "範例情境",
+    "step.boundaries": "限制與風險",
+    "step.review": "檢視與匯出",
     "field.title": "功能標題（一句話說明要做什麼）",
     "field.titleHelp": "請填「這次要交付的功能或改善」，不是專案名稱；例如：會員登入錯誤提示優化。",
     "field.titlePlaceholder": "例：會員登入錯誤提示優化",
@@ -186,7 +206,8 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "validation.vagueSuccessSignal": "成功訊號可能過於模糊。",
     "validation.openQuestionsPresent": "仍有未解問題。",
     "reviewPrompt.section.title": "AI 審閱協助",
-    "reviewPrompt.section.description": "複製後可貼到 Claude Code、ChatGPT 等 AI agent，請其針對本 spec 提出改良建議。AI 不會直接修改本草稿。",
+    "reviewPrompt.section.description":
+      "複製後可貼到 Claude Code、ChatGPT 等 AI agent，請其針對本 spec 提出改良建議。AI 不會直接修改本草稿。",
     "reviewPrompt.button.idle": "複製 AI 審閱 prompt",
     "reviewPrompt.button.copied": "已複製 ✓",
     "reviewPrompt.button.failed": "複製失敗，請手動複製",
@@ -243,13 +264,25 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "wizard.previous": "Previous",
     "wizard.review": "Review and Export",
     "wizard.reviewCta": "Go to Review and Export",
-    "wizard.reviewHelp": "Check that the summary reads like a handoff for engineers and AI coding agents, then copy or download YAML.",
+    "wizard.reviewHelp":
+      "Check that the summary reads like a handoff for engineers and AI coding agents, then copy or download YAML.",
     "wizard.exportYaml": "Download YAML",
     "wizard.copyYaml": "Copy YAML",
     "wizard.importDraft": "Import Draft JSON",
     "wizard.exportDraft": "Export Draft JSON",
+    "wizard.addItem": "Add Item",
+    "step.basic": "Basic",
+    "step.goal": "Goal & Impact",
+    "step.context": "Context & Activity",
+    "step.deliverables": "Deliverables",
+    "step.stories": "User Stories",
+    "step.criteria": "Criteria",
+    "step.examples": "Examples",
+    "step.boundaries": "Boundaries",
+    "step.review": "Review",
     "field.title": "Feature title (one sentence about what to build)",
-    "field.titleHelp": "Enter the feature or improvement being delivered, not the project name; e.g. Improve login error messages.",
+    "field.titleHelp":
+      "Enter the feature or improvement being delivered, not the project name; e.g. Improve login error messages.",
     "field.titlePlaceholder": "e.g. Improve login error messages",
     "field.owner": "Owner",
     "field.ownerHelp": "Enter the main decision maker or acceptance contact; a name, role, or team is fine.",
@@ -298,7 +331,8 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "field.acceptanceCriteriaPlaceholder": "e.g. Each tool must have a unique asset number",
     "field.exampleScenario": "Example scenario",
     "field.exampleScenarioHelp": "Describe one concrete input, behavior, and expected result.",
-    "field.exampleScenarioPlaceholder": "e.g. When a manager creates a tool with an asset number, the system shows it as available.",
+    "field.exampleScenarioPlaceholder":
+      "e.g. When a manager creates a tool with an asset number, the system shows it as available.",
     "field.testExpectations": "Test expectations",
     "field.testExpectationsHelp": "List tests or checks the AI coding agent should add.",
     "field.testExpectationsPlaceholder": "e.g. Add validation tests for duplicate asset numbers",
@@ -319,13 +353,15 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "validation.missingUserActivities": "Add user activities or workflow steps.",
     "validation.missingEpicTitle": "Add an epic title so the story group is clear.",
     "validation.missingTestExpectations": "Add test expectations so the AI coding agent can verify the work.",
-    "validation.localeContentMismatch": "Content appears to be Chinese, but locale is English; confirm the language setting.",
+    "validation.localeContentMismatch":
+      "Content appears to be Chinese, but locale is English; confirm the language setting.",
     "validation.missingConstraints": "Add constraints if any apply.",
     "validation.missingNonGoals": "Add non-goals if any apply.",
     "validation.vagueSuccessSignal": "Success signal may be too vague.",
     "validation.openQuestionsPresent": "Open questions remain.",
     "reviewPrompt.section.title": "AI Review Assistance",
-    "reviewPrompt.section.description": "Copy and paste into any AI agent (Claude Code, ChatGPT, etc.) to request feedback on this spec. AI will not modify this draft directly.",
+    "reviewPrompt.section.description":
+      "Copy and paste into any AI agent (Claude Code, ChatGPT, etc.) to request feedback on this spec. AI will not modify this draft directly.",
     "reviewPrompt.button.idle": "Copy AI Review Prompt",
     "reviewPrompt.button.copied": "Copied ✓",
     "reviewPrompt.button.failed": "Copy failed, please copy manually",
@@ -375,4 +411,4 @@ At the end, list the top 3 items you would prioritize fixing.
 \`\`\`
 `
   }
-};
+}

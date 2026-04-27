@@ -1,14 +1,16 @@
-import type { FeatureDraft } from "../model/specTypes";
-import { getStories } from "../model/validation";
+import type { FeatureDraft } from "../model/specTypes"
+import { getStories } from "../model/validation"
 
 function listOrFallback(items: string[], fallback: string): string {
-  const nonBlank = items.filter((item) => item.trim().length > 0);
-  return nonBlank.length > 0 ? nonBlank.map((item) => `- ${item}`).join("\n") : `- ${fallback}`;
+  const nonBlank = items.filter((item) => item.trim().length > 0)
+  return nonBlank.length > 0 ? nonBlank.map((item) => `- ${item}`).join("\n") : `- ${fallback}`
 }
 
 export function buildHumanSummary(draft: FeatureDraft): string {
-  const stories = getStories(draft).filter((story) => story.title.trim().length > 0 || story.userStory.trim().length > 0);
-  const storyLines = stories.map((story) => `- ${story.title || story.userStory}`).join("\n") || "- No story provided";
+  const stories = getStories(draft).filter(
+    (story) => story.title.trim().length > 0 || story.userStory.trim().length > 0
+  )
+  const storyLines = stories.map((story) => `- ${story.title || story.userStory}`).join("\n") || "- No story provided"
 
   return [
     `# ${draft.metadata.title || "Untitled Feature"}`,
@@ -35,5 +37,5 @@ export function buildHumanSummary(draft: FeatureDraft): string {
     "",
     "## Non-goals",
     listOrFallback(draft.agentBoundaries.nonGoals, "No non-goals provided")
-  ].join("\n");
+  ].join("\n")
 }

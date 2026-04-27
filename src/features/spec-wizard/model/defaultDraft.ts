@@ -1,4 +1,4 @@
-import type { FeatureDraft, Locale } from "./specTypes";
+import type { FeatureDraft, Locale } from "./specTypes"
 
 export function createEmptyDraft(locale: Locale = "zh-TW"): FeatureDraft {
   return {
@@ -40,5 +40,5 @@ export function createEmptyDraft(locale: Locale = "zh-TW"): FeatureDraft {
       risks: [],
       openQuestions: []
     }
-  };
+  }
 }
