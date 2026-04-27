@@ -91,21 +91,6 @@ export function Wizard() {
             />
           </div>
           <div className="field">
-            <label htmlFor="locale">Language</label>
-            <select
-              id="locale"
-              value={locale}
-              onChange={(event) => {
-                const nextLocale = event.target.value as FeatureDraft["metadata"]["locale"]
-                setLocale(nextLocale)
-                setDraft({ ...draft, metadata: { ...draft.metadata, locale: nextLocale } })
-              }}
-            >
-              <option value="zh-TW">繁體中文</option>
-              <option value="en">English</option>
-            </select>
-          </div>
-          <div className="field">
             <label htmlFor="draftImport">{t("wizard.importDraft")}</label>
             <input
               id="draftImport"
@@ -417,8 +402,24 @@ export function Wizard() {
   return (
     <div className="stack">
       <header>
-        <h1>{t("wizard.title")}</h1>
-        <p>{t("wizard.subtitle")}</p>
+        <div>
+          <h1>{t("wizard.title")}</h1>
+          <p>{t("wizard.subtitle")}</p>
+        </div>
+        <div className="locale-switcher">
+          <select
+            value={locale}
+            onChange={(event) => {
+              const nextLocale = event.target.value as FeatureDraft["metadata"]["locale"]
+              setLocale(nextLocale)
+              setDraft({ ...draft, metadata: { ...draft.metadata, locale: nextLocale } })
+            }}
+            aria-label="Change Language"
+          >
+            <option value="zh-TW">繁體中文</option>
+            <option value="en">English</option>
+          </select>
+        </div>
       </header>
 
       <nav className="step-nav">
