@@ -125,6 +125,14 @@ export type MessageKey =
   | "reviewPrompt.button.failed"
   | "reviewPrompt.fallback.label"
   | "reviewPrompt.template"
+  | "handoff.button.idle"
+  | "handoff.button.pending"
+  | "handoff.button.success"
+  | "handoff.button.failed"
+  | "agentDraft.button.idle"
+  | "agentDraft.button.pending"
+  | "agentDraft.button.success"
+  | "agentDraft.load"
   | "seedPrompt.title"
   | "seedPrompt.help"
   | "seedPrompt.button.idle"
@@ -325,6 +333,14 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
 {{yaml_content}}
 \`\`\`
 `,
+    "handoff.button.idle": "送交 Agent 實作",
+    "handoff.button.pending": "傳送中...",
+    "handoff.button.success": "已送達專案目錄 ✓",
+    "handoff.button.failed": "傳送失敗",
+    "agentDraft.button.idle": "呼叫 Agent 寫草稿",
+    "agentDraft.button.pending": "Agent 正在思考中...",
+    "agentDraft.button.success": "草稿已就緒 ✓",
+    "agentDraft.load": "載入 Agent 草稿",
     "seedPrompt.title": "AI 快速生成草稿",
     "seedPrompt.help": "不知道怎麼開始？輸入功能標題後，複製下方 Prompt 給外部 AI (如 Claude)，它會幫你生成一份完整的 JSON 草稿，匯入後即可開始編輯。",
     "seedPrompt.button.idle": "複製 AI 生成 Prompt",
@@ -528,6 +544,14 @@ At the end, list the top 3 items you would prioritize fixing.
 {{yaml_content}}
 \`\`\`
 `,
+    "handoff.button.idle": "Handoff to Agent",
+    "handoff.button.pending": "Sending...",
+    "handoff.button.success": "Delivered to project ✓",
+    "handoff.button.failed": "Handoff failed",
+    "agentDraft.button.idle": "Ask Agent for Draft",
+    "agentDraft.button.pending": "Agent is thinking...",
+    "agentDraft.button.success": "Draft Ready ✓",
+    "agentDraft.load": "Load Agent Draft",
     "seedPrompt.title": "AI Quick Draft",
     "seedPrompt.help": "Don't know where to start? Enter a title, then copy this prompt for an external AI (like Claude). It will help you generate a full JSON draft that you can import here.",
     "seedPrompt.button.idle": "Copy AI Seed Prompt",

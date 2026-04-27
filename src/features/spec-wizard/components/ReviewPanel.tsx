@@ -26,6 +26,7 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
   )
 
   const [copyState, setCopyState] = useState<"idle" | "copied" | "failed">("idle")
+  const [handoffState, setHandoffState] = useState<"idle" | "pending" | "success" | "failed">("idle")
 
   async function handleCopyReviewPrompt() {
     try {
@@ -37,12 +38,44 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
     }
   }
 
+  async function handleHandoff() {
+    setHandoffState("pending")
+    try {
+      const response = await fetch("/api/handoff", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          yaml,
+          title: draft.metadata.title
+        })
+      })
+
+      if (!response.ok) throw new Error("Handoff failed")
+      
+      setHandoffState("success")
+      setTimeout(() => setHandoffState("idle"), 3000)
+    } catch (error) {
+      console.error(error)
+      setHandoffState("failed")
+      setTimeout(() => setHandoffState("idle"), 3000)
+    }
+  }
+
   const reviewButtonLabel =
     copyState === "copied"
       ? t("reviewPrompt.button.copied")
       : copyState === "failed"
         ? t("reviewPrompt.button.failed")
         : t("reviewPrompt.button.idle")
+
+  const handoffButtonLabel =
+    handoffState === "pending"
+      ? t("handoff.button.pending")
+      : handoffState === "success"
+        ? t("handoff.button.success")
+        : handoffState === "failed"
+          ? t("handoff.button.failed")
+          : t("handoff.button.idle")
 
   return (
     <section className="panel stack">
@@ -83,6 +116,14 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
         <div style={{ flex: 1 }} />
         <button type="button" disabled={!canExportYaml} onClick={() => navigator.clipboard?.writeText(yaml)}>
           {t("wizard.copyYaml")}
+        </button>
+        <button
+          type="button"
+          className="primary"
+          disabled={!canExportYaml || handoffState === "pending"}
+          onClick={handleHandoff}
+        >
+          {handoffButtonLabel}
         </button>
         <a
           className={!canExportYaml ? "disabled" : ""}

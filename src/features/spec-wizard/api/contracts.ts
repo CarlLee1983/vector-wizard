@@ -11,6 +11,16 @@ export type GenerateSpecResponse = {
   validation: ValidationResult
 }
 
+export type HandoffRequest = {
+  yaml: string
+  title: string
+}
+
+export type HandoffResponse = {
+  success: true
+  filePath: string
+}
+
 export type ApiErrorResponse = {
   error: string
 }

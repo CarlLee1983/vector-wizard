@@ -12,6 +12,7 @@ type SeedPromptSectionProps = {
 export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
   const { locale, t } = useI18n()
   const [copied, setCopied] = useState(false)
+  const [agentState, setAgentState] = useState<"idle" | "pending" | "success" | "failed">("idle")
 
   const handleCopy = async () => {
     if (!title) return
@@ -25,6 +26,27 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
     }
   }
 
+  const handleRequestAgent = async () => {
+    setAgentState("pending")
+    try {
+      const response = await fetch("/api/request-draft", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, owner, locale })
+      })
+
+      if (!response.ok) throw new Error("Request failed")
+      
+      setAgentState("success")
+      // We don't auto-reset success to idle because we want the user 
+      // to know it's ready until they potentially reload or something
+    } catch (error) {
+      console.error(error)
+      setAgentState("failed")
+      setTimeout(() => setAgentState("idle"), 3000)
+    }
+  }
+
   if (!title) return null
 
   return (
@@ -35,15 +57,32 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
       <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "var(--text-muted)", lineHeight: "1.5" }}>
         {t("seedPrompt.help")}
       </p>
-      <button
-        type="button"
-        className={copied ? "success" : "secondary"}
-        onClick={handleCopy}
-        disabled={!title}
-        style={{ width: "100%" }}
-      >
-        {copied ? t("seedPrompt.button.copied") : t("seedPrompt.button.idle")}
-      </button>
+      
+      <div className="stack" style={{ gap: "8px" }}>
+        <button
+          type="button"
+          className={copied ? "success" : "secondary"}
+          onClick={handleCopy}
+          disabled={!title}
+          style={{ width: "100%" }}
+        >
+          {copied ? t("seedPrompt.button.copied") : t("seedPrompt.button.idle")}
+        </button>
+
+        <button
+          type="button"
+          className={agentState === "success" ? "success" : agentState === "pending" ? "secondary" : "primary"}
+          onClick={handleRequestAgent}
+          disabled={!title || agentState === "pending"}
+          style={{ width: "100%" }}
+        >
+          {agentState === "pending" 
+            ? t("agentDraft.button.pending") 
+            : agentState === "success" 
+              ? t("agentDraft.button.success") 
+              : t("agentDraft.button.idle")}
+        </button>
+      </div>
     </div>
   )
 }
