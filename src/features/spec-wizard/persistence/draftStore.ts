@@ -9,8 +9,10 @@ let state: DraftStoreState | null = null
 let lastWriteError: Error | null = null
 const subscribers = new Set<() => void>()
 
+const EMPTY_STATE: DraftStoreState = { version: 1, activeDraftId: null, drafts: {}, meta: {} }
+
 function emptyState(): DraftStoreState {
-  return { version: 1, activeDraftId: null, drafts: {}, meta: {} }
+  return EMPTY_STATE
 }
 
 export function generateDraftId(): string {
@@ -135,6 +137,10 @@ export function subscribe(cb: () => void): () => void {
 
 export function getLastWriteError(): Error | null {
   return lastWriteError
+}
+
+export function getServerLastWriteError(): null {
+  return null
 }
 
 export function createDraft(locale: Locale = "zh-TW"): string {

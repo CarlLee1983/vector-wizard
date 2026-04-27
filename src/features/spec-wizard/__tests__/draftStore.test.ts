@@ -6,6 +6,8 @@ import {
   deleteDraft,
   exportDraftJson,
   generateDraftId,
+  getServerLastWriteError,
+  getServerSnapshot,
   getSnapshot,
   importDraftJson,
   renameDraft,
@@ -40,6 +42,18 @@ describe("draftStore — bootstrap", () => {
   it("returns the same reference on repeated calls without mutations", () => {
     const a = getSnapshot()
     const b = getSnapshot()
+    expect(a).toBe(b)
+  })
+
+  it("getServerSnapshot returns the same reference on repeated calls", () => {
+    const a = getServerSnapshot()
+    const b = getServerSnapshot()
+    expect(a).toBe(b)
+  })
+
+  it("getServerLastWriteError returns the same reference on repeated calls", () => {
+    const a = getServerLastWriteError()
+    const b = getServerLastWriteError()
     expect(a).toBe(b)
   })
 })

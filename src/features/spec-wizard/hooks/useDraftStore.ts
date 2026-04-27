@@ -7,6 +7,7 @@ import {
   deleteDraft as deleteDraftAction,
   exportDraftJson as exportDraftJsonAction,
   getLastWriteError,
+  getServerLastWriteError,
   getServerSnapshot,
   getSnapshot,
   importDraftJson as importDraftJsonAction,
@@ -39,7 +40,7 @@ export type UseDraftStoreValue = {
 
 export function useDraftStore(): UseDraftStoreValue {
   const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
-  const lastWriteError = useSyncExternalStore(subscribe, getLastWriteError, () => null)
+  const lastWriteError = useSyncExternalStore(subscribe, getLastWriteError, getServerLastWriteError)
 
   const drafts: DraftListEntry[] = Object.keys(state.drafts).map((id) => ({
     id,
