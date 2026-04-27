@@ -27,7 +27,7 @@ bunx vitest run src/features/spec-wizard/__tests__/yamlSerializer.test.ts
 bunx vitest run -t "minimal valid draft"
 
 # Run locally via npx (requires local source or npm link)
-npx vector
+npx vector-wizard
 ```
 
 There is no separate typecheck script — `next build` runs `tsc --noEmit` (the `tsconfig.json` has `noEmit: true`). Use `npx tsc --noEmit` for a faster type-only check.
