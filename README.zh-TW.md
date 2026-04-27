@@ -69,6 +69,60 @@ bun run test:watch
 - **i18n/**: 基於字典的國際化支援。
 - **api/**: 伺服器與客戶端通訊的共用合約（Contracts）。
 
+## 🤖 AI 代理技能：`vector-analyzer`
+
+本倉庫內附可重複使用的技能 `.agents/skills/vector-analyzer/SKILL.md`，教導 AI 代理把既有程式碼逆向分析成符合 Vector 規格的 `FeatureDraft` JSON。產出可直接貼進向導的 Draft Manager。
+
+### 手動安裝（Claude Code）
+
+全域安裝（所有專案皆可使用）：
+
+```bash
+mkdir -p ~/.claude/skills
+cp -R .agents/skills/vector-analyzer ~/.claude/skills/
+```
+
+僅安裝至特定專案（透過複製或軟連結）：
+
+```bash
+mkdir -p /path/to/target-repo/.claude/skills
+ln -s "$(pwd)/.agents/skills/vector-analyzer" \
+      /path/to/target-repo/.claude/skills/vector-analyzer
+```
+
+其他代理（Codex、Cursor、Copilot…）可直接讀取 `.agents/skills/vector-analyzer/SKILL.md`，呼叫時指向該檔即可。
+
+### 使用 Agent Prompt 安裝
+
+把以下提示詞貼進任一 AI 代理的新對話，代理會自動偵測平台並完成安裝：
+
+> 請幫我安裝本倉庫的 `vector-analyzer` 技能，檔案位於 `.agents/skills/vector-analyzer/SKILL.md`，安裝後我希望可以跨專案重複使用。
+>
+> 1. 偵測你目前運行於哪個代理平台（Claude Code、Codex、Cursor、Copilot…）。
+> 2. 若為 Claude Code：把整個目錄複製到 `~/.claude/skills/vector-analyzer/`。
+> 3. 若為其他代理：請告訴我此系統建議的安裝路徑，並先提案 `cp` 或 `ln -s` 指令再執行。
+> 4. 確認目的地、執行指令，並回讀 `SKILL.md` 驗證安裝成功。
+> 5. 印出一行使用提示：說明該平台應如何呼叫此技能。
+
+### 從 GitHub 透過 Agent Prompt 安裝
+
+若尚未 clone 本倉庫，把以下提示詞貼進任一 AI 代理，它會自動從 GitHub 抓取並安裝：
+
+> 請從 https://github.com/CarlLee1983/vector-wizard 安裝 `vector-analyzer` 技能，安裝後我希望可以跨專案重複使用。
+>
+> 1. 偵測你目前運行於哪個代理平台（Claude Code、Codex、Cursor、Copilot…）。
+> 2. 用淺層 clone 抓取倉庫到臨時目錄：`git clone --depth 1 https://github.com/CarlLee1983/vector-wizard /tmp/vector-wizard-skill`。
+> 3. 若為 Claude Code：將 `/tmp/vector-wizard-skill/.agents/skills/vector-analyzer` 複製至 `~/.claude/skills/vector-analyzer/`。
+> 4. 若為其他代理：請告訴我建議的安裝路徑，並先提案 `cp` 或 `ln -s` 指令再執行。
+> 5. 清理臨時 clone。
+> 6. 從安裝目的地回讀 `SKILL.md` 驗證成功，並印出一行使用提示。
+
+### 使用方式
+
+安裝完成後，請對你的代理說：
+
+> 請使用 `vector-analyzer` 技能分析這個專案，產出一份 `FeatureDraft` JSON，我會把它貼進 `npx vector-wizard` 的 Draft Manager。
+
 ## 📄 授權
 
 本專案為內部使用之私有專案。
