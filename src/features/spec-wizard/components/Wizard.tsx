@@ -1,10 +1,10 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { useI18n } from "../i18n/I18nContext"
-import { createEmptyDraft } from "../model/defaultDraft"
 import type { FeatureDraft } from "../model/specTypes"
-import { draftFromJson, loadDraft, saveDraft } from "../persistence/draftStorage"
+import { useDraftStore } from "../hooks/useDraftStore"
+import { draftFromJson } from "../persistence/draftStorage"
 import { FieldArray } from "./FieldArray"
 import { ReviewPanel } from "./ReviewPanel"
 import { WizardStep } from "./WizardStep"
@@ -48,18 +48,13 @@ function updateStory(
 }
 
 export function Wizard() {
-  const { locale, setLocale, t } = useI18n()
+  const { locale, t } = useI18n()
+  const { activeDraft, setActiveDraft } = useDraftStore()
   const [stepIndex, setStepIndex] = useState(0)
-  const [draft, setDraft] = useState<FeatureDraft>(() => createEmptyDraft(locale))
 
-  useEffect(() => {
-    const stored = loadDraft()
-    if (stored) setDraft(stored)
-  }, [])
-
-  useEffect(() => {
-    saveDraft(draft)
-  }, [draft])
+  if (!activeDraft) return null
+  const draft = activeDraft
+  const setDraft = setActiveDraft
 
   const step = steps[stepIndex]
   const firstEpic = draft.epics[0]
@@ -457,34 +452,12 @@ export function Wizard() {
     firstStory.title,
     firstStory.userStory,
     locale,
-    setLocale,
     step,
     t
   ])
 
   return (
-    <div className="stack">
-      <header>
-        <div>
-          <h1>{t("wizard.title")}</h1>
-          <p>{t("wizard.subtitle")}</p>
-        </div>
-        <div className="locale-switcher">
-          <select
-            value={locale}
-            onChange={(event) => {
-              const nextLocale = event.target.value as FeatureDraft["metadata"]["locale"]
-              setLocale(nextLocale)
-              setDraft({ ...draft, metadata: { ...draft.metadata, locale: nextLocale } })
-            }}
-            aria-label="Change Language"
-          >
-            <option value="zh-TW">繁體中文</option>
-            <option value="en">English</option>
-          </select>
-        </div>
-      </header>
-
+    <>
       <nav className="step-nav">
         {steps.map((s, index) => (
           <div
@@ -502,17 +475,22 @@ export function Wizard() {
         <button
           className="secondary"
           type="button"
+          aria-label={t("wizard.previous")}
           disabled={stepIndex === 0}
           onClick={() => setStepIndex((current) => Math.max(0, current - 1))}
         >
           ← {t("wizard.previous")}
         </button>
         {stepIndex < steps.length - 1 ? (
-          <button type="button" onClick={() => setStepIndex((current) => Math.min(steps.length - 1, current + 1))}>
+          <button
+            type="button"
+            aria-label={stepIndex === steps.length - 2 ? t("wizard.reviewCta") : t("wizard.next")}
+            onClick={() => setStepIndex((current) => Math.min(steps.length - 1, current + 1))}
+          >
             {stepIndex === steps.length - 2 ? t("wizard.reviewCta") : t("wizard.next")} →
           </button>
         ) : null}
       </nav>
-    </div>
+    </>
   )
 }

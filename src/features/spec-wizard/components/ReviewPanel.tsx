@@ -72,7 +72,12 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
         >
           {t("review.summary")}
         </button>
-        <button className={`secondary ${tab === "yaml" ? "active" : ""}`} type="button" onClick={() => setTab("yaml")}>
+        <button
+          className={`secondary ${tab === "yaml" ? "active" : ""}`}
+          type="button"
+          aria-label="YAML"
+          onClick={() => setTab("yaml")}
+        >
           {t("review.yaml")}
         </button>
         <div style={{ flex: 1 }} />
@@ -81,6 +86,7 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
         </button>
         <a
           className={!canExportYaml ? "disabled" : ""}
+          aria-disabled={!canExportYaml ? "true" : undefined}
           href={canExportYaml ? `data:text/yaml;charset=utf-8,${encodeURIComponent(yaml)}` : undefined}
           download={canExportYaml ? `${draft.metadata.title || "feature-spec"}.yaml` : undefined}
           onClick={(event) => {

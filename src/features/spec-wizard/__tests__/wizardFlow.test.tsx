@@ -1,6 +1,7 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it } from "vitest"
+import { __resetForTests, createDraft } from "../persistence/draftStore"
 import { I18nProvider } from "../i18n/I18nContext"
 import { Wizard } from "../components/Wizard"
 
@@ -15,6 +16,8 @@ function renderWizard() {
 describe("Wizard", () => {
   beforeEach(() => {
     localStorage.clear()
+    __resetForTests()
+    createDraft()
   })
 
   it("walks from basic info to review and renders YAML", async () => {
