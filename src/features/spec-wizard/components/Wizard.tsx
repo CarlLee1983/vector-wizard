@@ -65,9 +65,9 @@ export function Wizard() {
   const firstStory = firstEpic.stories[0]
 
   const content = useMemo(() => {
-    if (step === "basic") {
-      return (
-        <WizardStep title="基本資訊">
+      if (step === "basic") {
+    return (
+      <WizardStep title={t("step.basic")}>
           <div className="field">
             <label htmlFor="title">{t("field.title")}</label>
             <small id="title-help">{t("field.titleHelp")}</small>
@@ -109,7 +109,7 @@ export function Wizard() {
 
     if (step === "goal") {
       return (
-        <WizardStep title="目標與影響" method="Impact Mapping">
+        <WizardStep title={t("step.goal")} method="Impact Mapping">
           <div className="field">
             <label htmlFor="problem">{t("field.problem")}</label>
             <small id="problem-help">{t("field.problemHelp")}</small>
@@ -160,9 +160,8 @@ export function Wizard() {
     if (step === "context") {
       const firstImpact = draft.impacts[0] ?? { id: "IM-001", actor: "", impact: "" }
       const firstActivity = draft.userActivities[0] ?? { id: "UA-001", actor: "", activity: "" }
-
       return (
-        <WizardStep title="影響與活動" method="Impact Mapping">
+        <WizardStep title={t("step.context")} method="Impact Mapping">
           <div className="field">
             <label htmlFor="impactActor">{t("field.impactActor")}</label>
             <small id="impact-actor-help">{t("field.impactActorHelp")}</small>
@@ -217,9 +216,8 @@ export function Wizard() {
 
     if (step === "deliverables") {
       const firstDeliverable = draft.deliverables[0] ?? { id: "DE-001", name: "", description: "" }
-
       return (
-        <WizardStep title="交付項目" method="Story Mapping">
+        <WizardStep title={t("step.deliverables")} method="Story Mapping">
           <div className="field">
             <label htmlFor="deliverableName">{t("field.deliverableName")}</label>
             <small id="deliverable-name-help">{t("field.deliverableNameHelp")}</small>
@@ -252,7 +250,7 @@ export function Wizard() {
 
     if (step === "stories") {
       return (
-        <WizardStep title="使用者故事" method="Story Mapping">
+        <WizardStep title={t("step.stories")} method="Story Mapping">
           <div className="field">
             <label htmlFor="epicTitle">{t("field.epicTitle")}</label>
             <small id="epic-title-help">{t("field.epicTitleHelp")}</small>
@@ -292,7 +290,7 @@ export function Wizard() {
 
     if (step === "criteria") {
       return (
-        <WizardStep title="驗收條件" method="Specification by Example">
+        <WizardStep title={t("step.criteria")} method="Specification by Example">
           <FieldArray
             label={t("field.acceptanceCriteria")}
             help={t("field.acceptanceCriteriaHelp")}
@@ -316,9 +314,8 @@ export function Wizard() {
 
     if (step === "examples") {
       const firstExample = firstStory.examples[0] ?? { id: "EX-001", format: "natural-language" as const, scenario: "" }
-
       return (
-        <WizardStep title="範例情境" method="Specification by Example">
+        <WizardStep title={t("step.examples")} method="Specification by Example">
           <div className="field">
             <label htmlFor="exampleScenario">{t("field.exampleScenario")}</label>
             <small id="example-scenario-help">{t("field.exampleScenarioHelp")}</small>
@@ -342,7 +339,7 @@ export function Wizard() {
 
     if (step === "boundaries") {
       return (
-        <WizardStep title="限制、非目標與風險">
+        <WizardStep title={t("step.boundaries")}>
           <div className="field">
             <label htmlFor="constraints">{t("field.constraints")}</label>
             <small id="constraints-help">{t("field.constraintsHelp")}</small>
@@ -429,7 +426,7 @@ export function Wizard() {
             className={`step-nav-item ${index === stepIndex ? "active" : ""} ${index < stepIndex ? "completed" : ""}`}
             onClick={() => setStepIndex(index)}
           >
-            {String(index + 1).padStart(2, "0")} {t(`step.${s}` as any)}
+            {String(index + 1).padStart(2, "0")} {t(`step.${s}`)}
           </div>
         ))}
       </nav>

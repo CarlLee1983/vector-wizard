@@ -70,10 +70,10 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
           type="button"
           onClick={() => setTab("summary")}
         >
-          Summary
+          {t("review.summary")}
         </button>
         <button className={`secondary ${tab === "yaml" ? "active" : ""}`} type="button" onClick={() => setTab("yaml")}>
-          YAML
+          {t("review.yaml")}
         </button>
         <div style={{ flex: 1 }} />
         <button type="button" disabled={!canExportYaml} onClick={() => navigator.clipboard?.writeText(yaml)}>

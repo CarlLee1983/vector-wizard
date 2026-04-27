@@ -13,6 +13,8 @@ export type MessageKey =
   | "wizard.importDraft"
   | "wizard.exportDraft"
   | "wizard.addItem"
+  | "review.summary"
+  | "review.yaml"
   | "step.basic"
   | "step.goal"
   | "step.context"
@@ -120,6 +122,8 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "wizard.importDraft": "匯入草稿 JSON",
     "wizard.exportDraft": "匯出草稿 JSON",
     "wizard.addItem": "新增項目",
+    "review.summary": "摘要內容",
+    "review.yaml": "YAML 源碼",
     "step.basic": "基本資訊",
     "step.goal": "目標與影響",
     "step.context": "影響與活動",
@@ -271,6 +275,8 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "wizard.importDraft": "Import Draft JSON",
     "wizard.exportDraft": "Export Draft JSON",
     "wizard.addItem": "Add Item",
+    "review.summary": "Summary",
+    "review.yaml": "YAML Source",
     "step.basic": "Basic",
     "step.goal": "Goal & Impact",
     "step.context": "Context & Activity",
