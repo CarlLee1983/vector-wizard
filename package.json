@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": false,
   "bin": {
-    "vector": "./bin/cli.js"
+    "vector-wizard": "./bin/cli.js"
   },
   "files": [
     "app",
