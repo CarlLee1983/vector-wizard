@@ -2,11 +2,11 @@ import type { FeatureDraft } from "../model/specTypes"
 
 export const DRAFT_STORAGE_KEY = "vector.featureDraft.v1"
 
-export function saveDraft(draft: FeatureDraft): void {
-  localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(draft))
-}
-
+/**
+ * @deprecated 僅供 draftStore migration 使用，新程式碼請用 draftStore.ts。
+ */
 export function loadDraft(): FeatureDraft | null {
+  if (typeof localStorage === "undefined") return null
   const raw = localStorage.getItem(DRAFT_STORAGE_KEY)
   if (!raw) return null
 
@@ -15,10 +15,6 @@ export function loadDraft(): FeatureDraft | null {
   } catch {
     return null
   }
-}
-
-export function clearDraft(): void {
-  localStorage.removeItem(DRAFT_STORAGE_KEY)
 }
 
 export function draftToJson(draft: FeatureDraft): string {

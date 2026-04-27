@@ -99,3 +99,17 @@ export type ValidationResult = {
   blockingErrors: ValidationIssue[]
   warnings: ValidationIssue[]
 }
+
+export type DraftId = string
+
+export type DraftMetaEntry = {
+  createdAt: number
+  updatedAt: number
+}
+
+export type DraftStoreState = {
+  version: 1
+  activeDraftId: DraftId | null
+  drafts: Record<DraftId, FeatureDraft>
+  meta: Record<DraftId, DraftMetaEntry>
+}
