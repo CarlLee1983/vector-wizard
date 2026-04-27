@@ -136,6 +136,9 @@ export type MessageKey =
   | "draftManager.delete"
   | "draftManager.rename"
   | "draftManager.updatedAt"
+  | "draftManager.paste"
+  | "draftManager.pastePlaceholder"
+  | "draftManager.pasteSubmit"
   | "confirm.deleteDraft.title"
   | "confirm.deleteDraft.message"
   | "confirm.confirm"
@@ -327,7 +330,10 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "draftManager.delete": "刪除",
     "draftManager.rename": "重新命名",
     "draftManager.updatedAt": "上次更新",
-    "confirm.deleteDraft.title": "確定刪除草稿？",
+    "draftManager.paste": "直接貼上 JSON",
+    "draftManager.pastePlaceholder": "請在此貼上 AI 生成的 JSON 物件...",
+    "draftManager.pasteSubmit": "確認匯入",
+    "confirm.deleteDraft.title": "確定刪除草稿？",,
     "confirm.deleteDraft.message": "確定刪除此草稿？此動作無法還原。",
     "confirm.confirm": "確定",
     "confirm.cancel": "取消",
@@ -521,7 +527,10 @@ At the end, list the top 3 items you would prioritize fixing.
     "draftManager.delete": "Delete",
     "draftManager.rename": "Rename",
     "draftManager.updatedAt": "Last updated",
-    "confirm.deleteDraft.title": "Delete draft?",
+    "draftManager.paste": "Paste JSON directly",
+    "draftManager.pastePlaceholder": "Paste the AI-generated JSON object here...",
+    "draftManager.pasteSubmit": "Confirm Import",
+    "confirm.deleteDraft.title": "Delete draft?",,
     "confirm.deleteDraft.message": "Delete this draft? This cannot be undone.",
     "confirm.confirm": "Confirm",
     "confirm.cancel": "Cancel",
