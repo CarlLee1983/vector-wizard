@@ -9,6 +9,7 @@ import { FieldArray } from "./FieldArray"
 import { ReviewPanel } from "./ReviewPanel"
 import { WizardStep } from "./WizardStep"
 import { AssistButton } from "./AssistButton"
+import { SeedPromptSection } from "./SeedPromptSection"
 
 const steps = [
   "basic",
@@ -86,7 +87,10 @@ export function Wizard() {
               onChange={(event) => setDraft({ ...draft, metadata: { ...draft.metadata, owner: event.target.value } })}
             />
           </div>
-          <div className="field">
+
+          <SeedPromptSection title={draft.metadata.title} owner={draft.metadata.owner} />
+
+          <div className="field" style={{ marginTop: "32px", borderTop: "1px solid var(--border)", paddingTop: "24px" }}>
             <label htmlFor="draftImport">{t("wizard.importDraft")}</label>
             <input
               id="draftImport"
@@ -100,6 +104,7 @@ export function Wizard() {
             />
           </div>
         </WizardStep>
+
       )
     }
 

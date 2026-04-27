@@ -119,6 +119,11 @@ export type MessageKey =
   | "reviewPrompt.button.failed"
   | "reviewPrompt.fallback.label"
   | "reviewPrompt.template"
+  | "seedPrompt.title"
+  | "seedPrompt.help"
+  | "seedPrompt.button.idle"
+  | "seedPrompt.button.copied"
+  | "seedPrompt.button.failed"
   | "draftSwitcher.label"
   | "draftSwitcher.untitled"
   | "draftSwitcher.new"
@@ -261,27 +266,6 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "reviewPrompt.button.copied": "已複製 ✓",
     "reviewPrompt.button.failed": "複製失敗，請手動複製",
     "reviewPrompt.fallback.label": "Prompt 內容（可手動全選複製）",
-    "draftSwitcher.label": "目前草稿",
-    "draftSwitcher.untitled": "未命名草稿",
-    "draftSwitcher.new": "+ 新增草稿",
-    "draftSwitcher.manage": "⚙ 管理",
-    "draftSwitcher.empty": "+ 開始第一個草稿",
-    "draftManager.title": "草稿管理",
-    "draftManager.import": "匯入 JSON",
-    "draftManager.importError": "匯入失敗：JSON 格式不正確",
-    "draftManager.export": "匯出 JSON",
-    "draftManager.delete": "刪除",
-    "draftManager.rename": "重新命名",
-    "draftManager.updatedAt": "上次更新",
-    "confirm.deleteDraft.title": "確定刪除草稿？",
-    "confirm.deleteDraft.message": "確定刪除此草稿？此動作無法還原。",
-    "confirm.confirm": "確定",
-    "confirm.cancel": "取消",
-    "empty.title": "歡迎",
-    "empty.subtitle": "開始你的第一個想法",
-    "empty.cta": "+ 新增草稿",
-    "autosave.error": "自動存檔失敗，請匯出 JSON 備份",
-    "autosave.dismiss": "知道了",
     "reviewPrompt.template": `# 規格審閱請求
 
 你是一位資深產品/工程顧問，專長是為 AI coding agent 撰寫的功能規格做品質審閱。
@@ -325,7 +309,33 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
 \`\`\`yaml
 {{yaml_content}}
 \`\`\`
-`
+`,
+    "seedPrompt.title": "AI 快速生成草稿",
+    "seedPrompt.help": "不知道怎麼開始？輸入功能標題後，複製下方 Prompt 給外部 AI (如 Claude)，它會幫你生成一份完整的 JSON 草稿，匯入後即可開始編輯。",
+    "seedPrompt.button.idle": "複製 AI 生成 Prompt",
+    "seedPrompt.button.copied": "已複製 ✓",
+    "seedPrompt.button.failed": "複製失敗",
+    "draftSwitcher.label": "目前草稿",
+    "draftSwitcher.untitled": "未命名草稿",
+    "draftSwitcher.new": "+ 新增草稿",
+    "draftSwitcher.manage": "⚙ 管理",
+    "draftSwitcher.empty": "+ 開始第一個草稿",
+    "draftManager.title": "草稿管理",
+    "draftManager.import": "匯入 JSON",
+    "draftManager.importError": "匯入失敗：JSON 格式不正確",
+    "draftManager.export": "匯出 JSON",
+    "draftManager.delete": "刪除",
+    "draftManager.rename": "重新命名",
+    "draftManager.updatedAt": "上次更新",
+    "confirm.deleteDraft.title": "確定刪除草稿？",
+    "confirm.deleteDraft.message": "確定刪除此草稿？此動作無法還原。",
+    "confirm.confirm": "確定",
+    "confirm.cancel": "取消",
+    "empty.title": "歡迎",
+    "empty.subtitle": "開始你的第一個想法",
+    "empty.cta": "+ 新增草稿",
+    "autosave.error": "自動存檔失敗，請匯出 JSON 備份",
+    "autosave.dismiss": "知道了"
   },
   en: {
     "wizard.title": "Agile Roadmap Wizard",
@@ -450,27 +460,6 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "reviewPrompt.button.copied": "Copied ✓",
     "reviewPrompt.button.failed": "Copy failed, please copy manually",
     "reviewPrompt.fallback.label": "Prompt content (select all to copy manually)",
-    "draftSwitcher.label": "Current draft",
-    "draftSwitcher.untitled": "Untitled draft",
-    "draftSwitcher.new": "+ New draft",
-    "draftSwitcher.manage": "⚙ Manage",
-    "draftSwitcher.empty": "+ Start your first draft",
-    "draftManager.title": "Manage drafts",
-    "draftManager.import": "Import JSON",
-    "draftManager.importError": "Import failed: invalid JSON",
-    "draftManager.export": "Export JSON",
-    "draftManager.delete": "Delete",
-    "draftManager.rename": "Rename",
-    "draftManager.updatedAt": "Last updated",
-    "confirm.deleteDraft.title": "Delete draft?",
-    "confirm.deleteDraft.message": "Delete this draft? This cannot be undone.",
-    "confirm.confirm": "Confirm",
-    "confirm.cancel": "Cancel",
-    "empty.title": "Welcome",
-    "empty.subtitle": "Start your first idea",
-    "empty.cta": "+ New draft",
-    "autosave.error": "Autosave failed. Please export JSON as backup.",
-    "autosave.dismiss": "Dismiss",
     "reviewPrompt.template": `# Spec Review Request
 
 You are a senior product/engineering reviewer specializing in feature specifications written for AI coding agents.
@@ -514,6 +503,32 @@ At the end, list the top 3 items you would prioritize fixing.
 \`\`\`yaml
 {{yaml_content}}
 \`\`\`
-`
+`,
+    "seedPrompt.title": "AI Quick Draft",
+    "seedPrompt.help": "Don't know where to start? Enter a title, then copy this prompt for an external AI (like Claude). It will help you generate a full JSON draft that you can import here.",
+    "seedPrompt.button.idle": "Copy AI Seed Prompt",
+    "seedPrompt.button.copied": "Copied ✓",
+    "seedPrompt.button.failed": "Copy failed",
+    "draftSwitcher.label": "Current draft",
+    "draftSwitcher.untitled": "Untitled draft",
+    "draftSwitcher.new": "+ New draft",
+    "draftSwitcher.manage": "⚙ Manage",
+    "draftSwitcher.empty": "+ Start your first draft",
+    "draftManager.title": "Manage drafts",
+    "draftManager.import": "Import JSON",
+    "draftManager.importError": "Import failed: invalid JSON",
+    "draftManager.export": "Export JSON",
+    "draftManager.delete": "Delete",
+    "draftManager.rename": "Rename",
+    "draftManager.updatedAt": "Last updated",
+    "confirm.deleteDraft.title": "Delete draft?",
+    "confirm.deleteDraft.message": "Delete this draft? This cannot be undone.",
+    "confirm.confirm": "Confirm",
+    "confirm.cancel": "Cancel",
+    "empty.title": "Welcome",
+    "empty.subtitle": "Start your first idea",
+    "empty.cta": "+ New draft",
+    "autosave.error": "Autosave failed. Please export JSON as backup.",
+    "autosave.dismiss": "Dismiss"
   }
 }
