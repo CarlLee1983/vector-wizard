@@ -51,7 +51,7 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
       })
 
       if (!response.ok) throw new Error("Handoff failed")
-      
+
       setHandoffState("success")
       setTimeout(() => setHandoffState("idle"), 3000)
     } catch (error) {
@@ -167,20 +167,17 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
                   )}
                   {draft.metadata.horizon && (
                     <li>
-                      {t("field.horizon")}:{" "}
-                      <strong>{t(`horizon.${draft.metadata.horizon}` as const)}</strong>
+                      {t("field.horizon")}: <strong>{t(`horizon.${draft.metadata.horizon}` as const)}</strong>
                     </li>
                   )}
                   {draft.metadata.priority && (
                     <li>
-                      {t("field.priority")}:{" "}
-                      <strong>{t(`priority.${draft.metadata.priority}` as const)}</strong>
+                      {t("field.priority")}: <strong>{t(`priority.${draft.metadata.priority}` as const)}</strong>
                     </li>
                   )}
                   {(draft.metadata.dependsOn?.length ?? 0) > 0 && (
                     <li>
-                      {t("field.dependsOn")}:{" "}
-                      <strong>{draft.metadata.dependsOn!.join(", ")}</strong>
+                      {t("field.dependsOn")}: <strong>{draft.metadata.dependsOn!.join(", ")}</strong>
                     </li>
                   )}
                 </ul>
@@ -242,13 +239,11 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
             </section>
           </div>
         </div>
-
       ) : (
         <pre className="yaml-view">{yaml}</pre>
       )}
 
       <div className="ai-review-section">
-
         <h3>{t("reviewPrompt.section.title")}</h3>
         <p className="section-help">{t("reviewPrompt.section.description")}</p>
         <button type="button" onClick={handleCopyReviewPrompt}>

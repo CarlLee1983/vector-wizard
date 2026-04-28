@@ -134,7 +134,7 @@ describe("Wizard", () => {
 
     expect(screen.getByText(/不是專案名稱/)).toBeInTheDocument()
     expect(screen.getByText(/主要決策或驗收窗口/)).toBeInTheDocument()
-    expect(screen.getByPlaceholderText("例：會員登入錯誤提示優化")).toBeInTheDocument()
+    expect(screen.getByPlaceholderText("例：客戶退貨流程自動化優化")).toBeInTheDocument()
     expect(screen.getByPlaceholderText("例：PM Team、產品負責人 Annie")).toBeInTheDocument()
 
     await user.click(screen.getByRole("button", { name: "下一步" }))
@@ -150,7 +150,7 @@ describe("Wizard", () => {
 
     expect(screen.getByText(/這則故事要解決的使用者情境/)).toBeInTheDocument()
     expect(screen.getByText(/作為⋯我想要⋯以便⋯/)).toBeInTheDocument()
-    expect(screen.getByPlaceholderText("例：顯示安全的登入失敗提示")).toBeInTheDocument()
+    expect(screen.getByPlaceholderText("例：自動產生退貨標籤")).toBeInTheDocument()
 
     await user.click(screen.getByRole("button", { name: "下一步" }))
     await user.click(screen.getByRole("button", { name: "下一步" }))

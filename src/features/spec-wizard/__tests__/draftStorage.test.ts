@@ -44,9 +44,7 @@ describe("draftStorage helpers", () => {
         {
           id: "EP-001",
           title: "e",
-          stories: [
-            { id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }
-          ]
+          stories: [{ id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }]
         }
       ],
       agentBoundaries: { nonGoals: [], constraints: [], testExpectations: [], risks: [], openQuestions: [] }
@@ -80,9 +78,7 @@ describe("draftStorage helpers", () => {
         {
           id: "EP-001",
           title: "e",
-          stories: [
-            { id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }
-          ]
+          stories: [{ id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }]
         }
       ],
       agentBoundaries: { nonGoals: [], constraints: [], testExpectations: [], risks: [], openQuestions: [] }

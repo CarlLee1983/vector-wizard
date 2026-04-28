@@ -12,13 +12,7 @@ type I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue | null>(null)
 
-export function I18nProvider({
-  children,
-  initialLocale
-}: {
-  children: React.ReactNode
-  initialLocale?: Locale
-}) {
+export function I18nProvider({ children, initialLocale }: { children: React.ReactNode; initialLocale?: Locale }) {
   const [locale, setLocale] = useState<Locale>(initialLocale ?? "zh-TW")
 
   const value = useMemo<I18nContextValue>(() => {

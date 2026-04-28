@@ -12,9 +12,7 @@ interface BasicStepProps {
 
 export function BasicStep({ draft, setDraft }: BasicStepProps) {
   const { t } = useI18n()
-  const [dependsOnRaw, setDependsOnRaw] = useState(
-    (draft.metadata.dependsOn ?? []).join(", ")
-  )
+  const [dependsOnRaw, setDependsOnRaw] = useState((draft.metadata.dependsOn ?? []).join(", "))
 
   useEffect(() => {
     const next = (draft.metadata.dependsOn ?? []).join(", ")
