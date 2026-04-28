@@ -1,3 +1,5 @@
+import type { MessageKey } from "../i18n/messageKeys"
+
 export type Locale = "zh-TW" | "en"
 
 export type Impact = {
@@ -76,7 +78,7 @@ export type FeatureDraft = {
 export type ValidationIssue = {
   code: string
   fieldPath: string
-  messageKey?: string
+  messageKey?: MessageKey
   message?: string
 }
 

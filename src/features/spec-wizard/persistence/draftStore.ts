@@ -208,8 +208,10 @@ export function renameDraft(id: string, title: string): void {
 export function deleteDraft(id: string): void {
   const current = ensureHydrated()
   if (!current.drafts[id]) return
-  const { [id]: _droppedDraft, ...remainingDrafts } = current.drafts
-  const { [id]: _droppedMeta, ...remainingMeta } = current.meta
+  const remainingDrafts = { ...current.drafts }
+  delete remainingDrafts[id]
+  const remainingMeta = { ...current.meta }
+  delete remainingMeta[id]
   let nextActive = current.activeDraftId
   if (nextActive === id) {
     const remainingIds = Object.keys(remainingDrafts)

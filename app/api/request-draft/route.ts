@@ -17,7 +17,7 @@ export async function POST(request: Request) {
     }, null, 2))
 
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to send request to agent" }, { status: 500 })
   }
 }

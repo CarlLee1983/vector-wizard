@@ -35,27 +35,37 @@ describe("DraftManagerModal", () => {
     expect(screen.getAllByRole("button", { name: /^刪除$/ })).toHaveLength(2)
   })
 
-  it("renames a draft on input blur", () => {
+  it("renames a draft on input blur", async () => {
     const a = createDraft()
     renderModal()
 
     const input = screen.getAllByRole("textbox")[0] as HTMLInputElement
-    fireEvent.change(input, { target: { value: "改名後" } })
-    fireEvent.blur(input)
+    await act(async () => {
+      fireEvent.change(input, { target: { value: "改名後" } })
+      fireEvent.blur(input)
+    })
 
     expect(getSnapshot().drafts[a].metadata.title).toBe("改名後")
   })
 
-  it("requires confirmation before deleting", () => {
+  it("requires confirmation before deleting", async () => {
     createDraft()
     renderModal()
 
-    fireEvent.click(screen.getByRole("button", { name: /^刪除$/ }))
-    fireEvent.click(screen.getByRole("button", { name: /取消/ }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^刪除$/ }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /取消/ }))
+    })
     expect(Object.keys(getSnapshot().drafts)).toHaveLength(1)
 
-    fireEvent.click(screen.getByRole("button", { name: /^刪除$/ }))
-    fireEvent.click(screen.getByRole("button", { name: /^確定$/ }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^刪除$/ }))
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /^確定$/ }))
+    })
     expect(Object.keys(getSnapshot().drafts)).toHaveLength(0)
   })
 

@@ -24,20 +24,19 @@ const steps = [
   "boundaries",
   "review"
 ] as const
-type Step = (typeof steps)[number]
+// type Step = (typeof steps)[number]
 
 export function Wizard() {
-  const { locale, t } = useI18n()
+  const { t } = useI18n()
   const { activeDraft, setActiveDraft } = useDraftStore()
   const [stepIndex, setStepIndex] = useState(0)
-
-  if (!activeDraft) return null
-  const draft = activeDraft
-  const setDraft = setActiveDraft
 
   const step = steps[stepIndex]
 
   const content = useMemo(() => {
+    if (!activeDraft) return null
+    const draft = activeDraft
+    const setDraft = setActiveDraft
     const firstEpic = draft.epics[0]
     const firstStory = firstEpic?.stories?.[0]
     if (!firstEpic || !firstStory) {
@@ -60,7 +59,9 @@ export function Wizard() {
       case "review": return <ReviewPanel draft={draft} />
       default: return null
     }
-  }, [draft, setDraft, step])
+  }, [activeDraft, setActiveDraft, step])
+
+  if (!activeDraft) return null
 
   return (
     <>
