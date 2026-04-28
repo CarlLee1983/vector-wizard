@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "0.1",
+  "metadata": { "title": "預建 KPI 目錄 v1", "owner": "", "locale": "zh-TW" },
+  "summary": {
+    "problem": "Ops Analyst 想看 KPI 必須請工程師寫 SQL，導致週報循環延遲。",
+    "desiredOutcome": "10 個基準 KPI 直接可選並加進儀表板，免寫 SQL。"
+  },
+  "goal": {
+    "statement": "讓 Ops Analyst 從 10 個預建 KPI 中挑選並加進儀表板。",
+    "successSignals": [
+      "Ops 團隊週報所需 KPI 中至少 70% 可由目錄直接取得",
+      "新增 KPI 到儀表板的操作少於 60 秒"
+    ]
+  },
+  "impacts": [
+    { "id": "IM-001", "actor": "Ops Analyst", "impact": "免於排隊請工程師寫查詢" }
+  ],
+  "deliverables": [
+    { "id": "DE-001", "name": "KPI 目錄 UI", "description": "可瀏覽、搜尋、加入儀表板" },
+    { "id": "DE-002", "name": "10 個基準 KPI 定義", "description": "包含營收、流失率、庫存週轉等" }
+  ],
+  "userActivities": [
+    { "id": "UA-001", "actor": "Ops Analyst", "activity": "從 KPI 目錄挑選並加進儀表板" }
+  ],
+  "epics": [
+    {
+      "id": "EP-001",
+      "title": "KPI 目錄",
+      "stories": [
+        {
+          "id": "US-001",
+          "title": "瀏覽 KPI 目錄",
+          "userStory": "身為 Ops Analyst，我希望瀏覽預建 KPI 目錄，這樣我就不用每次都麻煩工程師寫 SQL。",
+          "acceptanceCriteria": [],
+          "examples": []
+        }
+      ]
+    }
+  ],
+  "agentBoundaries": {
+    "nonGoals": ["不支援自定義 KPI 公式", "不取代既有 BI 工具"],
+    "constraints": ["必須使用既有 Snowflake 倉儲", "儀表板不得顯示原始 PII"],
+    "testExpectations": [],
+    "risks": ["既有查詢層在規模化下效能不足", "預建 KPI 無法覆蓋 70% 週報需求"],
+    "openQuestions": ["10 個基準 KPI 由誰決定？", "是否需要支援多語系 KPI 名稱？"]
+  }
+}

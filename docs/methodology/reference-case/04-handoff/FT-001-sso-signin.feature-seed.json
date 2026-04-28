@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "0.1",
+  "metadata": { "title": "SSO 一鍵登入", "owner": "", "locale": "zh-TW" },
+  "summary": {
+    "problem": "內部使用者目前缺乏統一登入入口，每個工具都要重設密碼。",
+    "desiredOutcome": "使用者透過企業 SSO 登入後直接進入個人化儀表板。"
+  },
+  "goal": {
+    "statement": "讓內部使用者透過企業 SSO 登入並抵達個人化儀表板。",
+    "successSignals": [
+      "新使用者首次登入時間少於 30 秒",
+      "支援團隊每月密碼重設工單下降 80%"
+    ]
+  },
+  "impacts": [
+    { "id": "IM-001", "actor": "Ops Analyst", "impact": "免於記憶另一組密碼" },
+    { "id": "IM-002", "actor": "Finance Lead", "impact": "登入後直接看到團隊儀表板" }
+  ],
+  "deliverables": [
+    { "id": "DE-001", "name": "SSO 登入流程", "description": "整合企業 IdP 的 OIDC / SAML 流程" },
+    { "id": "DE-002", "name": "個人化儀表板首頁", "description": "依登入身分顯示對應團隊儀表板入口" }
+  ],
+  "userActivities": [
+    { "id": "UA-001", "actor": "Ops Analyst", "activity": "用企業帳號登入內部報表平台" }
+  ],
+  "epics": [
+    {
+      "id": "EP-001",
+      "title": "登入與身分",
+      "stories": [
+        {
+          "id": "US-001",
+          "title": "SSO 一鍵登入",
+          "userStory": "身為 Ops Analyst，我希望用企業 SSO 一鍵登入，這樣就不必再記另一組密碼。",
+          "acceptanceCriteria": [],
+          "examples": []
+        }
+      ]
+    }
+  ],
+  "agentBoundaries": {
+    "nonGoals": ["不支援外部客戶登入", "不取代現有人資系統"],
+    "constraints": ["必須使用既有 Snowflake 倉儲", "儀表板不得顯示原始 PII"],
+    "testExpectations": [],
+    "risks": ["既有查詢層在規模化下效能不足", "團隊仍回頭用試算表"],
+    "openQuestions": ["儀表板 schema 由誰負責定義？", "歷史 Excel 檔是否需要遷移？"]
+  }
+}
