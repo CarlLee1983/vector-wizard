@@ -8,30 +8,20 @@ describe("extractEmbeddedJson", () => {
   })
 
   it("extracts a single tagged block", () => {
-    const input = [
-      "# Stage",
-      "",
-      "<!-- schema: capability-list -->",
-      "```json",
-      "{ \"a\": 1 }",
-      "```",
-      ""
-    ].join("\n")
-    expect(extractEmbeddedJson(input)).toEqual([
-      { schema: "capability-list", json: { a: 1 } }
-    ])
+    const input = ["# Stage", "", "<!-- schema: capability-list -->", "```json", '{ "a": 1 }', "```", ""].join("\n")
+    expect(extractEmbeddedJson(input)).toEqual([{ schema: "capability-list", json: { a: 1 } }])
   })
 
   it("extracts multiple tagged blocks of mixed schemas", () => {
     const input = [
       "<!-- schema: system-brief -->",
       "```json",
-      "{ \"x\": 1 }",
+      '{ "x": 1 }',
       "```",
       "between text",
       "<!-- schema: feature-candidates -->",
       "```json",
-      "{ \"y\": 2 }",
+      '{ "y": 2 }',
       "```"
     ].join("\n")
     expect(extractEmbeddedJson(input)).toEqual([
@@ -41,27 +31,20 @@ describe("extractEmbeddedJson", () => {
   })
 
   it("throws when a tagged block contains malformed JSON", () => {
-    const input = [
-      "<!-- schema: system-brief -->",
-      "```json",
-      "{ not valid",
-      "```"
-    ].join("\n")
+    const input = ["<!-- schema: system-brief -->", "```json", "{ not valid", "```"].join("\n")
     expect(() => extractEmbeddedJson(input)).toThrow(/JSON/)
   })
 
   it("ignores untagged json blocks", () => {
     const input = [
       "```json",
-      "{ \"untagged\": true }",
+      '{ "untagged": true }',
       "```",
       "<!-- schema: system-brief -->",
       "```json",
-      "{ \"tagged\": true }",
+      '{ "tagged": true }',
       "```"
     ].join("\n")
-    expect(extractEmbeddedJson(input)).toEqual([
-      { schema: "system-brief", json: { tagged: true } }
-    ])
+    expect(extractEmbeddedJson(input)).toEqual([{ schema: "system-brief", json: { tagged: true } }])
   })
 })
