@@ -142,6 +142,15 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
         category: "invest"
       })
     }
+
+    if (hasExamples && !hasAcceptanceCriteria) {
+      warnings.push({
+        code: "story_orphan_examples",
+        fieldPath: `stories.${story.id}.examples`,
+        messageKey: "validation.storyOrphanExamples",
+        category: "invest"
+      })
+    }
   }
 
   if (nonBlankItems(draft.agentBoundaries.constraints).length === 0) {

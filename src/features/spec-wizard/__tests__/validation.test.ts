@@ -109,4 +109,31 @@ describe("validateDraft", () => {
     expect(draft.epics).toHaveLength(1)
     expect(draft.epics[0].stories).toHaveLength(1)
   })
+
+  it("warns when a story has examples but no acceptance criteria", () => {
+    const draft = minimalValidDraft()
+    draft.epics[0].stories[0].acceptanceCriteria = []
+    draft.epics[0].stories[0].examples = [
+      { id: "EX-001", format: "natural-language", scenario: "Member enters wrong password three times." }
+    ]
+
+    const result = validateDraft(draft)
+    const warning = result.warnings.find((w) => w.code === "story_orphan_examples")
+
+    expect(warning).toBeDefined()
+    expect(warning?.category).toBe("invest")
+    expect(warning?.messageKey).toBe("validation.storyOrphanExamples")
+    expect(warning?.fieldPath).toBe(`stories.${draft.epics[0].stories[0].id}.examples`)
+  })
+
+  it("does not warn story_orphan_examples when both AC and examples exist", () => {
+    const draft = minimalValidDraft()
+    draft.epics[0].stories[0].acceptanceCriteria = [{ id: "AC-001", statement: "Returns 401 with safe message." }]
+    draft.epics[0].stories[0].examples = [
+      { id: "EX-001", format: "natural-language", scenario: "Member enters wrong password." }
+    ]
+
+    const result = validateDraft(draft)
+    expect(result.warnings.find((w) => w.code === "story_orphan_examples")).toBeUndefined()
+  })
 })
