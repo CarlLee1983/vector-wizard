@@ -7,7 +7,7 @@ describe("yamlSerializer", () => {
   it("serializes the required top-level YAML sections", () => {
     const yaml = draftToYaml(minimalValidDraft(), "2026-04-26")
 
-    expect(yaml).toContain('schemaVersion: "0.1"')
+    expect(yaml).toContain('schemaVersion: "0.2"')
     expect(yaml).toContain("metadata:")
     expect(yaml).toContain("productSpec:")
     expect(yaml).toContain("agentSpec:")

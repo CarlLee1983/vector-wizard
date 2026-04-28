@@ -48,11 +48,19 @@ export type Epic = {
   stories: UserStory[]
 }
 
+export type Horizon = "now" | "next" | "later"
+
+export type Priority = "must" | "should" | "could" | "wont"
+
 export type FeatureDraft = {
   metadata: {
     title: string
     owner?: string
     locale: Locale
+    id?: string
+    horizon?: Horizon
+    priority?: Priority
+    dependsOn?: string[]
   }
   summary: {
     problem?: string

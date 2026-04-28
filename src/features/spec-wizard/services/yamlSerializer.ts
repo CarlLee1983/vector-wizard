@@ -50,7 +50,7 @@ function renderYaml(value: unknown, indent = 0): string {
 
 export function normalizeDraftForExport(draft: FeatureDraft, createdAt: string) {
   return {
-    schemaVersion: "0.1",
+    schemaVersion: "0.2",
     metadata: {
       title: cleanString(draft.metadata.title),
       owner: cleanString(draft.metadata.owner),
