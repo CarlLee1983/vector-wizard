@@ -6,7 +6,7 @@ Slice 完成後我們手上有一份 `feature-candidates.json`，裡頭一片片
 
 Vector 的核心不變式是「AI 非權威」（見 `AGENTS.md` 中的 invariants 列表）：assistService 與任何上游自動化都只能產生建議、警告、假設、待釐清問題，永遠不能直接替使用者寫死 acceptanceCriteria、examples、risks 這類「需要人類拍板」的欄位。Handoff 在這條線上恰好踩在「自動可填」與「必須人類拍板」之間：Stage 1–3 的結構性成果（goal、impacts 草稿、story 骨架）我們可以放心壓進 seed；具體驗收條件、Given/When/Then 例子、risks 的最終敲定，留在 wizard 內由人類補。
 
-換句話說，Handoff 只填這幾類欄位：`metadata`、`summary` 草稿、`goal.statement` 與 `goal.successSignals`、`impacts` 草稿、`deliverables` 草稿、`userActivities` 草稿、`epics` 內 story 的 `title` 與 `userStory` 骨架，以及從 system-brief 直接傳遞下來的 `agentBoundaries`。`acceptanceCriteria` 與 `examples` 在 seed 裡保持空陣列；任何 AI 推測出來、卻沒有上游證據支撐的內容，一律寫進 `agentBoundaries.openQuestions`。
+換句話說，Handoff 只填這幾類欄位：`metadata`、`summary` 草稿、`goal.statement` 與 `goal.successSignals`、`impacts` 草稿、`deliverables` 草稿、`userActivities` 草稿、`epics` 內 story 的 `title` 與 `userStory` 骨架，以及從 system-brief 傳遞下來的 `agentBoundaries`。其中 `agentBoundaries.constraints` 永遠原文照抄 system-brief（限制是系統級的、不分 feature）；`risks`、`openQuestions`、`successSignals` 三者允許做 feature 級的調整，但任何調整都必須能回溯到 system-brief 或 feature.oneLineGoal——不可無中生有。`acceptanceCriteria` 與 `examples` 在 seed 裡保持空陣列；任何 AI 推測出來、卻沒有上游證據支撐的內容，一律寫進 `agentBoundaries.openQuestions`。
 
 ## 4 個小步驟
 
@@ -14,7 +14,7 @@ Vector 的核心不變式是「AI 非權威」（見 `AGENTS.md` 中的 invarian
 
 - **Sub 4.1 Seed Prompt（reuse 模式）**：對每個 priority 為 `must` 或 `should` 的 feature，重用 wizard 內既有的 seed prompt builder（見 `src/features/spec-wizard/services/seedPromptBuilder.ts`）。把 `feature.title`、`feature.oneLineGoal`、可選的 owner 與 locale 帶進 prompt 模板，得到一段可直接貼進 LLM 的指示文字。Reuse 的目的是讓 Handoff 與 wizard 內「在 Wizard 裡按 Generate Seed」走同一套提示詞，避免兩處模板分歧。
 - **Sub 4.2 LLM Conversion**：把 prompt 交給 LLM（手動跑 ChatGPT、或交給 vector-pipeline-b skill），輸出一份接近完整的 `FeatureDraft` JSON。注意這裡產出的 draft 可能會「順手」把 acceptanceCriteria 與 examples 也填了——下一步的 Lint 會把它們清掉，避免 AI 越界做出未經人類確認的承諾。
-- **Sub 4.3 Lint**：套用一組「等價於 wizard `validateDraft.ts` 的規則」做本地檢查：`metadata.title` 不可空、`goal.statement` 不可空、至少 1 個 story 帶 `title` 或 `userStory`；同時把 LLM 額外產出的 `acceptanceCriteria` 與 `examples` 清空。Lint 失敗時不可繼續匯出——要嘛回 4.1 重跑、要嘛回 Stage 3 補 candidate 欄位。
+- **Sub 4.3 Lint**：套用一組「等價於 wizard `validateDraft.ts` 的規則」做本地檢查：`metadata.title` 不可空、`goal.statement` 不可空、至少 1 個 story 帶 `title` 或 `userStory`；同時把 LLM 額外產出的 `acceptanceCriteria` 與 `examples` 清空。boundary 欄位的傳遞規則：`agentBoundaries.constraints` 必須與 system-brief `constraints` 一字不差；`risks`、`openQuestions`、`successSignals` 允許 feature 級改寫或新增，但每一條都必須能追溯到 system-brief（或對 `successSignals` 而言，能追溯到 `feature.oneLineGoal`）；找不到對應上游的 risks 應改放到 `openQuestions` 等人類確認。Lint 失敗時不可繼續匯出——要嘛回 4.1 重跑、要嘛回 Stage 3 補 candidate 欄位。
 - **Sub 4.4 Export**：每一個 `must` / `should` feature 各匯出一檔，命名為 `<feature-id>-<short-slug>.feature-seed.json`（例：`FT-001-sso-signin.feature-seed.json`）。一份 candidate ↔ 一份 seed 檔，不合併、不拆分。
 
 ## 與 Vector wizard 的銜接
@@ -29,7 +29,7 @@ Handoff 不替使用者跨越「結構壓平」與「需求拍板」之間的那
 
 - **不自動填 acceptanceCriteria**：每個 story 的 `acceptanceCriteria` 在 seed 裡保持 `[]`，人類在 wizard 裡用 INVEST 視角自己補。
 - **不自動填 examples**：Given/When/Then 三段式範例同樣保持 `[]`，因為它們牽涉到具體系統行為的承諾。
-- **不替使用者確認 risks**：從 system-brief 的 `riskiestAssumptions` 傳遞下來的 risks，原文照抄；不擴寫、不刪減、不評估「這條 risk 還在不在」——這個判斷留在使用者跑下一輪回顧時做。
+- **不替使用者確認 risks**：risks 取自 system-brief 的 `riskiestAssumptions`，可改寫成 feature 級表述（例：把假設句改成風險句、收緊到 feature 範圍），但每一條都必須能回溯到原本的某個 riskiestAssumption；無法回溯的純 feature 級新風險，請改放到 `openQuestions` 等使用者下一輪回顧時拍板，不要靜默地寫進 `risks`。
 
 ## 進入完成的條件
 

@@ -1,6 +1,6 @@
 # Stage 4 — Handoff: Agent Script
 
-This script tells an automation agent (or a Claude Code skill invocation) exactly how to convert a validated `feature-candidates.json` into N standalone `*.feature-seed.json` files, one per `must` or `should` feature. The script is deterministic: input filtering is fixed, the output shape is fixed, lint is non-negotiable. The agent never invents acceptance criteria, examples, or risks the user did not provide; AI-inferred items always go to `agentBoundaries.openQuestions`, never to a load-bearing field.
+This script tells an automation agent (or a Claude Code skill invocation) exactly how to convert a validated `feature-candidates.json` into N standalone `*.feature-seed.json` files, one per `must` or `should` feature. The script is deterministic: input filtering is fixed, the output shape is fixed, lint is non-negotiable. The agent never invents acceptance criteria or examples; risks must trace back to `system-brief.riskiestAssumptions` (rewording into feature-specific form is allowed); any AI-inferred content that cannot be grounded in upstream artifacts goes to `agentBoundaries.openQuestions`, never to a load-bearing field.
 
 ## Inputs
 
@@ -27,10 +27,10 @@ One `<feature-id>-<short-slug>.feature-seed.json` file per `must` / `should` fea
       | ------------------ | ------ |
       | `metadata.title` | `feature.title` (feature-candidates) |
       | `goal.statement` | `feature.oneLineGoal` (feature-candidates) |
-      | `agentBoundaries.constraints` | `system-brief.constraints` (verbatim) |
-      | `agentBoundaries.risks` | `system-brief.riskiestAssumptions` (verbatim) |
-      | `agentBoundaries.openQuestions` | `system-brief.openQuestions` (verbatim) |
-      | `goal.successSignals` | Subset of `system-brief.successSignals` relevant to this feature; empty array if none |
+      | `agentBoundaries.constraints` | `system-brief.constraints` (**verbatim**; constraints are system-wide and never feature-scoped) |
+      | `agentBoundaries.risks` | Derived from `system-brief.riskiestAssumptions`; may be reworded into feature-specific form (e.g. assumption → risk phrasing, or scoped tighter) as long as each entry traces back to a `riskiestAssumption`. Net-new feature-only risks NOT traceable to `system-brief` must go to `openQuestions` instead — never silently into `risks` |
+      | `agentBoundaries.openQuestions` | `system-brief.openQuestions` plus any feature-specific open questions arising from this feature's scope (note their feature-level origin in surrounding prose) |
+      | `goal.successSignals` | Subset of `system-brief.successSignals` relevant to this feature, plus measurable feature-specific signals derived from `feature.oneLineGoal`. Forbidden tokens: `better`, `faster`, `更好`, `更快`, `提升`. Empty array if none |
 
    d. **Leave `acceptanceCriteria` and `examples` arrays empty** (`[]`) unless explicitly observed in upstream artifacts (`system-brief` or `feature-candidates`). They are not. AI-inferred acceptance criteria, given/when/then examples, or extra risks must be redirected into `agentBoundaries.openQuestions` as questions, never written into the load-bearing fields.
 
@@ -46,7 +46,9 @@ One `<feature-id>-<short-slug>.feature-seed.json` file per `must` / `should` fea
 ## Refusal rules
 
 - **Never invent acceptance criteria.** If the LLM returns acceptance criteria not grounded in `system-brief` or `feature-candidates`, drop them and write a corresponding entry to `agentBoundaries.openQuestions` (e.g. `"待釐清：FT-001 的 acceptanceCriteria 由誰補？"`).
-- **Never auto-confirm risks.** Risks come from `system-brief.riskiestAssumptions` verbatim. Do not reword, expand, or evaluate whether a risk is "still valid" — that judgment belongs to the human in their next retrospective.
+- **Constraints stay verbatim.** `agentBoundaries.constraints` must match `system-brief.constraints` exactly — constraints are system-wide invariants and are never relaxed or reworded per feature.
+- **Risks must be traceable.** Risks may be reworded into feature-specific form (e.g. assumption → risk phrasing) as long as each entry traces back to a `system-brief.riskiestAssumption`. Net-new risks that the LLM surfaces but cannot trace to `system-brief` go to `agentBoundaries.openQuestions` for human confirmation, never silently into `risks`. Do not evaluate whether a risk is "still valid" — that judgment belongs to the human retrospective.
+- **Open questions and success signals may be feature-scoped.** `openQuestions` starts from `system-brief.openQuestions` and may add questions arising from this feature's scope; `successSignals` may include both system-brief subset entries and feature-specific measurable signals derived from `feature.oneLineGoal` (forbidden tokens still apply: `better`, `faster`, `更好`, `更快`, `提升`).
 - **Never invent examples.** Given/When/Then triples involve concrete behavioral commitments; emit `examples: []` and let the human author them inside the wizard.
 
 ## Validation

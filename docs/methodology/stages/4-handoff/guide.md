@@ -31,10 +31,10 @@ LLM 產出的草稿不能直接出貨，因為它對你的 system-brief、featur
 | --------- | ---- |
 | `metadata.title` | `feature.title`（來自 `feature-candidates.json`） |
 | `goal.statement` | `feature.oneLineGoal`（來自 `feature-candidates.json`） |
-| `agentBoundaries.constraints` | `system-brief.constraints`（原文照抄） |
-| `agentBoundaries.risks` | `system-brief.riskiestAssumptions`（原文照抄，不擴寫） |
-| `agentBoundaries.openQuestions` | `system-brief.openQuestions`（原文照抄） |
-| `goal.successSignals` | 從 `system-brief.successSignals` 中挑與本 feature 相關者；無相關者寫空陣列 |
+| `agentBoundaries.constraints` | `system-brief.constraints`（**原文照抄**，限制不分 feature） |
+| `agentBoundaries.risks` | 從 `system-brief.riskiestAssumptions` 衍生；可改寫成 feature 特定形式，但必須能回溯到原本的假設。新增的純 feature 級風險請改放到 `openQuestions` 等人類確認 |
+| `agentBoundaries.openQuestions` | `system-brief.openQuestions` + 此 feature 衍生的問題（限本 feature scope，需在 prose 段註明出處） |
+| `goal.successSignals` | 取 `system-brief.successSignals` 中相關者；亦可加入由 `feature.oneLineGoal` 衍生的可量測 feature-specific 信號（避免 `better / faster / 更好 / 更快 / 提升`）；無相關者寫空陣列 |
 
 `metadata.locale` 設成你寫 brief 時用的語系（`zh-TW` 或 `en`）。`metadata.owner` 暫時留空字串 `""`，等貼進 wizard 後人類補。`acceptanceCriteria` 與 `examples` 在 seed 階段一律是 `[]`。
 
@@ -65,6 +65,6 @@ bun run dev
 - [ ] `feature-candidates.json` 中所有 `must` 與 `should` 的 feature 都有對應的 `*.feature-seed.json`。
 - [ ] 每個 seed 通過 `feature-seed.schema.json` 結構驗證。
 - [ ] 每個 seed 貼進 wizard 後 `blockingErrors === []`。
-- [ ] 每個 seed 的 `risks` 與 `openQuestions` 來自 `system-brief`，不是 LLM 自己發明。
+- [ ] 每個 seed 的 `risks` 都能回溯到 `system-brief.riskiestAssumptions`（即使做了 feature 級改寫）；`openQuestions` 包含 system-brief 的條目以及（若有）此 feature 衍生的問題；兩者都不是 LLM 憑空發明。
 - [ ] 每個 seed 的 `acceptanceCriteria` 與 `examples` 都是 `[]`。
 - [ ] 檔名形如 `<feature-id>-<short-slug>.feature-seed.json`（例：`FT-001-sso-signin.feature-seed.json`）。
