@@ -8,6 +8,9 @@ Vector is a high-density, professional technical design tool that bridges the ga
 
 - **Interactive Spec Wizard**: A guided interview process to capture requirements, user stories, and acceptance criteria.
 - **AI-Ready Export**: Generates structured YAML specifications optimized for consumption by AI agents (e.g., Claude Code, Cursor, Copilot).
+- **Dual-Path Methodology**:
+  - **Path A (Reverse)**: Use `vector-analyzer` to turn existing code into structured specs.
+  - **Path B (Forward)**: Use `vector-pipeline-b` to turn raw system ideas into feature seeds.
 - **AI Assistant**: Built-in quality checks and refinement suggestions to ensure specs are comprehensive and unambiguous.
 - **Human-Readable Summaries**: Exports clean Markdown summaries for team reviews.
 - **Draft Management**: Automatic persistence in `localStorage` with support for JSON import/export.
@@ -71,59 +74,51 @@ The project follows a self-contained feature-based architecture located in `src/
 - **i18n/**: Dictionary-based internationalization.
 - **api/**: Shared contracts for server-client communication.
 
-## 🤖 AI Agent Skill: `vector-analyzer`
+## 🤖 AI Agent Skills
 
-This repo ships a reusable skill at `.agents/skills/vector-analyzer/SKILL.md` that teaches AI agents how to reverse-engineer an existing codebase into a Vector-compatible `FeatureDraft` JSON. The output pastes straight into the wizard's Draft Manager.
+Vector ships with two core skills for AI agents to bridge the gap between ideas, code, and roadmap specs.
 
-### Manual install (Claude Code)
+### 1. `vector-analyzer` (Code → Spec)
+Reverse-engineers an existing codebase into a Vector-compatible `FeatureDraft` JSON.
+- **Location**: `.agents/skills/vector-analyzer/SKILL.md`
+- **Use case**: When you have code but no documentation or roadmap.
 
-Globally for all projects:
+### 2. `vector-pipeline-b` (Idea → Spec)
+Walks a system idea through a 4-stage pipeline: **Frame → Decompose → Slice → Handoff**.
+- **Location**: `.agents/skills/vector-pipeline-b/SKILL.md`
+- **Use case**: When starting a new project from scratch.
 
-```bash
-mkdir -p ~/.claude/skills
-cp -R .agents/skills/vector-analyzer ~/.claude/skills/
-```
+---
 
-Project-scoped (only inside one target repo) — copy or symlink:
+### Installation & Setup
 
-```bash
-mkdir -p /path/to/target-repo/.claude/skills
-ln -s "$(pwd)/.agents/skills/vector-analyzer" \
-      /path/to/target-repo/.claude/skills/vector-analyzer
-```
+Paste this into a fresh chat with your AI coding agent (Claude Code, Codex, Cursor, etc.). It will detect your platform and install the requested skills:
 
-Other agents (Codex, Cursor, Copilot, …) can read `.agents/skills/vector-analyzer/SKILL.md` directly — point the agent at the file when invoking it.
-
-### Install via agent prompt
-
-Paste this into a fresh chat with your AI coding agent. It detects your platform and installs the skill:
-
-> Please install the `vector-analyzer` skill from this repo, located at `.agents/skills/vector-analyzer/SKILL.md`, so I can reuse it across projects.
+> Please install the `vector-analyzer` and `vector-pipeline-b` skills from this repo (located in `.agents/skills/`).
 >
-> 1. Detect which agent platform you are running in (Claude Code, Codex, Cursor, Copilot, …).
-> 2. For Claude Code: copy the directory to `~/.claude/skills/vector-analyzer/`.
+> 1. Detect which agent platform you are running in.
+> 2. For Claude Code: copy the skill directories to `~/.claude/skills/`.
 > 3. For other agents: tell me the recommended install path on this system and propose a `cp` / `ln -s` command before running it.
-> 4. Confirm the destination, run the command, and verify the file lands by reading `SKILL.md` back.
-> 5. Print a one-line usage hint: how I should invoke the skill in your platform.
+> 4. Confirm the destination, run the command, and verify the files land by reading `SKILL.md` back.
+> 5. Print a one-line usage hint for each skill in your platform.
 
-### Install from GitHub via agent prompt
+### Remote Install (from GitHub)
 
-Don't have the repo cloned? Paste this into your AI agent — it fetches just the skill from GitHub:
+If you haven't cloned the repo yet, use this prompt:
 
-> Please install the `vector-analyzer` skill from https://github.com/CarlLee1983/vector-wizard so I can reuse it across projects.
+> Please install the `vector-analyzer` and `vector-pipeline-b` skills from https://github.com/CarlLee1983/vector-wizard.
 >
-> 1. Detect which agent platform you are running in (Claude Code, Codex, Cursor, Copilot, …).
-> 2. Shallow-clone the repo to a temp directory: `git clone --depth 1 https://github.com/CarlLee1983/vector-wizard /tmp/vector-wizard-skill`.
-> 3. For Claude Code: copy `/tmp/vector-wizard-skill/.agents/skills/vector-analyzer` to `~/.claude/skills/vector-analyzer/`.
-> 4. For other agents: tell me the recommended install path on this system and propose a `cp` / `ln -s` command before running it.
-> 5. Clean up the temp clone.
-> 6. Verify by reading `SKILL.md` from the install destination, then print a one-line usage hint.
+> 1. Shallow-clone the repo to `/tmp/vector-wizard-skills`.
+> 2. Install the skills found in `.agents/skills/` to my agent's local skill directory.
+> 3. Clean up the temp clone and verify the install.
 
-### Usage
+### Usage Example
 
-After install, ask your agent:
-
+**For Path A (Reverse-engineering):**
 > Use the `vector-analyzer` skill to analyze this repo and produce a `FeatureDraft` JSON. I will paste it into `npx vector-wizard`'s Draft Manager.
+
+**For Path B (System Design):**
+> Use the `vector-pipeline-b` skill to frame my system idea: "I want to build a [System X]". Follow the stages until we have feature-seed JSON files.
 
 ## 📄 License
 

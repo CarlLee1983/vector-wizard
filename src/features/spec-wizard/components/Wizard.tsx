@@ -59,10 +59,18 @@ export function Wizard() {
 
   const step = steps[stepIndex]
   const firstEpic = draft.epics[0]
-  const firstStory = firstEpic.stories[0]
+  const firstStory = firstEpic?.stories?.[0]
 
   const content = useMemo(() => {
-      if (step === "basic") {
+    if (!firstEpic || !firstStory) {
+      return (
+        <div className="error-state">
+          <p>Draft structure is invalid. Please try creating a new draft or importing a valid JSON.</p>
+        </div>
+      )
+    }
+
+    if (step === "basic") {
     return (
       <WizardStep title={t("step.basic")}>
           <div className="field">

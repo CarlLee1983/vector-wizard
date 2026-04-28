@@ -1,6 +1,6 @@
 import { createEmptyDraft } from "../model/defaultDraft"
 import type { DraftStoreState, FeatureDraft, Locale } from "../model/specTypes"
-import { draftFromJson, draftToJson } from "./draftStorage"
+import { draftFromJson, draftToJson, normalizeDraft } from "./draftStorage"
 
 const STORAGE_KEY = "vector.draftStore.v1"
 const V1_KEY = "vector.featureDraft.v1"
@@ -64,7 +64,7 @@ function migrateFromV1(): DraftStoreState | null {
   const raw = localStorage.getItem(V1_KEY)
   if (raw == null) return null
   try {
-    const parsed = JSON.parse(raw) as { metadata?: unknown; goal?: unknown }
+    const parsed = JSON.parse(raw)
     if (!parsed || typeof parsed !== "object" || !parsed.metadata || !parsed.goal) {
       throw new Error("invalid v1 draft")
     }
@@ -73,7 +73,7 @@ function migrateFromV1(): DraftStoreState | null {
     const next: DraftStoreState = {
       version: 1,
       activeDraftId: id,
-      drafts: { [id]: parsed as DraftStoreState["drafts"][string] },
+      drafts: { [id]: normalizeDraft(parsed) },
       meta: { [id]: { createdAt: now, updatedAt: now } }
     }
     localStorage.removeItem(V1_KEY)
@@ -84,13 +84,26 @@ function migrateFromV1(): DraftStoreState | null {
   }
 }
 
+function normalizeDraftStoreState(state: DraftStoreState): DraftStoreState {
+  const normalizedDrafts: Record<string, FeatureDraft> = {}
+  for (const id of Object.keys(state.drafts)) {
+    normalizedDrafts[id] = normalizeDraft(state.drafts[id])
+  }
+  return {
+    ...state,
+    drafts: normalizedDrafts
+  }
+}
+
 function hydrate(): DraftStoreState {
   if (typeof localStorage === "undefined") return emptyState()
   const raw = localStorage.getItem(STORAGE_KEY)
   if (raw != null) {
     try {
       const parsed = JSON.parse(raw)
-      if (isDraftStoreState(parsed)) return normalizeActiveDraft(parsed)
+      if (isDraftStoreState(parsed)) {
+        return normalizeDraftStoreState(normalizeActiveDraft(parsed))
+      }
       throw new Error("invalid v2 shape")
     } catch {
       backupCorrupt(STORAGE_KEY)

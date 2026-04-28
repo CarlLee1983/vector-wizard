@@ -11,7 +11,7 @@ export function loadDraft(): FeatureDraft | null {
   if (!raw) return null
 
   try {
-    return JSON.parse(raw) as FeatureDraft
+    return draftFromJson(raw)
   } catch {
     return null
   }
@@ -22,9 +22,60 @@ export function draftToJson(draft: FeatureDraft): string {
 }
 
 export function draftFromJson(raw: string): FeatureDraft {
-  const parsed = JSON.parse(raw) as FeatureDraft
-  if (!parsed.metadata || !parsed.goal || !Array.isArray(parsed.epics)) {
+  const parsed = JSON.parse(raw)
+  if (!parsed || typeof parsed !== "object" || !parsed.metadata || !parsed.goal || !Array.isArray(parsed.epics)) {
     throw new Error("Invalid draft JSON")
   }
-  return parsed
+  return normalizeDraft(parsed)
+}
+
+export function normalizeDraft(draft: any): FeatureDraft {
+  return {
+    ...draft,
+    metadata: {
+      owner: "",
+      ...draft.metadata
+    },
+    summary: {
+      problem: "",
+      desiredOutcome: "",
+      ...draft.summary
+    },
+    goal: {
+      statement: "",
+      successSignals: [],
+      ...draft.goal
+    },
+    impacts: (draft.impacts || []).map((i: any) => ({
+      id: i.id || "",
+      actor: i.actor || "",
+      impact: i.impact || ""
+    })),
+    deliverables: (draft.deliverables || []).map((d: any) => ({
+      id: d.id || "",
+      name: d.name || "",
+      description: d.description || ""
+    })),
+    userActivities: (draft.userActivities || []).map((u: any) => ({
+      id: u.id || "",
+      actor: u.actor || "",
+      activity: u.activity || ""
+    })),
+    epics: (draft.epics || []).map((epic: any) => ({
+      ...epic,
+      stories: (epic.stories || []).map((story: any) => ({
+        ...story,
+        acceptanceCriteria: story.acceptanceCriteria || [],
+        examples: story.examples || []
+      }))
+    })),
+    agentBoundaries: {
+      nonGoals: [],
+      constraints: [],
+      testExpectations: [],
+      risks: [],
+      openQuestions: [],
+      ...draft.agentBoundaries
+    }
+  }
 }

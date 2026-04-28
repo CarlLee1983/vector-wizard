@@ -99,3 +99,4 @@ Adding a UI string: extend the `MessageKey` union in `i18n/dictionaries.ts` and 
 ## Repository Skills
 
 - `.agents/skills/vector-analyzer/` — Tool-assisted deep feature analysis using the Vector schema. Use `vector:analyze` to reverse-engineer existing code into Roadmap specifications.
+- `.agents/skills/vector-pipeline-b/` — Walk a system idea through a four-stage methodology pipeline (Frame → Decompose → Slice → Handoff) and emit `feature-seed.json` files compatible with the Vector wizard's Draft Manager. Use when starting from "I want to build system X" and you need to produce N feature specs ready for npx vector-wizard.
