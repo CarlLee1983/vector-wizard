@@ -136,4 +136,42 @@ describe("validateDraft", () => {
     const result = validateDraft(draft)
     expect(result.warnings.find((w) => w.code === "story_orphan_examples")).toBeUndefined()
   })
+
+  it("warns at draft level when AC exist but no examples anywhere", () => {
+    const draft = minimalValidDraft()
+    draft.epics[0].stories[0].acceptanceCriteria = [{ id: "AC-001", statement: "Return 401." }]
+    draft.epics[0].stories[0].examples = []
+
+    const result = validateDraft(draft)
+    const warning = result.warnings.find((w) => w.code === "draft_acceptance_criteria_without_examples")
+
+    expect(warning).toBeDefined()
+    expect(warning?.category).toBe("invest")
+    expect(warning?.messageKey).toBe("validation.draftAcceptanceCriteriaWithoutExamples")
+    expect(warning?.fieldPath).toBe("epics")
+  })
+
+  it("does not warn draft_acceptance_criteria_without_examples when no AC exist", () => {
+    const draft = minimalValidDraft()
+    draft.epics[0].stories[0].acceptanceCriteria = []
+    draft.epics[0].stories[0].examples = []
+
+    const result = validateDraft(draft)
+    expect(
+      result.warnings.find((w) => w.code === "draft_acceptance_criteria_without_examples")
+    ).toBeUndefined()
+  })
+
+  it("does not warn draft_acceptance_criteria_without_examples when at least one example exists", () => {
+    const draft = minimalValidDraft()
+    draft.epics[0].stories[0].acceptanceCriteria = [{ id: "AC-001", statement: "Return 401." }]
+    draft.epics[0].stories[0].examples = [
+      { id: "EX-001", format: "natural-language", scenario: "Wrong password three times." }
+    ]
+
+    const result = validateDraft(draft)
+    expect(
+      result.warnings.find((w) => w.code === "draft_acceptance_criteria_without_examples")
+    ).toBeUndefined()
+  })
 })

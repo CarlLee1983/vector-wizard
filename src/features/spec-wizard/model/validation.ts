@@ -44,6 +44,21 @@ export function getStories(draft: FeatureDraft): UserStory[] {
   return draft.epics.flatMap((epic) => epic.stories)
 }
 
+function draftHasAnyAcceptanceCriterion(draft: FeatureDraft): boolean {
+  return getStories(draft).some((story) =>
+    story.acceptanceCriteria.some((criterion) => !isBlank(criterion.statement))
+  )
+}
+
+function draftHasAnyExample(draft: FeatureDraft): boolean {
+  return getStories(draft).some((story) =>
+    story.examples.some(
+      (example) =>
+        !isBlank(example.given) || !isBlank(example.when) || !isBlank(example.then) || !isBlank(example.scenario)
+    )
+  )
+}
+
 export function validateDraft(draft: FeatureDraft): ValidationResult {
   const blockingErrors: ValidationIssue[] = []
   const warnings: ValidationIssue[] = []
@@ -151,6 +166,15 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
         category: "invest"
       })
     }
+  }
+
+  if (draftHasAnyAcceptanceCriterion(draft) && !draftHasAnyExample(draft)) {
+    warnings.push({
+      code: "draft_acceptance_criteria_without_examples",
+      fieldPath: "epics",
+      messageKey: "validation.draftAcceptanceCriteriaWithoutExamples",
+      category: "invest"
+    })
   }
 
   if (nonBlankItems(draft.agentBoundaries.constraints).length === 0) {
