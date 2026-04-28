@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event"
 import { describe, expect, it, vi } from "vitest"
 import { I18nProvider } from "../i18n/I18nContext"
 import { ReviewPanel } from "../components/ReviewPanel"
-import { minimalValidDraft } from "../test/fixtures"
+import { draftWithRoadmap, minimalValidDraft } from "../test/fixtures"
 import { buildReviewPrompt } from "../services/reviewPromptBuilder"
 import { buildHumanSummary } from "../services/summary"
 import { draftToYaml } from "../services/yamlSerializer"
@@ -121,5 +121,32 @@ describe("ReviewPanel — dual-locale separation", () => {
     const sentText = await navigator.clipboard.readText()
     expect(sentText).toContain("# Spec Review Request")
     expect(sentText).not.toContain("# 規格審閱請求")
+  })
+})
+
+describe("ReviewPanel roadmap section", () => {
+  it("renders roadmap labels and values when fields are set", () => {
+    render(
+      <I18nProvider initialLocale="en">
+        <ReviewPanel draft={draftWithRoadmap()} />
+      </I18nProvider>
+    )
+
+    expect(screen.getByText(/Roadmap position/i)).toBeInTheDocument()
+    expect(screen.getByText("FT-001")).toBeInTheDocument()
+    expect(screen.getByText(/Now/)).toBeInTheDocument()
+    expect(screen.getByText(/Must/)).toBeInTheDocument()
+    expect(screen.getByText(/FT-002/)).toBeInTheDocument()
+    expect(screen.getByText(/FT-005/)).toBeInTheDocument()
+  })
+
+  it("does not render roadmap section when no fields are set", () => {
+    render(
+      <I18nProvider initialLocale="en">
+        <ReviewPanel draft={minimalValidDraft()} />
+      </I18nProvider>
+    )
+
+    expect(screen.queryByText(/Roadmap position/i)).not.toBeInTheDocument()
   })
 })

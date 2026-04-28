@@ -16,7 +16,7 @@ describe("POST /api/generate-spec", () => {
     const json = await response.json()
 
     expect(response.status).toBe(200)
-    expect(json.yaml).toContain('schemaVersion: "0.1"')
+    expect(json.yaml).toContain('schemaVersion: "0.2"')
     expect(json.summary).toContain("Login error message improvement")
     expect(json.validation.blockingErrors).toEqual([])
   })

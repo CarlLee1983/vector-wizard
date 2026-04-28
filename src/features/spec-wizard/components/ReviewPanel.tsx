@@ -153,6 +153,40 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
               Owner: {draft.metadata.owner || "Unassigned"}
             </p>
 
+            {(draft.metadata.id ||
+              draft.metadata.horizon ||
+              draft.metadata.priority ||
+              (draft.metadata.dependsOn?.length ?? 0) > 0) && (
+              <section>
+                <h2>{t("review.roadmap")}</h2>
+                <ul>
+                  {draft.metadata.id && (
+                    <li>
+                      ID: <strong>{draft.metadata.id}</strong>
+                    </li>
+                  )}
+                  {draft.metadata.horizon && (
+                    <li>
+                      {t("field.horizon")}:{" "}
+                      <strong>{t(`horizon.${draft.metadata.horizon}` as const)}</strong>
+                    </li>
+                  )}
+                  {draft.metadata.priority && (
+                    <li>
+                      {t("field.priority")}:{" "}
+                      <strong>{t(`priority.${draft.metadata.priority}` as const)}</strong>
+                    </li>
+                  )}
+                  {(draft.metadata.dependsOn?.length ?? 0) > 0 && (
+                    <li>
+                      {t("field.dependsOn")}:{" "}
+                      <strong>{draft.metadata.dependsOn!.join(", ")}</strong>
+                    </li>
+                  )}
+                </ul>
+              </section>
+            )}
+
             <section>
               <h2>Problem</h2>
               <p>{draft.summary.problem || "No problem statement provided."}</p>
