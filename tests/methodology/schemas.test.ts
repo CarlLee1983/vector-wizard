@@ -1,11 +1,13 @@
-import { readdirSync, readFileSync } from "node:fs"
+import { readdirSync, readFileSync, statSync } from "node:fs"
 import { resolve } from "node:path"
 import Ajv from "ajv"
 import { describe, expect, it } from "vitest"
 import { validateDraft } from "@/features/spec-wizard/model/validation"
 import type { FeatureDraft } from "@/features/spec-wizard/model/specTypes"
+import { extractEmbeddedJson } from "./extractEmbeddedJson"
 
 const SCHEMAS_DIR = resolve(__dirname, "../../docs/methodology/schemas")
+const REFERENCE_DIR = resolve(__dirname, "../../docs/methodology/reference-case")
 
 function loadSchema(filename: string): object {
   const path = resolve(SCHEMAS_DIR, filename)
@@ -259,6 +261,59 @@ describe("feature-seed schema", () => {
     const schema = loadSchema("feature-seed.schema.json")
     expect(() => ajv.compile(schema)).not.toThrow()
   })
+})
+
+function walk(dir: string): string[] {
+  const out: string[] = []
+  for (const entry of readdirSync(dir)) {
+    const path = resolve(dir, entry)
+    if (statSync(path).isDirectory()) {
+      out.push(...walk(path))
+    } else {
+      out.push(path)
+    }
+  }
+  return out
+}
+
+describe("reference-case sweep", () => {
+  const ajv = newAjv()
+  const compiled = {
+    "system-brief": ajv.compile(loadSchema("system-brief.schema.json")),
+    "capability-list": ajv.compile(loadSchema("capability-list.schema.json")),
+    "feature-candidates": ajv.compile(loadSchema("feature-candidates.schema.json")),
+    "feature-seed": ajv.compile(loadSchema("feature-seed.schema.json"))
+  } as const
+  type SchemaName = keyof typeof compiled
+
+  const files = walk(REFERENCE_DIR)
+
+  for (const file of files.filter((f) => f.endsWith(".md"))) {
+    it(`embedded JSON in ${file.replace(REFERENCE_DIR + "/", "")} validates against its declared schema`, () => {
+      const md = readFileSync(file, "utf8")
+      const blocks = extractEmbeddedJson(md)
+      for (const block of blocks) {
+        expect(Object.keys(compiled)).toContain(block.schema)
+        const validate = compiled[block.schema as SchemaName]
+        const ok = validate(block.json)
+        if (!ok) {
+          throw new Error(
+            `${file} → schema=${block.schema} failed:\n${ajv.errorsText(validate.errors, { separator: "\n" })}`
+          )
+        }
+      }
+    })
+  }
+
+  for (const file of files.filter((f) => f.endsWith(".feature-seed.json"))) {
+    it(`feature-seed file ${file.replace(REFERENCE_DIR + "/", "")} validates against feature-seed schema and wizard validateDraft`, () => {
+      const json = JSON.parse(readFileSync(file, "utf8"))
+      expect(compiled["feature-seed"](json)).toBe(true)
+      const { schemaVersion: _v, ...draft } = json
+      const result = validateDraft(draft as FeatureDraft)
+      expect(result.blockingErrors).toEqual([])
+    })
+  }
 })
 
 export { loadSchema, newAjv, SCHEMAS_DIR }
