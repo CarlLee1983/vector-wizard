@@ -129,7 +129,8 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
       warnings.push({
         code: "story_missing_acceptance_criteria",
         fieldPath: `stories.${story.id}.acceptanceCriteria`,
-        messageKey: "validation.storyMissingAcceptanceCriteria"
+        messageKey: "validation.storyMissingAcceptanceCriteria",
+        category: "invest"
       })
     }
 
@@ -137,7 +138,8 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
       warnings.push({
         code: "story_missing_examples",
         fieldPath: `stories.${story.id}.examples`,
-        messageKey: "validation.storyMissingExamples"
+        messageKey: "validation.storyMissingExamples",
+        category: "invest"
       })
     }
   }

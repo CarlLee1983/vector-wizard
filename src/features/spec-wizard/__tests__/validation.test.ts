@@ -4,12 +4,18 @@ import { validateDraft } from "../model/validation"
 import { minimalValidDraft } from "../test/fixtures"
 
 describe("validateDraft", () => {
-  it("accepts a minimal valid draft", () => {
+  it("accepts a minimal valid draft and tags story-level INVEST warnings", () => {
     const result = validateDraft(minimalValidDraft())
 
     expect(result.blockingErrors).toEqual([])
-    expect(result.warnings.map((warning) => warning.code)).toContain("story_missing_acceptance_criteria")
-    expect(result.warnings.map((warning) => warning.code)).toContain("story_missing_examples")
+
+    const acWarning = result.warnings.find((warning) => warning.code === "story_missing_acceptance_criteria")
+    expect(acWarning).toBeDefined()
+    expect(acWarning?.category).toBe("invest")
+
+    const exampleWarning = result.warnings.find((warning) => warning.code === "story_missing_examples")
+    expect(exampleWarning).toBeDefined()
+    expect(exampleWarning?.category).toBe("invest")
   })
 
   it("blocks missing title", () => {

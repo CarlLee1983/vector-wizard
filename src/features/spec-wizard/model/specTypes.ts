@@ -83,11 +83,14 @@ export type FeatureDraft = {
   }
 }
 
+export type ValidationCategory = "invest" | "general"
+
 export type ValidationIssue = {
   code: string
   fieldPath: string
   messageKey?: MessageKey
   message?: string
+  category?: ValidationCategory
 }
 
 export type ValidationResult = {
