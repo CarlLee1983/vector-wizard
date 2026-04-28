@@ -115,4 +115,64 @@ describe("capability-list schema", () => {
   })
 })
 
+describe("feature-candidates schema", () => {
+  const goodFixture = {
+    schemaVersion: "0.1",
+    features: [
+      {
+        id: "FT-001",
+        title: "SSO sign-in",
+        oneLineGoal: "Internal users sign in via corporate SSO.",
+        linkedCapabilities: ["CAP-001"],
+        priority: "must",
+        estimatedSize: "M",
+        dependsOn: [],
+        rationale: "Walking skeleton — nothing else can ship without auth."
+      }
+    ]
+  }
+
+  it("validates a complete fixture", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-candidates.schema.json")
+    expect(ajv.compile(schema)(goodFixture)).toBe(true)
+  })
+
+  it("rejects an invalid priority", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-candidates.schema.json")
+    const bad = {
+      ...goodFixture,
+      features: [{ ...goodFixture.features[0], priority: "maybe" }]
+    }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("rejects an invalid estimatedSize", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-candidates.schema.json")
+    const bad = {
+      ...goodFixture,
+      features: [{ ...goodFixture.features[0], estimatedSize: "huge" }]
+    }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("rejects malformed feature id", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-candidates.schema.json")
+    const bad = {
+      ...goodFixture,
+      features: [{ ...goodFixture.features[0], id: "feature-1" }]
+    }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("schema is valid JSON Schema", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-candidates.schema.json")
+    expect(() => ajv.compile(schema)).not.toThrow()
+  })
+})
+
 export { loadSchema, newAjv, SCHEMAS_DIR }
