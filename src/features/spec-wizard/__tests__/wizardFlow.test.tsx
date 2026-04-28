@@ -1,9 +1,13 @@
+import { useState } from "react"
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it } from "vitest"
 import { __resetForTests, createDraft } from "../persistence/draftStore"
 import { I18nProvider } from "../i18n/I18nContext"
 import { Wizard } from "../components/Wizard"
+import { BasicStep } from "../components/steps/BasicStep"
+import type { FeatureDraft } from "../model/specTypes"
+import { minimalValidDraft } from "../test/fixtures"
 
 function renderWizard() {
   return render(
@@ -154,5 +158,53 @@ describe("Wizard", () => {
 
     expect(screen.getByText(/不能違反的規則/)).toBeInTheDocument()
     expect(screen.getByText(/避免需求範圍擴大/)).toBeInTheDocument()
+  })
+})
+
+describe("BasicStep roadmap fields", () => {
+  function StatefulBasicStep({
+    initial,
+    onChange
+  }: {
+    initial?: FeatureDraft
+    onChange?: (draft: FeatureDraft) => void
+  }) {
+    const [draft, setDraft] = useState<FeatureDraft>(initial ?? minimalValidDraft())
+    return (
+      <BasicStep
+        draft={draft}
+        setDraft={(next) => {
+          setDraft(next)
+          onChange?.(next)
+        }}
+      />
+    )
+  }
+
+  it("renders id / horizon / priority / dependsOn inputs", () => {
+    render(
+      <I18nProvider initialLocale="en">
+        <StatefulBasicStep />
+      </I18nProvider>
+    )
+
+    expect(screen.getByLabelText(/Feature ID/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Roadmap horizon/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/MoSCoW priority/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Depends on/i)).toBeInTheDocument()
+  })
+
+  it("updates metadata.dependsOn from comma-separated input", async () => {
+    const user = userEvent.setup()
+    let lastDraft: FeatureDraft = minimalValidDraft()
+
+    render(
+      <I18nProvider initialLocale="en">
+        <StatefulBasicStep onChange={(next) => (lastDraft = next)} />
+      </I18nProvider>
+    )
+
+    await user.type(screen.getByLabelText(/Depends on/i), "FT-002, FT-005")
+    expect(lastDraft.metadata.dependsOn).toEqual(["FT-002", "FT-005"])
   })
 })
