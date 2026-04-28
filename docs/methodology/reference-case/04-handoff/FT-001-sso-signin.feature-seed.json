@@ -1,6 +1,13 @@
 {
-  "schemaVersion": "0.1",
-  "metadata": { "title": "SSO 一鍵登入", "owner": "", "locale": "zh-TW" },
+  "schemaVersion": "0.2",
+  "metadata": {
+    "title": "SSO 一鍵登入",
+    "owner": "",
+    "locale": "zh-TW",
+    "id": "FT-001",
+    "horizon": "now",
+    "priority": "must"
+  },
   "summary": {
     "problem": "內部使用者目前缺乏統一登入入口，每個工具都要重設密碼。",
     "desiredOutcome": "使用者透過企業 SSO 登入後直接進入個人化儀表板。"

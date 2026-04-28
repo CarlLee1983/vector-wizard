@@ -1,6 +1,14 @@
 {
-  "schemaVersion": "0.1",
-  "metadata": { "title": "預建 KPI 目錄 v1", "owner": "", "locale": "zh-TW" },
+  "schemaVersion": "0.2",
+  "metadata": {
+    "title": "預建 KPI 目錄 v1",
+    "owner": "",
+    "locale": "zh-TW",
+    "id": "FT-002",
+    "horizon": "next",
+    "priority": "should",
+    "dependsOn": ["FT-001"]
+  },
   "summary": {
     "problem": "Ops Analyst 想看 KPI 必須請工程師寫 SQL，導致週報循環延遲。",
     "desiredOutcome": "10 個基準 KPI 直接可選並加進儀表板，免寫 SQL。"

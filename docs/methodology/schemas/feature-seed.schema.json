@@ -17,7 +17,7 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "schemaVersion": { "type": "string", "const": "0.1" },
+    "schemaVersion": { "type": "string", "const": "0.2" },
     "metadata": {
       "type": "object",
       "required": ["title", "locale"],
@@ -25,7 +25,14 @@
       "properties": {
         "title": { "type": "string", "minLength": 1 },
         "owner": { "type": "string" },
-        "locale": { "type": "string", "enum": ["zh-TW", "en"] }
+        "locale": { "type": "string", "enum": ["zh-TW", "en"] },
+        "id": { "type": "string", "pattern": "^FT-\\d{3}$" },
+        "horizon": { "type": "string", "enum": ["now", "next", "later"] },
+        "priority": { "type": "string", "enum": ["must", "should", "could", "wont"] },
+        "dependsOn": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^FT-\\d{3}$" }
+        }
       }
     },
     "summary": {

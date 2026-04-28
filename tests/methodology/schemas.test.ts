@@ -181,7 +181,7 @@ describe("feature-candidates schema", () => {
 
 describe("feature-seed schema", () => {
   const goodFixture = {
-    schemaVersion: "0.1",
+    schemaVersion: "0.2",
     metadata: { title: "SSO sign-in", owner: "", locale: "zh-TW" },
     summary: { problem: "缺少統一登入。", desiredOutcome: "SSO 一鍵進入儀表板。" },
     goal: {
