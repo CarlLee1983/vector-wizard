@@ -2,14 +2,16 @@
 
 import { useMemo, useState } from "react"
 import { useI18n } from "../i18n/I18nContext"
-import type { FeatureDraft } from "../model/specTypes"
 import { useDraftStore } from "../hooks/useDraftStore"
-import { draftFromJson } from "../persistence/draftStorage"
-import { FieldArray } from "./FieldArray"
 import { ReviewPanel } from "./ReviewPanel"
-import { WizardStep } from "./WizardStep"
-import { AssistButton } from "./AssistButton"
-import { SeedPromptSection } from "./SeedPromptSection"
+import { BasicStep } from "./steps/BasicStep"
+import { GoalStep } from "./steps/GoalStep"
+import { ContextStep } from "./steps/ContextStep"
+import { DeliverablesStep } from "./steps/DeliverablesStep"
+import { StoriesStep } from "./steps/StoriesStep"
+import { CriteriaStep } from "./steps/CriteriaStep"
+import { ExamplesStep } from "./steps/ExamplesStep"
+import { BoundariesStep } from "./steps/BoundariesStep"
 
 const steps = [
   "basic",
@@ -24,30 +26,6 @@ const steps = [
 ] as const
 type Step = (typeof steps)[number]
 
-function updateFirstEpic(draft: FeatureDraft, patch: Partial<FeatureDraft["epics"][number]>): FeatureDraft {
-  return {
-    ...draft,
-    epics: draft.epics.map((epic, epicIndex) => (epicIndex === 0 ? { ...epic, ...patch } : epic))
-  }
-}
-
-function updateStory(
-  draft: FeatureDraft,
-  patch: Partial<FeatureDraft["epics"][number]["stories"][number]>
-): FeatureDraft {
-  return {
-    ...draft,
-    epics: draft.epics.map((epic, epicIndex) =>
-      epicIndex === 0
-        ? {
-            ...epic,
-            stories: epic.stories.map((story, storyIndex) => (storyIndex === 0 ? { ...story, ...patch } : story))
-          }
-        : epic
-    )
-  }
-}
-
 export function Wizard() {
   const { locale, t } = useI18n()
   const { activeDraft, setActiveDraft } = useDraftStore()
@@ -58,10 +36,10 @@ export function Wizard() {
   const setDraft = setActiveDraft
 
   const step = steps[stepIndex]
-  const firstEpic = draft.epics[0]
-  const firstStory = firstEpic?.stories?.[0]
 
   const content = useMemo(() => {
+    const firstEpic = draft.epics[0]
+    const firstStory = firstEpic?.stories?.[0]
     if (!firstEpic || !firstStory) {
       return (
         <div className="error-state">
@@ -70,416 +48,19 @@ export function Wizard() {
       )
     }
 
-    if (step === "basic") {
-    return (
-      <WizardStep title={t("step.basic")}>
-          <div className="field">
-            <label htmlFor="title">{t("field.title")}</label>
-            <small id="title-help">{t("field.titleHelp")}</small>
-            <input
-              id="title"
-              aria-describedby="title-help"
-              placeholder={t("field.titlePlaceholder")}
-              value={draft.metadata.title}
-              onChange={(event) => setDraft({ ...draft, metadata: { ...draft.metadata, title: event.target.value } })}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="owner">{t("field.owner")}</label>
-            <small id="owner-help">{t("field.ownerHelp")}</small>
-            <input
-              id="owner"
-              aria-describedby="owner-help"
-              placeholder={t("field.ownerPlaceholder")}
-              value={draft.metadata.owner}
-              onChange={(event) => setDraft({ ...draft, metadata: { ...draft.metadata, owner: event.target.value } })}
-            />
-          </div>
-
-          <SeedPromptSection title={draft.metadata.title} owner={draft.metadata.owner} />
-
-          <div className="field" style={{ marginTop: "32px", borderTop: "1px solid var(--border)", paddingTop: "24px" }}>
-            <label htmlFor="draftImport">{t("wizard.importDraft")}</label>
-            <input
-              id="draftImport"
-              type="file"
-              accept="application/json"
-              onChange={async (event) => {
-                const file = event.target.files?.[0]
-                if (!file) return
-                setDraft(draftFromJson(await file.text()))
-              }}
-            />
-          </div>
-        </WizardStep>
-
-      )
+    switch (step) {
+      case "basic": return <BasicStep draft={draft} setDraft={setDraft} />
+      case "goal": return <GoalStep draft={draft} setDraft={setDraft} />
+      case "context": return <ContextStep draft={draft} setDraft={setDraft} />
+      case "deliverables": return <DeliverablesStep draft={draft} setDraft={setDraft} />
+      case "stories": return <StoriesStep draft={draft} setDraft={setDraft} />
+      case "criteria": return <CriteriaStep draft={draft} setDraft={setDraft} />
+      case "examples": return <ExamplesStep draft={draft} setDraft={setDraft} />
+      case "boundaries": return <BoundariesStep draft={draft} setDraft={setDraft} />
+      case "review": return <ReviewPanel draft={draft} />
+      default: return null
     }
-
-    if (step === "goal") {
-      return (
-        <WizardStep title={t("step.goal")} method="Impact Mapping">
-          <div className="field">
-            <label htmlFor="problem">{t("field.problem")}</label>
-            <small id="problem-help">{t("field.problemHelp")}</small>
-            <textarea
-              id="problem"
-              aria-describedby="problem-help"
-              placeholder={t("field.problemPlaceholder")}
-              value={draft.summary.problem}
-              onChange={(event) => setDraft({ ...draft, summary: { ...draft.summary, problem: event.target.value } })}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="desiredOutcome">{t("field.desiredOutcome")}</label>
-            <small id="desired-outcome-help">{t("field.desiredOutcomeHelp")}</small>
-            <textarea
-              id="desiredOutcome"
-              aria-describedby="desired-outcome-help"
-              placeholder={t("field.desiredOutcomePlaceholder")}
-              value={draft.summary.desiredOutcome}
-              onChange={(event) =>
-                setDraft({ ...draft, summary: { ...draft.summary, desiredOutcome: event.target.value } })
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="goal">{t("field.goal")}</label>
-            <small id="goal-help">{t("field.goalHelp")}</small>
-            <textarea
-              id="goal"
-              aria-describedby="goal-help"
-              placeholder={t("field.goalPlaceholder")}
-              value={draft.goal.statement}
-              onChange={(event) => setDraft({ ...draft, goal: { ...draft.goal, statement: event.target.value } })}
-            />
-            <div className="field-actions">
-              <AssistButton
-                mode="rewrite"
-                text={draft.goal.statement}
-                onApply={(suggestedText) => setDraft({ ...draft, goal: { ...draft.goal, statement: suggestedText } })}
-              />
-            </div>
-          </div>
-          <FieldArray
-            label={t("field.successSignals")}
-            help={t("field.successSignalsHelp")}
-            helpId="success-signals-help"
-            placeholder={t("field.successSignalsPlaceholder")}
-            values={draft.goal.successSignals}
-            onChange={(successSignals) => setDraft({ ...draft, goal: { ...draft.goal, successSignals } })}
-          />
-        </WizardStep>
-      )
-    }
-
-    if (step === "context") {
-      const firstImpact = draft.impacts[0] ?? { id: "IM-001", actor: "", impact: "" }
-      const firstActivity = draft.userActivities[0] ?? { id: "UA-001", actor: "", activity: "" }
-      return (
-        <WizardStep title={t("step.context")} method="Impact Mapping">
-          <div className="field">
-            <label htmlFor="impactActor">{t("field.impactActor")}</label>
-            <small id="impact-actor-help">{t("field.impactActorHelp")}</small>
-            <input
-              id="impactActor"
-              aria-describedby="impact-actor-help"
-              placeholder={t("field.impactActorPlaceholder")}
-              value={firstImpact.actor}
-              onChange={(event) => setDraft({ ...draft, impacts: [{ ...firstImpact, actor: event.target.value }] })}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="impact">{t("field.impact")}</label>
-            <small id="impact-help">{t("field.impactHelp")}</small>
-            <textarea
-              id="impact"
-              aria-describedby="impact-help"
-              placeholder={t("field.impactPlaceholder")}
-              value={firstImpact.impact}
-              onChange={(event) => setDraft({ ...draft, impacts: [{ ...firstImpact, impact: event.target.value }] })}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="userActivityActor">{t("field.userActivityActor")}</label>
-            <small id="user-activity-actor-help">{t("field.userActivityActorHelp")}</small>
-            <input
-              id="userActivityActor"
-              aria-describedby="user-activity-actor-help"
-              placeholder={t("field.userActivityActorPlaceholder")}
-              value={firstActivity.actor}
-              onChange={(event) =>
-                setDraft({ ...draft, userActivities: [{ ...firstActivity, actor: event.target.value }] })
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="userActivity">{t("field.userActivity")}</label>
-            <small id="user-activity-help">{t("field.userActivityHelp")}</small>
-            <textarea
-              id="userActivity"
-              aria-describedby="user-activity-help"
-              placeholder={t("field.userActivityPlaceholder")}
-              value={firstActivity.activity}
-              onChange={(event) =>
-                setDraft({ ...draft, userActivities: [{ ...firstActivity, activity: event.target.value }] })
-              }
-            />
-          </div>
-        </WizardStep>
-      )
-    }
-
-    if (step === "deliverables") {
-      const firstDeliverable = draft.deliverables[0] ?? { id: "DE-001", name: "", description: "" }
-      return (
-        <WizardStep title={t("step.deliverables")} method="Story Mapping">
-          <div className="field">
-            <label htmlFor="deliverableName">{t("field.deliverableName")}</label>
-            <small id="deliverable-name-help">{t("field.deliverableNameHelp")}</small>
-            <input
-              id="deliverableName"
-              aria-describedby="deliverable-name-help"
-              placeholder={t("field.deliverableNamePlaceholder")}
-              value={firstDeliverable.name}
-              onChange={(event) =>
-                setDraft({ ...draft, deliverables: [{ ...firstDeliverable, name: event.target.value }] })
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="deliverableDescription">{t("field.deliverableDescription")}</label>
-            <small id="deliverable-description-help">{t("field.deliverableDescriptionHelp")}</small>
-            <textarea
-              id="deliverableDescription"
-              aria-describedby="deliverable-description-help"
-              placeholder={t("field.deliverableDescriptionPlaceholder")}
-              value={firstDeliverable.description}
-              onChange={(event) =>
-                setDraft({ ...draft, deliverables: [{ ...firstDeliverable, description: event.target.value }] })
-              }
-            />
-          </div>
-        </WizardStep>
-      )
-    }
-
-    if (step === "stories") {
-      return (
-        <WizardStep title={t("step.stories")} method="Story Mapping">
-          <div className="field">
-            <label htmlFor="epicTitle">{t("field.epicTitle")}</label>
-            <small id="epic-title-help">{t("field.epicTitleHelp")}</small>
-            <input
-              id="epicTitle"
-              aria-describedby="epic-title-help"
-              placeholder={t("field.epicTitlePlaceholder")}
-              value={firstEpic.title}
-              onChange={(event) => setDraft(updateFirstEpic(draft, { title: event.target.value }))}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="storyTitle">{t("field.storyTitle")}</label>
-            <small id="story-title-help">{t("field.storyTitleHelp")}</small>
-            <input
-              id="storyTitle"
-              aria-describedby="story-title-help"
-              placeholder={t("field.storyTitlePlaceholder")}
-              value={firstStory.title}
-              onChange={(event) => setDraft(updateStory(draft, { title: event.target.value }))}
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="userStory">{t("field.userStory")}</label>
-            <small id="user-story-help">{t("field.userStoryHelp")}</small>
-            <textarea
-              id="userStory"
-              aria-describedby="user-story-help"
-              placeholder={t("field.userStoryPlaceholder")}
-              value={firstStory.userStory}
-              onChange={(event) => setDraft(updateStory(draft, { userStory: event.target.value }))}
-            />
-            <div className="field-actions">
-              <AssistButton
-                mode="rewrite"
-                text={firstStory.userStory}
-                onApply={(suggestedText) => setDraft(updateStory(draft, { userStory: suggestedText }))}
-              />
-            </div>
-          </div>
-        </WizardStep>
-      )
-    }
-
-    if (step === "criteria") {
-      return (
-        <WizardStep title={t("step.criteria")} method="Specification by Example">
-          <FieldArray
-            label={t("field.acceptanceCriteria")}
-            help={t("field.acceptanceCriteriaHelp")}
-            helpId="acceptance-criteria-help"
-            placeholder={t("field.acceptanceCriteriaPlaceholder")}
-            values={firstStory.acceptanceCriteria.map((criterion) => criterion.statement)}
-            onChange={(statements) =>
-              setDraft(
-                updateStory(draft, {
-                  acceptanceCriteria: statements.map((statement, index) => ({
-                    id: `AC-${String(index + 1).padStart(3, "0")}`,
-                    statement
-                  }))
-                })
-              )
-            }
-          />
-        </WizardStep>
-      )
-    }
-
-    if (step === "examples") {
-      const firstExample = firstStory.examples[0] ?? { id: "EX-001", format: "given-when-then" as const, scenario: "" }
-      return (
-        <WizardStep title={t("step.examples")} method="Specification by Example">
-          <div className="field">
-            <label htmlFor="exampleGiven">{t("field.given")}</label>
-            <small id="example-given-help">{t("field.givenHelp")}</small>
-            <textarea
-              id="exampleGiven"
-              aria-describedby="example-given-help"
-              placeholder={t("field.givenPlaceholder")}
-              value={firstExample.given ?? ""}
-              onChange={(event) =>
-                setDraft(
-                  updateStory(draft, {
-                    examples: [{ ...firstExample, given: event.target.value, format: "given-when-then" }]
-                  })
-                )
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="exampleWhen">{t("field.when")}</label>
-            <small id="example-when-help">{t("field.whenHelp")}</small>
-            <textarea
-              id="exampleWhen"
-              aria-describedby="example-when-help"
-              placeholder={t("field.whenPlaceholder")}
-              value={firstExample.when ?? ""}
-              onChange={(event) =>
-                setDraft(
-                  updateStory(draft, {
-                    examples: [{ ...firstExample, when: event.target.value, format: "given-when-then" }]
-                  })
-                )
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="exampleThen">{t("field.then")}</label>
-            <small id="example-then-help">{t("field.thenHelp")}</small>
-            <textarea
-              id="exampleThen"
-              aria-describedby="example-then-help"
-              placeholder={t("field.thenPlaceholder")}
-              value={firstExample.then ?? ""}
-              onChange={(event) =>
-                setDraft(
-                  updateStory(draft, {
-                    examples: [{ ...firstExample, then: event.target.value, format: "given-when-then" }]
-                  })
-                )
-              }
-            />
-          </div>
-          <div className="field">
-            <label htmlFor="exampleScenario">{t("field.exampleScenario")}</label>
-            <small id="example-scenario-help">{t("field.exampleScenarioHelp")}</small>
-            <textarea
-              id="exampleScenario"
-              aria-describedby="example-scenario-help"
-              placeholder={t("field.exampleScenarioPlaceholder")}
-              value={firstExample.scenario ?? ""}
-              onChange={(event) =>
-                setDraft(
-                  updateStory(draft, {
-                    examples: [{ ...firstExample, scenario: event.target.value }]
-                  })
-                )
-              }
-            />
-          </div>
-        </WizardStep>
-      )
-    }
-
-    if (step === "boundaries") {
-      return (
-        <WizardStep title={t("step.boundaries")}>
-          <FieldArray
-            id="constraints"
-            label={t("field.constraints")}
-            help={t("field.constraintsHelp")}
-            helpId="constraints-help"
-            placeholder={t("field.constraintsPlaceholder")}
-            values={draft.agentBoundaries.constraints}
-            onChange={(constraints) =>
-              setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, constraints } })
-            }
-          />
-          <FieldArray
-            id="nonGoals"
-            label={t("field.nonGoals")}
-            help={t("field.nonGoalsHelp")}
-            helpId="non-goals-help"
-            placeholder={t("field.nonGoalsPlaceholder")}
-            values={draft.agentBoundaries.nonGoals}
-            onChange={(nonGoals) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, nonGoals } })}
-          />
-          <FieldArray
-            label={t("field.risks")}
-            help={t("field.risksHelp")}
-            helpId="risks-help"
-            placeholder={t("field.risksPlaceholder")}
-            values={draft.agentBoundaries.risks}
-            onChange={(risks) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, risks } })}
-          />
-          <FieldArray
-            label={t("field.openQuestions")}
-            help={t("field.openQuestionsHelp")}
-            helpId="open-questions-help"
-            placeholder={t("field.openQuestionsPlaceholder")}
-            values={draft.agentBoundaries.openQuestions}
-            onChange={(openQuestions) =>
-              setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, openQuestions } })
-            }
-          />
-          <FieldArray
-            label={t("field.testExpectations")}
-            help={t("field.testExpectationsHelp")}
-            helpId="test-expectations-help"
-            placeholder={t("field.testExpectationsPlaceholder")}
-            values={draft.agentBoundaries.testExpectations}
-            onChange={(testExpectations) =>
-              setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, testExpectations } })
-            }
-          />
-        </WizardStep>
-      )
-    }
-
-    if (step === "review") return <ReviewPanel draft={draft} />
-
-    return null
-  }, [
-    draft,
-    firstEpic.title,
-    firstStory.acceptanceCriteria,
-    firstStory.examples,
-    firstStory.title,
-    firstStory.userStory,
-    locale,
-    step,
-    t
-  ])
+  }, [draft, setDraft, step])
 
   return (
     <>
@@ -495,7 +76,9 @@ export function Wizard() {
         ))}
       </nav>
 
-      {content}
+      <div key={step} className="fade-in">
+        {content}
+      </div>
       <nav className="button-row">
         <button
           className="secondary"

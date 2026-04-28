@@ -507,3 +507,12 @@ button.success:hover {
 .panel-ai-highlight {
   border-left: 4px solid var(--primary);
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}

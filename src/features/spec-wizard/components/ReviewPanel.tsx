@@ -8,6 +8,7 @@ import { draftToYaml } from "../services/yamlSerializer"
 import { draftToJson } from "../persistence/draftStorage"
 import { buildReviewPrompt } from "../services/reviewPromptBuilder"
 import { useI18n } from "../i18n/I18nContext"
+import type { MessageKey } from "../i18n/dictionaries"
 
 type ReviewPanelProps = {
   draft: FeatureDraft
@@ -86,14 +87,14 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
       {validation.blockingErrors.length > 0 ? (
         <div className="error">
           {validation.blockingErrors.map((issue) => (
-            <p key={issue.code}>{issue.message || t(issue.messageKey as never)}</p>
+            <p key={issue.code}>{issue.message || t(issue.messageKey as MessageKey)}</p>
           ))}
         </div>
       ) : null}
       {validation.warnings.length > 0 ? (
         <div className="warning">
           {validation.warnings.map((issue, index) => (
-            <p key={`${issue.code}-${index}`}>{issue.message || t(issue.messageKey as never)}</p>
+            <p key={`${issue.code}-${index}`}>{issue.message || t(issue.messageKey as MessageKey)}</p>
           ))}
         </div>
       ) : null}

@@ -1,6 +1,6 @@
 # Agile Roadmap Wizard Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Build a Next.js Wizard that converts non-technical agile roadmap input into a human-reviewable summary and agent-ready YAML Feature Spec.
 
@@ -77,7 +77,7 @@ Boundaries:
 - Create: `app/page.tsx`
 - Create: `app/globals.css`
 
-- [ ] **Step 1: Create package manifest and scripts**
+- [x] **Step 1: Create package manifest and scripts**
 
 Create `package.json`:
 
@@ -115,7 +115,7 @@ Create `package.json`:
 }
 ```
 
-- [ ] **Step 2: Create Next config**
+- [x] **Step 2: Create Next config**
 
 Create `next.config.mjs`:
 
@@ -128,7 +128,7 @@ const nextConfig = {
 export default nextConfig
 ```
 
-- [ ] **Step 3: Create TypeScript config**
+- [x] **Step 3: Create TypeScript config**
 
 Create `tsconfig.json`:
 
@@ -159,7 +159,7 @@ Create `tsconfig.json`:
 }
 ```
 
-- [ ] **Step 4: Create Vitest config**
+- [x] **Step 4: Create Vitest config**
 
 Create `vitest.config.ts`:
 
@@ -182,7 +182,7 @@ export default defineConfig({
 })
 ```
 
-- [ ] **Step 5: Create test setup**
+- [x] **Step 5: Create test setup**
 
 Create `src/features/spec-wizard/test/setup.ts`:
 
@@ -190,7 +190,7 @@ Create `src/features/spec-wizard/test/setup.ts`:
 import "@testing-library/jest-dom/vitest"
 ```
 
-- [ ] **Step 6: Create root layout and page shell**
+- [x] **Step 6: Create root layout and page shell**
 
 Create `app/layout.tsx`:
 
@@ -229,7 +229,7 @@ export default function Home() {
 }
 ```
 
-- [ ] **Step 7: Create global styles**
+- [x] **Step 7: Create global styles**
 
 Create `app/globals.css`:
 
@@ -356,7 +356,7 @@ pre {
 }
 ```
 
-- [ ] **Step 8: Install dependencies**
+- [x] **Step 8: Install dependencies**
 
 Run:
 
@@ -366,7 +366,7 @@ npm install
 
 Expected: `package-lock.json` is created and dependencies install successfully.
 
-- [ ] **Step 9: Run initial tests**
+- [x] **Step 9: Run initial tests**
 
 Run:
 
@@ -376,7 +376,7 @@ npm test -- --passWithNoTests
 
 Expected: PASS with no tests found or no test files.
 
-- [ ] **Step 10: Commit foundation**
+- [x] **Step 10: Commit foundation**
 
 ```bash
 git add package.json package-lock.json next.config.mjs tsconfig.json vitest.config.ts app src/features/spec-wizard/test/setup.ts
@@ -403,7 +403,7 @@ Not-tested: Browser rendering beyond the initial shell"
 - Create: `src/features/spec-wizard/test/fixtures.ts`
 - Create: `src/features/spec-wizard/__tests__/validation.test.ts`
 
-- [ ] **Step 1: Write validation tests first**
+- [x] **Step 1: Write validation tests first**
 
 Create `src/features/spec-wizard/__tests__/validation.test.ts`:
 
@@ -478,7 +478,7 @@ describe("validateDraft", () => {
 })
 ```
 
-- [ ] **Step 2: Run validation tests and verify failure**
+- [x] **Step 2: Run validation tests and verify failure**
 
 Run:
 
@@ -488,7 +488,7 @@ npm test -- src/features/spec-wizard/__tests__/validation.test.ts
 
 Expected: FAIL because model files do not exist.
 
-- [ ] **Step 3: Create spec types**
+- [x] **Step 3: Create spec types**
 
 Create `src/features/spec-wizard/model/specTypes.ts`:
 
@@ -589,7 +589,7 @@ export type ValidationResult = {
 }
 ```
 
-- [ ] **Step 4: Create default draft factory**
+- [x] **Step 4: Create default draft factory**
 
 Create `src/features/spec-wizard/model/defaultDraft.ts`:
 
@@ -640,7 +640,7 @@ export function createEmptyDraft(locale: Locale = "zh-TW"): FeatureDraft {
 }
 ```
 
-- [ ] **Step 5: Create validation implementation**
+- [x] **Step 5: Create validation implementation**
 
 Create `src/features/spec-wizard/model/validation.ts`:
 
@@ -745,7 +745,7 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
 }
 ```
 
-- [ ] **Step 6: Create fixtures**
+- [x] **Step 6: Create fixtures**
 
 Create `src/features/spec-wizard/test/fixtures.ts`:
 
@@ -798,7 +798,7 @@ export function minimalValidDraft(): FeatureDraft {
 }
 ```
 
-- [ ] **Step 7: Run validation tests**
+- [x] **Step 7: Run validation tests**
 
 Run:
 
@@ -808,7 +808,7 @@ npm test -- src/features/spec-wizard/__tests__/validation.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit model and validation**
+- [x] **Step 8: Commit model and validation**
 
 ```bash
 git add src/features/spec-wizard/model src/features/spec-wizard/test/fixtures.ts src/features/spec-wizard/__tests__/validation.test.ts
@@ -833,7 +833,7 @@ Not-tested: UI integration"
 - Create: `src/features/spec-wizard/services/summary.ts`
 - Create: `src/features/spec-wizard/__tests__/yamlSerializer.test.ts`
 
-- [ ] **Step 1: Write YAML tests first**
+- [x] **Step 1: Write YAML tests first**
 
 Create `src/features/spec-wizard/__tests__/yamlSerializer.test.ts`:
 
@@ -885,7 +885,7 @@ describe("yamlSerializer", () => {
 })
 ```
 
-- [ ] **Step 2: Run YAML tests and verify failure**
+- [x] **Step 2: Run YAML tests and verify failure**
 
 Run:
 
@@ -895,7 +895,7 @@ npm test -- src/features/spec-wizard/__tests__/yamlSerializer.test.ts
 
 Expected: FAIL because services do not exist.
 
-- [ ] **Step 3: Implement summary builder**
+- [x] **Step 3: Implement summary builder**
 
 Create `src/features/spec-wizard/services/summary.ts`:
 
@@ -943,7 +943,7 @@ export function buildHumanSummary(draft: FeatureDraft): string {
 }
 ```
 
-- [ ] **Step 4: Implement YAML serializer**
+- [x] **Step 4: Implement YAML serializer**
 
 Create `src/features/spec-wizard/services/yamlSerializer.ts`:
 
@@ -1076,7 +1076,7 @@ export function draftToYaml(draft: FeatureDraft, createdAt = new Date().toISOStr
 }
 ```
 
-- [ ] **Step 5: Run YAML tests**
+- [x] **Step 5: Run YAML tests**
 
 Run:
 
@@ -1086,7 +1086,7 @@ npm test -- src/features/spec-wizard/__tests__/yamlSerializer.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit YAML generation**
+- [x] **Step 6: Commit YAML generation**
 
 ```bash
 git add src/features/spec-wizard/services src/features/spec-wizard/__tests__/yamlSerializer.test.ts
@@ -1112,7 +1112,7 @@ Not-tested: Browser export interactions"
 - Create: `app/api/generate-spec/route.ts`
 - Create: `src/features/spec-wizard/__tests__/generateSpecRoute.test.ts`
 
-- [ ] **Step 1: Write API route tests first**
+- [x] **Step 1: Write API route tests first**
 
 Create `src/features/spec-wizard/__tests__/generateSpecRoute.test.ts`:
 
@@ -1162,7 +1162,7 @@ describe("POST /api/generate-spec", () => {
 })
 ```
 
-- [ ] **Step 2: Run API tests and verify failure**
+- [x] **Step 2: Run API tests and verify failure**
 
 Run:
 
@@ -1172,7 +1172,7 @@ npm test -- src/features/spec-wizard/__tests__/generateSpecRoute.test.ts
 
 Expected: FAIL because route and contract files do not exist.
 
-- [ ] **Step 3: Create API contracts**
+- [x] **Step 3: Create API contracts**
 
 Create `src/features/spec-wizard/api/contracts.ts`:
 
@@ -1195,7 +1195,7 @@ export type ApiErrorResponse = {
 }
 ```
 
-- [ ] **Step 4: Implement generate-spec route**
+- [x] **Step 4: Implement generate-spec route**
 
 Create `app/api/generate-spec/route.ts`:
 
@@ -1239,7 +1239,7 @@ export async function POST(request: Request): Promise<NextResponse<GenerateSpecR
 }
 ```
 
-- [ ] **Step 5: Run API tests**
+- [x] **Step 5: Run API tests**
 
 Run:
 
@@ -1249,7 +1249,7 @@ npm test -- src/features/spec-wizard/__tests__/generateSpecRoute.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit generation API**
+- [x] **Step 6: Commit generation API**
 
 ```bash
 git add app/api/generate-spec src/features/spec-wizard/api src/features/spec-wizard/__tests__/generateSpecRoute.test.ts
@@ -1274,7 +1274,7 @@ Not-tested: Network calls from the browser UI"
 - Create: `src/features/spec-wizard/i18n/I18nContext.tsx`
 - Create: `src/features/spec-wizard/__tests__/i18n.test.tsx`
 
-- [ ] **Step 1: Write i18n tests first**
+- [x] **Step 1: Write i18n tests first**
 
 Create `src/features/spec-wizard/__tests__/i18n.test.tsx`:
 
@@ -1312,7 +1312,7 @@ describe("I18nProvider", () => {
 })
 ```
 
-- [ ] **Step 2: Run i18n tests and verify failure**
+- [x] **Step 2: Run i18n tests and verify failure**
 
 Run:
 
@@ -1322,7 +1322,7 @@ npm test -- src/features/spec-wizard/__tests__/i18n.test.tsx
 
 Expected: FAIL because i18n files do not exist.
 
-- [ ] **Step 3: Create dictionaries**
+- [x] **Step 3: Create dictionaries**
 
 Create `src/features/spec-wizard/i18n/dictionaries.ts`:
 
@@ -1423,7 +1423,7 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
 }
 ```
 
-- [ ] **Step 4: Create provider**
+- [x] **Step 4: Create provider**
 
 Create `src/features/spec-wizard/i18n/I18nContext.tsx`:
 
@@ -1465,7 +1465,7 @@ export function useI18n(): I18nContextValue {
 }
 ```
 
-- [ ] **Step 5: Run i18n tests**
+- [x] **Step 5: Run i18n tests**
 
 Run:
 
@@ -1475,7 +1475,7 @@ npm test -- src/features/spec-wizard/__tests__/i18n.test.tsx
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit i18n layer**
+- [x] **Step 6: Commit i18n layer**
 
 ```bash
 git add src/features/spec-wizard/i18n src/features/spec-wizard/__tests__/i18n.test.tsx
@@ -1499,7 +1499,7 @@ Not-tested: Full Wizard language switching"
 - Create: `src/features/spec-wizard/persistence/draftStorage.ts`
 - Create: `src/features/spec-wizard/__tests__/draftStorage.test.ts`
 
-- [ ] **Step 1: Write persistence tests first**
+- [x] **Step 1: Write persistence tests first**
 
 Create `src/features/spec-wizard/__tests__/draftStorage.test.ts`:
 
@@ -1541,7 +1541,7 @@ describe("draftStorage", () => {
 })
 ```
 
-- [ ] **Step 2: Run persistence tests and verify failure**
+- [x] **Step 2: Run persistence tests and verify failure**
 
 Run:
 
@@ -1551,7 +1551,7 @@ npm test -- src/features/spec-wizard/__tests__/draftStorage.test.ts
 
 Expected: FAIL because persistence file does not exist.
 
-- [ ] **Step 3: Implement localStorage helpers**
+- [x] **Step 3: Implement localStorage helpers**
 
 Create `src/features/spec-wizard/persistence/draftStorage.ts`:
 
@@ -1592,7 +1592,7 @@ export function draftFromJson(raw: string): FeatureDraft {
 }
 ```
 
-- [ ] **Step 4: Run persistence tests**
+- [x] **Step 4: Run persistence tests**
 
 Run:
 
@@ -1602,7 +1602,7 @@ npm test -- src/features/spec-wizard/__tests__/draftStorage.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit persistence layer**
+- [x] **Step 5: Commit persistence layer**
 
 ```bash
 git add src/features/spec-wizard/persistence src/features/spec-wizard/__tests__/draftStorage.test.ts
@@ -1629,7 +1629,7 @@ Not-tested: Browser quota failure handling in a real browser"
 - Create: `src/features/spec-wizard/components/Wizard.tsx`
 - Create: `src/features/spec-wizard/__tests__/wizardFlow.test.tsx`
 
-- [ ] **Step 1: Write Wizard flow tests first**
+- [x] **Step 1: Write Wizard flow tests first**
 
 Create `src/features/spec-wizard/__tests__/wizardFlow.test.tsx`:
 
@@ -1697,7 +1697,7 @@ describe("Wizard", () => {
 })
 ```
 
-- [ ] **Step 2: Run Wizard tests and verify failure**
+- [x] **Step 2: Run Wizard tests and verify failure**
 
 Run:
 
@@ -1707,7 +1707,7 @@ npm test -- src/features/spec-wizard/__tests__/wizardFlow.test.tsx
 
 Expected: FAIL because components do not exist.
 
-- [ ] **Step 3: Create reusable FieldArray**
+- [x] **Step 3: Create reusable FieldArray**
 
 Create `src/features/spec-wizard/components/FieldArray.tsx`:
 
@@ -1746,7 +1746,7 @@ export function FieldArray({ label, values, onChange }: FieldArrayProps) {
 }
 ```
 
-- [ ] **Step 4: Create WizardStep wrapper**
+- [x] **Step 4: Create WizardStep wrapper**
 
 Create `src/features/spec-wizard/components/WizardStep.tsx`:
 
@@ -1766,7 +1766,7 @@ export function WizardStep({ title, method, children }: { title: string; method?
 }
 ```
 
-- [ ] **Step 5: Create ReviewPanel**
+- [x] **Step 5: Create ReviewPanel**
 
 Create `src/features/spec-wizard/components/ReviewPanel.tsx`:
 
@@ -1842,7 +1842,7 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
 }
 ```
 
-- [ ] **Step 6: Create Wizard component**
+- [x] **Step 6: Create Wizard component**
 
 Create `src/features/spec-wizard/components/Wizard.tsx`:
 
@@ -2084,7 +2084,7 @@ export function Wizard() {
 }
 ```
 
-- [ ] **Step 7: Run Wizard flow tests**
+- [x] **Step 7: Run Wizard flow tests**
 
 Run:
 
@@ -2094,7 +2094,7 @@ npm test -- src/features/spec-wizard/__tests__/wizardFlow.test.tsx
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit Wizard UI**
+- [x] **Step 8: Commit Wizard UI**
 
 ```bash
 git add src/features/spec-wizard/components src/features/spec-wizard/__tests__/wizardFlow.test.tsx app/page.tsx
@@ -2119,7 +2119,7 @@ Not-tested: Full visual polish and download interactions"
 - Create: `app/api/assist/route.ts`
 - Create: `src/features/spec-wizard/__tests__/assistService.test.ts`
 
-- [ ] **Step 1: Write assist service tests first**
+- [x] **Step 1: Write assist service tests first**
 
 Create `src/features/spec-wizard/__tests__/assistService.test.ts`:
 
@@ -2150,7 +2150,7 @@ describe("assistDraft", () => {
 })
 ```
 
-- [ ] **Step 2: Run assist tests and verify failure**
+- [x] **Step 2: Run assist tests and verify failure**
 
 Run:
 
@@ -2160,7 +2160,7 @@ npm test -- src/features/spec-wizard/__tests__/assistService.test.ts
 
 Expected: FAIL because assist service does not exist.
 
-- [ ] **Step 3: Implement mock assist service**
+- [x] **Step 3: Implement mock assist service**
 
 Create `src/features/spec-wizard/services/assistService.ts`:
 
@@ -2231,7 +2231,7 @@ export async function assistDraft(request: AssistRequest): Promise<AssistRespons
 }
 ```
 
-- [ ] **Step 4: Implement assist API route**
+- [x] **Step 4: Implement assist API route**
 
 Create `app/api/assist/route.ts`:
 
@@ -2266,7 +2266,7 @@ export async function POST(request: Request): Promise<NextResponse<AssistRespons
 }
 ```
 
-- [ ] **Step 5: Run assist tests**
+- [x] **Step 5: Run assist tests**
 
 Run:
 
@@ -2276,7 +2276,7 @@ npm test -- src/features/spec-wizard/__tests__/assistService.test.ts
 
 Expected: PASS.
 
-- [ ] **Step 6: Commit assist API**
+- [x] **Step 6: Commit assist API**
 
 ```bash
 git add src/features/spec-wizard/services/assistService.ts app/api/assist src/features/spec-wizard/__tests__/assistService.test.ts
@@ -2301,7 +2301,7 @@ Not-tested: Real LLM provider behavior"
 - Modify: `docs/superpowers/specs/2026-04-26-agile-roadmap-wizard-design.md` only if implementation reveals a mismatch that must be documented.
 - No new source files expected.
 
-- [ ] **Step 1: Run full test suite**
+- [x] **Step 1: Run full test suite**
 
 Run:
 
@@ -2311,7 +2311,7 @@ npm test
 
 Expected: PASS for all tests.
 
-- [ ] **Step 2: Run TypeScript and production build**
+- [x] **Step 2: Run TypeScript and production build**
 
 Run:
 
@@ -2321,7 +2321,7 @@ npm run build
 
 Expected: Next.js production build completes successfully.
 
-- [ ] **Step 3: Run lint if available**
+- [x] **Step 3: Run lint if available**
 
 Run:
 
@@ -2331,7 +2331,7 @@ npm run lint
 
 Expected: PASS, or Next.js prompts to configure linting. If it prompts, add the default Next.js ESLint config and rerun until lint passes.
 
-- [ ] **Step 4: Manually smoke-test the app**
+- [x] **Step 4: Manually smoke-test the app**
 
 Run:
 
@@ -2351,7 +2351,7 @@ Manual path:
 6. Refresh the browser.
 7. Confirm the draft restores from localStorage.
 
-- [ ] **Step 5: Check git status**
+- [x] **Step 5: Check git status**
 
 Run:
 
@@ -2361,7 +2361,7 @@ git status --short
 
 Expected: only intended files are modified or untracked.
 
-- [ ] **Step 6: Commit final verification fixes if any were needed**
+- [x] **Step 6: Commit final verification fixes if any were needed**
 
 If any build, lint, or test fixes were required, commit them:
 

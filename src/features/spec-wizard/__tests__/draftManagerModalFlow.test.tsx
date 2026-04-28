@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react"
+import { fireEvent, render, screen, act } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { DraftManagerModal } from "../components/DraftManagerModal"
 import { I18nProvider } from "../i18n/I18nContext"
@@ -64,8 +64,10 @@ describe("DraftManagerModal", () => {
     const file = new File([JSON.stringify(minimalValidDraft())], "draft.json", { type: "application/json" })
     const input = screen.getByLabelText(/匯入 JSON/) as HTMLInputElement
     Object.defineProperty(input, "files", { value: [file] })
-    fireEvent.change(input)
-    await new Promise((r) => setTimeout(r, 0))
+    await act(async () => {
+      fireEvent.change(input)
+      await new Promise((r) => setTimeout(r, 0))
+    })
     expect(Object.keys(getSnapshot().drafts).length).toBeGreaterThanOrEqual(1)
   })
 
@@ -74,7 +76,10 @@ describe("DraftManagerModal", () => {
     const file = new File(["{not-json"], "bad.json", { type: "application/json" })
     const input = screen.getByLabelText(/匯入 JSON/) as HTMLInputElement
     Object.defineProperty(input, "files", { value: [file] })
-    fireEvent.change(input)
+    await act(async () => {
+      fireEvent.change(input)
+      await new Promise((r) => setTimeout(r, 0))
+    })
     expect(await screen.findByText(/匯入失敗/)).toBeInTheDocument()
   })
 })
