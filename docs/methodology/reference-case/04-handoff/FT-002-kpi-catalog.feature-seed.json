@@ -42,6 +42,11 @@
     "constraints": ["必須使用既有 Snowflake 倉儲", "儀表板不得顯示原始 PII"],
     "testExpectations": [],
     "risks": ["既有查詢層在規模化下效能不足", "預建 KPI 無法覆蓋 70% 週報需求"],
-    "openQuestions": ["10 個基準 KPI 由誰決定？", "是否需要支援多語系 KPI 名稱？"]
+    "openQuestions": [
+      "儀表板 schema 由誰負責定義？",
+      "歷史 Excel 檔是否需要遷移？",
+      "10 個基準 KPI 由誰決定？",
+      "是否需要支援多語系 KPI 名稱？"
+    ]
   }
 }

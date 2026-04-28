@@ -62,7 +62,7 @@ Frame 階段沉澱下來的 `successSignals`、`constraints`、`riskiestAssumpti
 
 - [`README.md`](README.md)：方法論手冊入口，說明三條入路、四階段 pipeline 與三層讀者。
 - [`pipeline-b.md`](pipeline-b.md)：Path B 的端到端敘事，從系統概念走到 feature-seed。
-- `glossary.md`：中英文方法論名詞對照表（後續任務補上）。
+- [`glossary.md`](glossary.md)：中英文方法論名詞對照表。
 - `schemas/`：四份 JSON Schema（`system-brief`、`capability-list`、`feature-candidates`、`feature-seed`），所有階段的結構化輸出都對齊這份規格。
 - `stages/1-frame/`：Frame 階段的 A／B／C 三層文件，把系統概念寫成 `system-brief`。
 - `stages/2-decompose/`：Decompose 階段，把系統拆成角色、領域語彙與 capability。
