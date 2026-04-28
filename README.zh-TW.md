@@ -1,5 +1,7 @@
 # Vector Agile Roadmap Wizard
 
+[English](README.md) | 繁體中文
+
 Vector 是一款高密度、專業的技術設計工具，旨在橋接「非技術決策者」與「AI 程式代理人」。它引導用戶完成敏捷路線圖（Agile Roadmap）訪談，並匯出可供 AI 代理人直接讀取的 YAML 功能規格書。
 
 ## 🚀 核心功能

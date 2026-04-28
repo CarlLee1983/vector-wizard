@@ -1,5 +1,7 @@
 # Vector Agile Roadmap Wizard
 
+English | [繁體中文](README.zh-TW.md)
+
 Vector is a high-density, professional technical design tool that bridges the gap between non-technical decision-makers and AI coding agents. It walks users through an agile roadmap interview and exports an AI-ready YAML feature specification.
 
 ## 🚀 Key Features
