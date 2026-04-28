@@ -46,6 +46,37 @@ describe("yamlSerializer", () => {
     expect(yamlWithout).not.toContain('id: "FT-')
   })
 
+  it("emits metadata.horizon only when set", () => {
+    const withRoadmap = draftWithRoadmap()
+    const withoutRoadmap = minimalValidDraft()
+
+    expect(draftToYaml(withRoadmap, "2026-04-28")).toContain('horizon: "now"')
+    expect(draftToYaml(withoutRoadmap, "2026-04-28")).not.toContain("horizon:")
+  })
+
+  it("emits metadata.priority only when set", () => {
+    const withRoadmap = draftWithRoadmap()
+    const withoutRoadmap = minimalValidDraft()
+
+    expect(draftToYaml(withRoadmap, "2026-04-28")).toContain('priority: "must"')
+    expect(draftToYaml(withoutRoadmap, "2026-04-28")).not.toContain("priority:")
+  })
+
+  it("emits metadata.dependsOn only when non-empty", () => {
+    const withRoadmap = draftWithRoadmap()
+    const withoutRoadmap = minimalValidDraft()
+    const withEmptyArray = minimalValidDraft()
+    withEmptyArray.metadata.dependsOn = []
+
+    const yamlWith = draftToYaml(withRoadmap, "2026-04-28")
+    expect(yamlWith).toContain("dependsOn:")
+    expect(yamlWith).toContain('- "FT-002"')
+    expect(yamlWith).toContain('- "FT-005"')
+
+    expect(draftToYaml(withoutRoadmap, "2026-04-28")).not.toContain("dependsOn:")
+    expect(draftToYaml(withEmptyArray, "2026-04-28")).not.toContain("dependsOn:")
+  })
+
   it("builds a human-readable summary", () => {
     const summary = buildHumanSummary(minimalValidDraft())
 

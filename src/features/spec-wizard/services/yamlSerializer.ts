@@ -56,6 +56,11 @@ export function normalizeDraftForExport(draft: FeatureDraft, createdAt: string) 
       owner: cleanString(draft.metadata.owner),
       locale: draft.metadata.locale,
       ...(draft.metadata.id ? { id: draft.metadata.id } : {}),
+      ...(draft.metadata.horizon ? { horizon: draft.metadata.horizon } : {}),
+      ...(draft.metadata.priority ? { priority: draft.metadata.priority } : {}),
+      ...(draft.metadata.dependsOn && draft.metadata.dependsOn.length > 0
+        ? { dependsOn: draft.metadata.dependsOn }
+        : {}),
       createdAt,
       status: "draft"
     },
