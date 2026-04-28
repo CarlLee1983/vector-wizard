@@ -2,6 +2,8 @@ import { readdirSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import Ajv from "ajv"
 import { describe, expect, it } from "vitest"
+import { validateDraft } from "@/features/spec-wizard/model/validation"
+import type { FeatureDraft } from "@/features/spec-wizard/model/specTypes"
 
 const SCHEMAS_DIR = resolve(__dirname, "../../docs/methodology/schemas")
 
@@ -171,6 +173,90 @@ describe("feature-candidates schema", () => {
   it("schema is valid JSON Schema", () => {
     const ajv = newAjv()
     const schema = loadSchema("feature-candidates.schema.json")
+    expect(() => ajv.compile(schema)).not.toThrow()
+  })
+})
+
+describe("feature-seed schema", () => {
+  const goodFixture = {
+    schemaVersion: "0.1",
+    metadata: { title: "SSO sign-in", owner: "", locale: "zh-TW" },
+    summary: { problem: "缺少統一登入。", desiredOutcome: "SSO 一鍵進入儀表板。" },
+    goal: {
+      statement: "讓內部使用者透過企業 SSO 登入並抵達個人化儀表板。",
+      successSignals: ["首次登入時間少於 30 秒"]
+    },
+    impacts: [{ id: "IM-001", actor: "Ops Analyst", impact: "免於重複登入" }],
+    deliverables: [{ id: "DE-001", name: "SSO 登入流程", description: "OIDC/SAML 整合" }],
+    userActivities: [{ id: "UA-001", actor: "Ops Analyst", activity: "用企業帳號登入" }],
+    epics: [
+      {
+        id: "EP-001",
+        title: "登入與身分",
+        stories: [
+          {
+            id: "US-001",
+            title: "SSO 一鍵登入",
+            userStory: "身為 Ops Analyst，我希望用 SSO 一鍵登入。",
+            acceptanceCriteria: [{ id: "AC-001", statement: "點擊『SSO 登入』後 5 秒內導向首頁。" }],
+            examples: [
+              {
+                id: "EX-001",
+                format: "given-when-then",
+                given: "已登入企業 IdP",
+                when: "點擊 SSO 登入按鈕",
+                then: "5 秒內進入個人化儀表板"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    agentBoundaries: {
+      nonGoals: ["不支援外部客戶登入"],
+      constraints: ["必須使用既有 IdP"],
+      testExpectations: ["SSO 重定向回流的單元測試"],
+      risks: ["既有查詢層在規模化下效能不足"],
+      openQuestions: ["儀表板 schema 由誰負責？"]
+    }
+  }
+
+  it("validates a complete feature-seed fixture", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    expect(ajv.compile(schema)(goodFixture)).toBe(true)
+  })
+
+  it("rejects feature-seed missing metadata.title", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const bad = { ...goodFixture, metadata: { ...goodFixture.metadata, title: "" } }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("rejects feature-seed missing goal.statement", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const bad = { ...goodFixture, goal: { ...goodFixture.goal, statement: "" } }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("rejects feature-seed with no story", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const bad = { ...goodFixture, epics: [] }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("good fixture also passes wizard validateDraft without blocking errors", () => {
+    const { schemaVersion: _v, ...draft } = goodFixture
+    const result = validateDraft(draft as FeatureDraft)
+    expect(result.blockingErrors).toEqual([])
+  })
+
+  it("schema is valid JSON Schema", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
     expect(() => ajv.compile(schema)).not.toThrow()
   })
 })
