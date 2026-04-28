@@ -53,3 +53,28 @@ export function draftWithRoadmap(): FeatureDraft {
   draft.metadata.dependsOn = ["FT-002", "FT-005"]
   return draft
 }
+
+export function draftWithGwtAc(): FeatureDraft {
+  const draft = minimalValidDraft()
+  draft.epics[0].stories[0].acceptanceCriteria = [
+    {
+      id: "AC-001",
+      statement: "Given the member enters a wrong password, when they submit, then the form shows a safe message."
+    }
+  ]
+  draft.epics[0].stories[0].examples = [
+    { id: "EX-001", format: "natural-language", scenario: "Wrong password three times in a row." }
+  ]
+  return draft
+}
+
+export function draftWithPlainAc(): FeatureDraft {
+  const draft = minimalValidDraft()
+  draft.epics[0].stories[0].acceptanceCriteria = [
+    { id: "AC-001", statement: "登入失敗時要顯示安全訊息。" }
+  ]
+  draft.epics[0].stories[0].examples = [
+    { id: "EX-001", format: "natural-language", scenario: "連續輸錯三次密碼。" }
+  ]
+  return draft
+}

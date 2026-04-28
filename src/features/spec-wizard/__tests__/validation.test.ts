@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { createEmptyDraft } from "../model/defaultDraft"
 import { validateDraft } from "../model/validation"
-import { minimalValidDraft } from "../test/fixtures"
+import { draftWithGwtAc, draftWithPlainAc, minimalValidDraft } from "../test/fixtures"
 
 describe("validateDraft", () => {
   it("accepts a minimal valid draft and tags story-level INVEST warnings", () => {
@@ -173,5 +173,45 @@ describe("validateDraft", () => {
     expect(
       result.warnings.find((w) => w.code === "draft_acceptance_criteria_without_examples")
     ).toBeUndefined()
+  })
+
+  it("warns when a story has AC but none in Given/When/Then format", () => {
+    const draft = draftWithPlainAc()
+
+    const result = validateDraft(draft)
+    const warning = result.warnings.find((w) => w.code === "story_acceptance_criteria_not_gwt")
+
+    expect(warning).toBeDefined()
+    expect(warning?.category).toBe("invest")
+    expect(warning?.messageKey).toBe("validation.storyAcceptanceCriteriaNotGwt")
+    expect(warning?.fieldPath).toBe(`stories.${draft.epics[0].stories[0].id}.acceptanceCriteria`)
+  })
+
+  it("does not warn story_acceptance_criteria_not_gwt when at least one AC uses English GWT keywords", () => {
+    const draft = draftWithGwtAc()
+
+    const result = validateDraft(draft)
+    expect(result.warnings.find((w) => w.code === "story_acceptance_criteria_not_gwt")).toBeUndefined()
+  })
+
+  it("does not warn story_acceptance_criteria_not_gwt when at least one AC uses Chinese GWT keywords", () => {
+    const draft = minimalValidDraft()
+    draft.epics[0].stories[0].acceptanceCriteria = [
+      { id: "AC-001", statement: "假設使用者已登入，當點擊匯出按鈕，那麼系統下載 PDF。" }
+    ]
+    draft.epics[0].stories[0].examples = [
+      { id: "EX-001", format: "natural-language", scenario: "已登入後點擊匯出。" }
+    ]
+
+    const result = validateDraft(draft)
+    expect(result.warnings.find((w) => w.code === "story_acceptance_criteria_not_gwt")).toBeUndefined()
+  })
+
+  it("does not warn story_acceptance_criteria_not_gwt when story has no AC", () => {
+    const draft = minimalValidDraft()
+    draft.epics[0].stories[0].acceptanceCriteria = []
+
+    const result = validateDraft(draft)
+    expect(result.warnings.find((w) => w.code === "story_acceptance_criteria_not_gwt")).toBeUndefined()
   })
 })

@@ -12,6 +12,17 @@ function hasHanText(value: string | undefined): boolean {
   return /[\u3400-\u9fff]/u.test(value ?? "")
 }
 
+function isGwtFormatted(text: string): boolean {
+  const lower = text.toLowerCase()
+  const hasEnGiven = /\bgiven\b/.test(lower)
+  const hasEnWhen = /\bwhen\b/.test(lower)
+  const hasEnThen = /\bthen\b/.test(lower)
+  const hasZhGiven = /(\u5047\u8a2d|\u524d\u63d0)/.test(text)
+  const hasZhWhen = /(\u7576|\u82e5)/.test(text)
+  const hasZhThen = /(\u90a3\u9ebc|\u5247|\u63a5\u8457)/.test(text)
+  return (hasEnGiven && hasEnWhen && hasEnThen) || (hasZhGiven && hasZhWhen && hasZhThen)
+}
+
 function draftTextValues(draft: FeatureDraft): string[] {
   return [
     draft.metadata.title,
@@ -163,6 +174,19 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
         code: "story_orphan_examples",
         fieldPath: `stories.${story.id}.examples`,
         messageKey: "validation.storyOrphanExamples",
+        category: "invest"
+      })
+    }
+
+    const acStatements = story.acceptanceCriteria
+      .map((criterion) => criterion.statement)
+      .filter((statement) => !isBlank(statement))
+
+    if (acStatements.length > 0 && !acStatements.some(isGwtFormatted)) {
+      warnings.push({
+        code: "story_acceptance_criteria_not_gwt",
+        fieldPath: `stories.${story.id}.acceptanceCriteria`,
+        messageKey: "validation.storyAcceptanceCriteriaNotGwt",
         category: "invest"
       })
     }

@@ -107,6 +107,7 @@ export type MessageKey =
   | "validation.storyMissingExamples"
   | "validation.storyOrphanExamples"
   | "validation.draftAcceptanceCriteriaWithoutExamples"
+  | "validation.storyAcceptanceCriteriaNotGwt"
   | "validation.missingSuccessSignals"
   | "validation.missingImpacts"
   | "validation.missingDeliverables"
