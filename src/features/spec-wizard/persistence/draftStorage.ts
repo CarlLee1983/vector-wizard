@@ -34,7 +34,11 @@ export function normalizeDraft(draft: any): FeatureDraft {
     ...draft,
     metadata: {
       owner: "",
-      ...draft.metadata
+      ...draft.metadata,
+      ...(draft.metadata?.id ? { id: draft.metadata.id } : {}),
+      ...(draft.metadata?.horizon ? { horizon: draft.metadata.horizon } : {}),
+      ...(draft.metadata?.priority ? { priority: draft.metadata.priority } : {}),
+      ...(Array.isArray(draft.metadata?.dependsOn) ? { dependsOn: draft.metadata.dependsOn } : {})
     },
     summary: {
       problem: "",

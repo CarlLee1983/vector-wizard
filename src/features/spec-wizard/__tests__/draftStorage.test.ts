@@ -31,4 +31,68 @@ describe("draftStorage helpers", () => {
   it("draftFromJson throws on missing required fields", () => {
     expect(() => draftFromJson(JSON.stringify({ no: "metadata" }))).toThrow()
   })
+
+  it("loads legacy draft (no roadmap fields) and leaves them undefined", () => {
+    const legacyJson = JSON.stringify({
+      metadata: { title: "Legacy", locale: "en" },
+      summary: {},
+      goal: { statement: "x", successSignals: [] },
+      impacts: [],
+      deliverables: [],
+      userActivities: [],
+      epics: [
+        {
+          id: "EP-001",
+          title: "e",
+          stories: [
+            { id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }
+          ]
+        }
+      ],
+      agentBoundaries: { nonGoals: [], constraints: [], testExpectations: [], risks: [], openQuestions: [] }
+    })
+
+    const draft = draftFromJson(legacyJson)
+
+    expect(draft.metadata.title).toBe("Legacy")
+    expect(draft.metadata.id).toBeUndefined()
+    expect(draft.metadata.horizon).toBeUndefined()
+    expect(draft.metadata.priority).toBeUndefined()
+    expect(draft.metadata.dependsOn).toBeUndefined()
+  })
+
+  it("preserves roadmap fields when present in JSON", () => {
+    const json = JSON.stringify({
+      metadata: {
+        title: "New",
+        locale: "en",
+        id: "FT-001",
+        horizon: "next",
+        priority: "should",
+        dependsOn: ["FT-000"]
+      },
+      summary: {},
+      goal: { statement: "x", successSignals: [] },
+      impacts: [],
+      deliverables: [],
+      userActivities: [],
+      epics: [
+        {
+          id: "EP-001",
+          title: "e",
+          stories: [
+            { id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }
+          ]
+        }
+      ],
+      agentBoundaries: { nonGoals: [], constraints: [], testExpectations: [], risks: [], openQuestions: [] }
+    })
+
+    const draft = draftFromJson(json)
+
+    expect(draft.metadata.id).toBe("FT-001")
+    expect(draft.metadata.horizon).toBe("next")
+    expect(draft.metadata.priority).toBe("should")
+    expect(draft.metadata.dependsOn).toEqual(["FT-000"])
+  })
 })
