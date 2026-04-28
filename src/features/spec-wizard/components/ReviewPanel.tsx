@@ -17,6 +17,8 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
   const { t } = useI18n()
   const [tab, setTab] = useState<"summary" | "yaml">("summary")
   const validation = useMemo(() => validateDraft(draft), [draft])
+  const investWarnings = validation.warnings.filter((warning) => warning.category === "invest")
+  const otherWarnings = validation.warnings.filter((warning) => warning.category !== "invest")
   const canExportYaml = validation.blockingErrors.length === 0
   const summary = useMemo(() => buildHumanSummary(draft), [draft])
   const yaml = useMemo(() => draftToYaml(draft), [draft])
@@ -90,9 +92,19 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
           ))}
         </div>
       ) : null}
-      {validation.warnings.length > 0 ? (
+      {investWarnings.length > 0 ? (
+        <div className="warning warning--invest">
+          <p>
+            <strong>{t("review.investHeading")}</strong>
+          </p>
+          {investWarnings.map((issue, index) => (
+            <p key={`${issue.code}-${index}`}>{issue.message || (issue.messageKey && t(issue.messageKey))}</p>
+          ))}
+        </div>
+      ) : null}
+      {otherWarnings.length > 0 ? (
         <div className="warning">
-          {validation.warnings.map((issue, index) => (
+          {otherWarnings.map((issue, index) => (
             <p key={`${issue.code}-${index}`}>{issue.message || (issue.messageKey && t(issue.messageKey))}</p>
           ))}
         </div>

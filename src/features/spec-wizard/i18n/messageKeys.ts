@@ -16,6 +16,7 @@ export type MessageKey =
   | "wizard.aiAssistDone"
   | "review.summary"
   | "review.yaml"
+  | "review.investHeading"
   | "step.basic"
   | "step.goal"
   | "step.context"

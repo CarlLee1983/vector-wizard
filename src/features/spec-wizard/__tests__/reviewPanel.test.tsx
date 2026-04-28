@@ -150,3 +150,23 @@ describe("ReviewPanel roadmap section", () => {
     expect(screen.queryByText(/Roadmap position/i)).not.toBeInTheDocument()
   })
 })
+
+describe("ReviewPanel — INVEST warnings group", () => {
+  it("renders INVEST warnings under a dedicated heading separate from general warnings", () => {
+    render(
+      <I18nProvider>
+        <ReviewPanel draft={minimalValidDraft()} />
+      </I18nProvider>
+    )
+
+    const investHeading = screen.getByText("故事就緒檢查（INVEST）")
+    expect(investHeading).toBeInTheDocument()
+
+    const investBlock = investHeading.closest(".warning")
+    expect(investBlock).not.toBeNull()
+    expect(investBlock?.textContent).toContain("故事缺少驗收條件")
+    expect(investBlock?.textContent).toContain("故事缺少範例")
+
+    expect(investBlock?.textContent).not.toContain("建議補充限制條件")
+  })
+})
