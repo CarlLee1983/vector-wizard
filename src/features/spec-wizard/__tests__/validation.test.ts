@@ -157,9 +157,7 @@ describe("validateDraft", () => {
     draft.epics[0].stories[0].examples = []
 
     const result = validateDraft(draft)
-    expect(
-      result.warnings.find((w) => w.code === "draft_acceptance_criteria_without_examples")
-    ).toBeUndefined()
+    expect(result.warnings.find((w) => w.code === "draft_acceptance_criteria_without_examples")).toBeUndefined()
   })
 
   it("does not warn draft_acceptance_criteria_without_examples when at least one example exists", () => {
@@ -170,9 +168,7 @@ describe("validateDraft", () => {
     ]
 
     const result = validateDraft(draft)
-    expect(
-      result.warnings.find((w) => w.code === "draft_acceptance_criteria_without_examples")
-    ).toBeUndefined()
+    expect(result.warnings.find((w) => w.code === "draft_acceptance_criteria_without_examples")).toBeUndefined()
   })
 
   it("warns when a story has AC but none in Given/When/Then format", () => {
@@ -199,9 +195,7 @@ describe("validateDraft", () => {
     draft.epics[0].stories[0].acceptanceCriteria = [
       { id: "AC-001", statement: "假設使用者已登入，當點擊匯出按鈕，那麼系統下載 PDF。" }
     ]
-    draft.epics[0].stories[0].examples = [
-      { id: "EX-001", format: "natural-language", scenario: "已登入後點擊匯出。" }
-    ]
+    draft.epics[0].stories[0].examples = [{ id: "EX-001", format: "natural-language", scenario: "已登入後點擊匯出。" }]
 
     const result = validateDraft(draft)
     expect(result.warnings.find((w) => w.code === "story_acceptance_criteria_not_gwt")).toBeUndefined()

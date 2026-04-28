@@ -56,9 +56,7 @@ export function getStories(draft: FeatureDraft): UserStory[] {
 }
 
 function draftHasAnyAcceptanceCriterion(draft: FeatureDraft): boolean {
-  return getStories(draft).some((story) =>
-    story.acceptanceCriteria.some((criterion) => !isBlank(criterion.statement))
-  )
+  return getStories(draft).some((story) => story.acceptanceCriteria.some((criterion) => !isBlank(criterion.statement)))
 }
 
 function draftHasAnyExample(draft: FeatureDraft): boolean {
@@ -250,10 +248,7 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
       warnings.push({
         code: `open_question_${question.slice(0, 10)}`,
         fieldPath: "agentBoundaries.openQuestions",
-        message:
-          draft.metadata.locale === "zh-TW"
-            ? `待釐清問題：${question}`
-            : `Open Question: ${question}`
+        message: draft.metadata.locale === "zh-TW" ? `待釐清問題：${question}` : `Open Question: ${question}`
       })
     }
   }

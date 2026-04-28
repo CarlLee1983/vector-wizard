@@ -113,7 +113,8 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "validation.storyMissingAcceptanceCriteria": "故事缺少驗收條件。",
     "validation.storyMissingExamples": "故事缺少範例。",
     "validation.storyOrphanExamples": "故事有具體例子但沒有驗收條件，請補上對應的驗收條件。",
-    "validation.draftAcceptanceCriteriaWithoutExamples": "整份草稿已有驗收條件但沒有任何具體例子；建議每條 AC 都搭配一個範例情境。",
+    "validation.draftAcceptanceCriteriaWithoutExamples":
+      "整份草稿已有驗收條件但沒有任何具體例子；建議每條 AC 都搭配一個範例情境。",
     "validation.storyAcceptanceCriteriaNotGwt": "故事的驗收條件可改寫為 Given / When / Then 三段格式，讓行為更明確。",
     "validation.missingSuccessSignals": "建議補充可觀察的成功訊號。",
     "validation.missingImpacts": "建議補充受影響角色與影響。",
@@ -356,8 +357,10 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "validation.storyMissingAcceptanceCriteria": "Story is missing acceptance criteria.",
     "validation.storyMissingExamples": "Story is missing examples.",
     "validation.storyOrphanExamples": "Story has examples but no acceptance criteria — add the criteria they map to.",
-    "validation.draftAcceptanceCriteriaWithoutExamples": "Draft has acceptance criteria but no examples; pair each AC with a concrete scenario.",
-    "validation.storyAcceptanceCriteriaNotGwt": "Acceptance criteria can be rewritten in Given / When / Then form for clarity.",
+    "validation.draftAcceptanceCriteriaWithoutExamples":
+      "Draft has acceptance criteria but no examples; pair each AC with a concrete scenario.",
+    "validation.storyAcceptanceCriteriaNotGwt":
+      "Acceptance criteria can be rewritten in Given / When / Then form for clarity.",
     "validation.missingSuccessSignals": "Add observable success signals.",
     "validation.missingImpacts": "Add impacted actors and impacts.",
     "validation.missingDeliverables": "Add deliverables.",

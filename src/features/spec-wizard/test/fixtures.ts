@@ -70,11 +70,7 @@ export function draftWithGwtAc(): FeatureDraft {
 
 export function draftWithPlainAc(): FeatureDraft {
   const draft = minimalValidDraft()
-  draft.epics[0].stories[0].acceptanceCriteria = [
-    { id: "AC-001", statement: "登入失敗時要顯示安全訊息。" }
-  ]
-  draft.epics[0].stories[0].examples = [
-    { id: "EX-001", format: "natural-language", scenario: "連續輸錯三次密碼。" }
-  ]
+  draft.epics[0].stories[0].acceptanceCriteria = [{ id: "AC-001", statement: "登入失敗時要顯示安全訊息。" }]
+  draft.epics[0].stories[0].examples = [{ id: "EX-001", format: "natural-language", scenario: "連續輸錯三次密碼。" }]
   return draft
 }
