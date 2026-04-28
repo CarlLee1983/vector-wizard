@@ -16,7 +16,7 @@ Two artifacts produced together:
 
 ## Steps
 
-1. **Read the `system-brief` JSON block.** Parse the embedded JSON block from `system-brief.md`. Extract `targetUsers` as the seed for stakeholder rows; copy each `role` and treat its `context` as a hint for the "想得到什麼" column. Do not drop any role.
+1. **Read the `system-brief` JSON block.** Parse the embedded JSON block from `system-brief.md`. Extract `targetUsers` as the seed for stakeholder rows; copy each `role` and treat its `context` as a hint for the "想得到什麼" column. Do not drop any role. Present the seeded table to the user and ask whether any internal supporting roles (e.g., Data Engineer, Platform Ops) should be added before proceeding.
 2. **Propose JTBD statements per stakeholder.** For each row in the stakeholder table, draft 1–3 statements using the form `When ___ I want to ___ so I can ___` (or zh-TW `當 ___ 時，我想 ___，這樣我就能 ___`). Present them to the user and ask for explicit confirmation; only retain confirmed statements.
 3. **Propose an event timeline.** Emit a bulleted list of past-tense PascalCase events covering the main flow from first contact to task completion (5–15 events). Ask the user to confirm, trim, or reorder; do not silently rewrite. Events must describe domain state changes, not UI interactions.
 4. **Cluster jobs + events into capabilities.** Group statements that share a purpose and span 2–5 events into a capability. Assign IDs `CAP-001`, `CAP-002`, `CAP-003`, … (zero-padded, three digits, contiguous). Each capability must populate all six required fields: `id`, `name`, `description`, `actors`, `jobs`, `events`. `actors` values must come from the stakeholder table; never invent new end users.
@@ -34,7 +34,7 @@ This runs the reference-case sweep, which extracts the embedded JSON block, look
 
 ## Failure modes
 
-- **Refuse to invent stakeholders not in `system-brief.targetUsers`.** If a needed actor is missing, surface the gap as a proposed update to `system-brief.openQuestions` (e.g. `"Should Data Engineer be promoted to a targetUser, or remain an internal supporting role?"`) and pause the script. Do not silently add a new end-user role.
+- **Refuse to invent new end-user stakeholders not in `system-brief.targetUsers`.** Internal supporting roles (e.g., Data Engineer, Platform Ops) may be added with explicit user confirmation; mark them as non-end-user in the description column. If a needed end-user actor is missing, surface the gap as a proposed update to `system-brief.openQuestions` (e.g. `"Should Data Engineer be promoted to a targetUser, or remain an internal supporting role?"`) and pause the script. Do not silently add a new end-user role.
 - **If the user cannot confirm a JTBD statement, drop it.** Do not retain unconfirmed statements just to fill space; an empty `jobs` array on a capability is a blocking error and will be caught at Step 4.
 - **If the proposed event timeline contains UI verbs (e.g. `ButtonClicked`, `ModalOpened`), reject it once and ask the user to restate as a domain state change.** Do not auto-rewrite; the wording belongs to the user.
 - **Never produce fewer than 3 capabilities.** If clustering yields only 1–2, return to Step 3 and ask for additional events; an under-decomposed system will fail Stage 3 slicing downstream.
