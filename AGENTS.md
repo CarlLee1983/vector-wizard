@@ -69,7 +69,7 @@ These come from the design spec; tests in `__tests__/` enforce most of them:
 
 - **YAML keys stay English** regardless of UI locale. The locale only affects UI labels, helper text, validation messages, and summary text.
 - **Draft schema is separate from YAML schema.** `FeatureDraft` (internal) ≠ the `{ schemaVersion, metadata, summary, productSpec, agentSpec }` shape produced by `normalizeDraftForExport`. Future migrations rely on this seam.
-- **`schemaVersion` is `"0.1"`** in the exported YAML; bump explicitly if you change the YAML shape.
+- **`schemaVersion` is `"0.2"`** in the exported YAML（自 2026-04-28 起，新增 `metadata.{id,horizon,priority,dependsOn}` 四個選填欄位）；bump explicitly if you change the YAML shape.
 - **Validation is intentionally loose.** Only three conditions are blocking errors: missing `metadata.title`, missing `goal.statement`, no user story. Everything else is a non-blocking warning. Blocking errors stop YAML download but must still allow JSON draft export.
 - **AI is non-authoritative.** `assistService` returns suggestions, warnings, assumptions, open questions — it must never directly mutate the draft, add stories/criteria/examples, or be required for Wizard completion. Any inferred requirement surfaces as an assumption/warning/open question.
 - **LLM keys are server-side only.** Real provider calls go through API routes, never from the client. Current code ships a mock provider; add new providers behind the same `AssistRequest`/`AssistResponse` contract.
