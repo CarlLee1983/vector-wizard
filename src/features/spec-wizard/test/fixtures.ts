@@ -44,3 +44,12 @@ export function minimalValidDraft(): FeatureDraft {
     }
   }
 }
+
+export function draftWithRoadmap(): FeatureDraft {
+  const draft = minimalValidDraft()
+  draft.metadata.id = "FT-001"
+  draft.metadata.horizon = "now"
+  draft.metadata.priority = "must"
+  draft.metadata.dependsOn = ["FT-002", "FT-005"]
+  return draft
+}

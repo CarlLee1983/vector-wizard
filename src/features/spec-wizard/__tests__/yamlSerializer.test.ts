@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { buildHumanSummary } from "../services/summary"
 import { draftToYaml, normalizeDraftForExport } from "../services/yamlSerializer"
-import { minimalValidDraft } from "../test/fixtures"
+import { draftWithRoadmap, minimalValidDraft } from "../test/fixtures"
 
 describe("yamlSerializer", () => {
   it("serializes the required top-level YAML sections", () => {
@@ -33,6 +33,17 @@ describe("yamlSerializer", () => {
     const normalized = normalizeDraftForExport(draft, "2026-04-26")
 
     expect(normalized.productSpec.goal.successSignals).toEqual(["Support tickets decrease"])
+  })
+
+  it("emits metadata.id only when set", () => {
+    const withId = draftWithRoadmap()
+    const withoutId = minimalValidDraft()
+
+    const yamlWith = draftToYaml(withId, "2026-04-28")
+    const yamlWithout = draftToYaml(withoutId, "2026-04-28")
+
+    expect(yamlWith).toContain('id: "FT-001"')
+    expect(yamlWithout).not.toContain('id: "FT-')
   })
 
   it("builds a human-readable summary", () => {

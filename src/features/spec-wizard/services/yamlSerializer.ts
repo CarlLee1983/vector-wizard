@@ -55,6 +55,7 @@ export function normalizeDraftForExport(draft: FeatureDraft, createdAt: string) 
       title: cleanString(draft.metadata.title),
       owner: cleanString(draft.metadata.owner),
       locale: draft.metadata.locale,
+      ...(draft.metadata.id ? { id: draft.metadata.id } : {}),
       createdAt,
       status: "draft"
     },
