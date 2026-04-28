@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://vector.cmg.local/methodology/system-brief.schema.json",
+  "title": "SystemBrief",
+  "description": "Stage 1 (Frame) output: a written anchor for the system before decomposition.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "oneLiner",
+    "problem",
+    "nonProblems",
+    "targetUsers",
+    "successSignals",
+    "uniqueValue",
+    "keyMetrics",
+    "constraints",
+    "riskiestAssumptions",
+    "openQuestions"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "string", "const": "0.1" },
+    "oneLiner": { "type": "string", "minLength": 1 },
+    "problem": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "nonProblems": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "targetUsers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["role", "context"],
+        "additionalProperties": false,
+        "properties": {
+          "role": { "type": "string", "minLength": 1 },
+          "context": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "successSignals": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "uniqueValue": { "type": "string" },
+    "keyMetrics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "target"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "target": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "constraints": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "riskiestAssumptions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "openQuestions": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  }
+}
