@@ -70,4 +70,49 @@ describe("system-brief schema", () => {
   })
 })
 
+describe("capability-list schema", () => {
+  const goodFixture = {
+    schemaVersion: "0.1",
+    capabilities: [
+      {
+        id: "CAP-001",
+        name: "Authenticated dashboard access",
+        description: "Authorized users sign in and view scoped dashboards.",
+        actors: ["Ops Analyst"],
+        jobs: ["Sign in"],
+        events: ["UserAuthenticated"]
+      }
+    ]
+  }
+
+  it("validates a complete fixture", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("capability-list.schema.json")
+    expect(ajv.compile(schema)(goodFixture)).toBe(true)
+  })
+
+  it("rejects a malformed capability id", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("capability-list.schema.json")
+    const bad = {
+      ...goodFixture,
+      capabilities: [{ ...goodFixture.capabilities[0], id: "cap-1" }]
+    }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("rejects an empty capabilities array", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("capability-list.schema.json")
+    const bad = { ...goodFixture, capabilities: [] }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("schema is valid JSON Schema", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("capability-list.schema.json")
+    expect(() => ajv.compile(schema)).not.toThrow()
+  })
+})
+
 export { loadSchema, newAjv, SCHEMAS_DIR }
