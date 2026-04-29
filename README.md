@@ -63,6 +63,18 @@ bun run test
 bun run test:watch
 ```
 
+### Importing Pipeline B feature-seeds
+
+After running the methodology Pipeline B, you can stage all generated seeds in one shot:
+
+```bash
+npx vector-wizard import ./docs/methodology/artifacts/seeds/
+# or one or many specific files
+npx vector-wizard import ./seed-a.feature-seed.json ./seed-b.feature-seed.json
+```
+
+The CLI writes the resolved drafts into `.vector/import/pending.json` and then launches the wizard. On first load, the wizard auto-imports each draft into its Draft Manager and shows a toast summarising the result. The pending file is consumed atomically (read-and-deleted), so refreshing the wizard never causes duplicate imports.
+
 ## 🏗 Architecture
 
 The project follows a self-contained feature-based architecture located in `src/features/spec-wizard/`:

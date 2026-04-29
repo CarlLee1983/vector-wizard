@@ -64,8 +64,8 @@ Pipeline B 不是線性瀑布。下列情況請主動回溯到上游階段，不
 
 Pipeline B 跑完之後，你手上會有 N 份 `<feature-id>.feature-seed.json`。從這裡進入 Vector wizard 的步驟：
 
-1. 在專案目錄執行 `npx vector-wizard` 啟動本地 wizard。
-2. 開啟 Draft Manager，選擇「貼上 JSON」匯入 feature-seed，每份 JSON 對應一個 `FeatureDraft`。
+1. 在專案目錄執行 `npx vector-wizard import <資料夾或檔案路徑>` 一次性 stage 所有 seed，例如 `npx vector-wizard import ./docs/methodology/artifacts/seeds/`。CLI 會把通過驗證的 seed 寫入 `.vector/import/pending.json`，再啟動本地 wizard。
+2. 開啟瀏覽器到 wizard 預設網址（通常為 `http://localhost:3000`）。首次載入時，`StagedImportToast` 會顯示成功匯入的份數，每份 seed 對應 Draft Manager 內的一份 `FeatureDraft`。若你只想單獨匯入一份，仍可如過往使用 Draft Manager 的「貼上 JSON」或檔案選擇。
 3. 在 wizard 內補完 acceptance criteria、examples，並逐一確認 `openQuestions` 與假設。
 4. 確認 BasicStep 的「Roadmap」區塊：若這份 draft 由 Pipeline B 產生，`id`、`priority`、`dependsOn` 應已預填；可視需要調整 `horizon`，或補上 Slice 階段未決定的欄位。
 5. 透過 wizard 的 Generate Spec 匯出最終 YAML，交給後續 AI coding agent。

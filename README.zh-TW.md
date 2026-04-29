@@ -63,6 +63,18 @@ bun run test
 bun run test:watch
 ```
 
+### 匯入 Pipeline B 的 feature-seed
+
+跑完方法論 Pipeline B 之後，可以一次把整批 seed 匯入 wizard：
+
+```bash
+npx vector-wizard import ./docs/methodology/artifacts/seeds/
+# 或指定一份或多份檔案
+npx vector-wizard import ./seed-a.feature-seed.json ./seed-b.feature-seed.json
+```
+
+CLI 會把通過驗證的 draft 寫入 `.vector/import/pending.json`，然後啟動 wizard。首次載入時，wizard 會自動把每份 draft 灌進 Draft Manager，並以 toast 顯示匯入結果。pending 檔案讀完即刪（consume-on-read），重新整理頁面不會造成重複匯入。
+
 ## 🏗 專案架構
 
 本專案採用高度自包含的功能模組架構，核心邏輯位於 `src/features/spec-wizard/`：
