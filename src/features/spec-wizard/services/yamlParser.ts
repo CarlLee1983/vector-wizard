@@ -20,6 +20,66 @@ export function parseScalar(token: string, lineNumber: number): unknown {
   }
 }
 
+export type YamlToken =
+  | { line: number; indent: number; kind: "kv-inline"; key: string; value: string }
+  | { line: number; indent: number; kind: "kv-block"; key: string }
+  | { line: number; indent: number; kind: "list-scalar"; value: string }
+  | { line: number; indent: number; kind: "list-kv-inline"; key: string; value: string }
+  | { line: number; indent: number; kind: "list-kv-block"; key: string }
+
+const KEY_RE = /^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$/
+
+function countLeadingSpaces(line: string): number {
+  let i = 0
+  while (i < line.length && line[i] === " ") i += 1
+  return i
+}
+
+export function tokenizeYaml(raw: string): YamlToken[] {
+  const stripped = raw.replace(/\r\n?/g, "\n")
+  const tokens: YamlToken[] = []
+  const lines = stripped.split("\n")
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const lineNumber = i + 1
+    const original = lines[i]
+    const trimmed = original.trim()
+    if (trimmed.length === 0) continue
+    if (trimmed.startsWith("#")) continue
+
+    const indent = countLeadingSpaces(original)
+
+    if (trimmed.startsWith("- ")) {
+      const remainder = trimmed.slice(2)
+      const kvMatch = KEY_RE.exec(remainder)
+      if (kvMatch) {
+        const [, key, value] = kvMatch
+        if (value.length === 0) {
+          tokens.push({ line: lineNumber, indent, kind: "list-kv-block", key })
+        } else {
+          tokens.push({ line: lineNumber, indent, kind: "list-kv-inline", key, value })
+        }
+      } else {
+        tokens.push({ line: lineNumber, indent, kind: "list-scalar", value: remainder })
+      }
+      continue
+    }
+
+    const kvMatch = KEY_RE.exec(trimmed)
+    if (!kvMatch) {
+      throw new YamlParseError(`Unrecognized line: ${trimmed}`, lineNumber)
+    }
+    const [, key, value] = kvMatch
+    if (value.length === 0) {
+      tokens.push({ line: lineNumber, indent, kind: "kv-block", key })
+    } else {
+      tokens.push({ line: lineNumber, indent, kind: "kv-inline", key, value })
+    }
+  }
+
+  return tokens
+}
+
 export function parseYamlDocument(raw: string): unknown {
   const stripped = raw.replace(/\r\n?/g, "\n")
   const lines = stripped.split("\n")
