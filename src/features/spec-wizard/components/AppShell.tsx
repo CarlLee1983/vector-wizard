@@ -6,6 +6,7 @@ import { AutosaveErrorToast } from "./AutosaveErrorToast"
 import { DraftManagerModal } from "./DraftManagerModal"
 import { DraftSwitcher } from "./DraftSwitcher"
 import { LanguageSwitcher } from "./LanguageSwitcher"
+import { StagedImportToast } from "./StagedImportToast"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { t } = useI18n()
@@ -29,6 +30,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <DraftManagerModal open={managerOpen} onClose={() => setManagerOpen(false)} />
         <AutosaveErrorToast />
+        <StagedImportToast />
       </div>
     </div>
   )
