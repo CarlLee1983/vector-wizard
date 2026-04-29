@@ -69,7 +69,43 @@
       }
     },
     "constraints": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "riskiestAssumptions": { "type": "array", "items": { "type": "string", "minLength": 1 } },
-    "openQuestions": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+    "riskiestAssumptions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string", "minLength": 1 },
+          {
+            "type": "object",
+            "required": ["id", "text", "status"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "text": { "type": "string", "minLength": 1 },
+              "status": { "type": "string", "enum": ["open", "validating", "validated", "invalidated"] },
+              "mitigation": { "type": "string" }
+            }
+          }
+        ]
+      }
+    },
+    "openQuestions": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string", "minLength": 1 },
+          {
+            "type": "object",
+            "required": ["id", "text", "status"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "text": { "type": "string", "minLength": 1 },
+              "status": { "type": "string", "enum": ["open", "validating", "validated", "invalidated"] },
+              "mitigation": { "type": "string" }
+            }
+          }
+        ]
+      }
+    }
   }
 }

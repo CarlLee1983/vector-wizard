@@ -68,6 +68,20 @@ describe("system-brief schema", () => {
     expect(validate(bad)).toBe(false)
   })
 
+  it("accepts system-brief with structured riskiestAssumptions and openQuestions", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("system-brief.schema.json")
+    const validate = ajv.compile(schema)
+    const fixture = {
+      ...goodFixture,
+      riskiestAssumptions: [
+        { id: "R-001", text: "Query layer scales", status: "validating", mitigation: "Indexes" }
+      ],
+      openQuestions: [{ id: "Q-001", text: "Who owns dashboards?", status: "open" }]
+    }
+    expect(validate(fixture)).toBe(true)
+  })
+
   it("schema is valid JSON Schema", () => {
     const ajv = newAjv()
     const schema = loadSchema("system-brief.schema.json")
@@ -255,6 +269,49 @@ describe("feature-seed schema", () => {
     const { schemaVersion: _v, ...draft } = goodFixture
     const result = validateDraft(normalizeDraft(draft) as FeatureDraft)
     expect(result.blockingErrors).toEqual([])
+  })
+
+  it("accepts feature-seed with structured RaidEntry risks and openQuestions", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const validate = ajv.compile(schema)
+    const fixture = {
+      ...goodFixture,
+      agentBoundaries: {
+        ...goodFixture.agentBoundaries,
+        risks: [{ id: "R-001", text: "查詢效能不足", status: "validating", mitigation: "加 index" }],
+        openQuestions: [{ id: "Q-001", text: "schema 由誰定義？", status: "open" }]
+      }
+    }
+    expect(validate(fixture)).toBe(true)
+  })
+
+  it("rejects RaidEntry without required text", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const validate = ajv.compile(schema)
+    const fixture = {
+      ...goodFixture,
+      agentBoundaries: {
+        ...goodFixture.agentBoundaries,
+        risks: [{ id: "R-001", status: "open" }]
+      }
+    }
+    expect(validate(fixture)).toBe(false)
+  })
+
+  it("rejects RaidEntry with invalid status", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const validate = ajv.compile(schema)
+    const fixture = {
+      ...goodFixture,
+      agentBoundaries: {
+        ...goodFixture.agentBoundaries,
+        risks: [{ id: "R-001", text: "x", status: "bogus" }]
+      }
+    }
+    expect(validate(fixture)).toBe(false)
   })
 
   it("schema is valid JSON Schema", () => {

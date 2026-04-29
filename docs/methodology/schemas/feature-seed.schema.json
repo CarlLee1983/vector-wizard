@@ -172,8 +172,44 @@
         "nonGoals": { "type": "array", "items": { "type": "string" } },
         "constraints": { "type": "array", "items": { "type": "string" } },
         "testExpectations": { "type": "array", "items": { "type": "string" } },
-        "risks": { "type": "array", "items": { "type": "string" } },
-        "openQuestions": { "type": "array", "items": { "type": "string" } }
+        "risks": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["id", "text", "status"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": { "type": "string", "minLength": 1 },
+                  "text": { "type": "string", "minLength": 1 },
+                  "status": { "type": "string", "enum": ["open", "validating", "validated", "invalidated"] },
+                  "mitigation": { "type": "string" }
+                }
+              }
+            ]
+          }
+        },
+        "openQuestions": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "type": "string" },
+              {
+                "type": "object",
+                "required": ["id", "text", "status"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": { "type": "string", "minLength": 1 },
+                  "text": { "type": "string", "minLength": 1 },
+                  "status": { "type": "string", "enum": ["open", "validating", "validated", "invalidated"] },
+                  "mitigation": { "type": "string" }
+                }
+              }
+            ]
+          }
+        }
       }
     }
   }
