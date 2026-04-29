@@ -74,4 +74,18 @@ describe("tokenizeYaml", () => {
     const input = ["a: 1", "", "b: 2"].join("\n")
     expect(tokenizeYaml(input).map((t) => t.line)).toEqual([1, 3])
   })
+
+  it("throws on tab indentation", () => {
+    expect(() => tokenizeYaml("\tkey: 1")).toThrow(YamlParseError)
+    expect(() => tokenizeYaml(" \t key: 1")).toThrow(YamlParseError)
+  })
+
+  it("throws on empty list item", () => {
+    expect(() => tokenizeYaml("- ")).toThrow(YamlParseError)
+    expect(() => tokenizeYaml("-")).toThrow(YamlParseError)
+  })
+
+  it("throws on unrecognized line", () => {
+    expect(() => tokenizeYaml("not a key or list")).toThrow(YamlParseError)
+  })
 })

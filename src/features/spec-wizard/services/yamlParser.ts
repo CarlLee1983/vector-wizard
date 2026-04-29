@@ -29,12 +29,6 @@ export type YamlToken =
 
 const KEY_RE = /^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$/
 
-function countLeadingSpaces(line: string): number {
-  let i = 0
-  while (i < line.length && line[i] === " ") i += 1
-  return i
-}
-
 export function tokenizeYaml(raw: string): YamlToken[] {
   const stripped = raw.replace(/\r\n?/g, "\n")
   const tokens: YamlToken[] = []
@@ -47,10 +41,17 @@ export function tokenizeYaml(raw: string): YamlToken[] {
     if (trimmed.length === 0) continue
     if (trimmed.startsWith("#")) continue
 
-    const indent = countLeadingSpaces(original)
+    const leading = original.match(/^[ \t]*/)?.[0] ?? ""
+    if (leading.includes("\t")) {
+      throw new YamlParseError("Tab characters not allowed in indentation", lineNumber)
+    }
+    const indent = leading.length
 
-    if (trimmed.startsWith("- ")) {
-      const remainder = trimmed.slice(2)
+    if (trimmed === "-" || trimmed.startsWith("- ")) {
+      const remainder = trimmed === "-" ? "" : trimmed.slice(2).trim()
+      if (remainder.length === 0) {
+        throw new YamlParseError("List item has no value", lineNumber)
+      }
       const kvMatch = KEY_RE.exec(remainder)
       if (kvMatch) {
         const [, key, value] = kvMatch
