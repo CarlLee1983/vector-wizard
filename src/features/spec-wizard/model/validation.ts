@@ -54,8 +54,8 @@ function draftTextValues(draft: FeatureDraft): string[] {
     ...draft.agentBoundaries.nonGoals,
     ...draft.agentBoundaries.constraints,
     ...draft.agentBoundaries.testExpectations,
-    ...draft.agentBoundaries.risks,
-    ...draft.agentBoundaries.openQuestions
+    ...draft.agentBoundaries.risks.map((entry) => entry.text),
+    ...draft.agentBoundaries.openQuestions.map((entry) => entry.text)
   ].filter((value): value is string => typeof value === "string")
 }
 
@@ -257,7 +257,7 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
     }
   }
 
-  const openQuestions = nonBlankItems(draft.agentBoundaries.openQuestions)
+  const openQuestions = nonBlankItems(draft.agentBoundaries.openQuestions.map((entry) => entry.text))
   if (openQuestions.length > 0) {
     for (const question of openQuestions) {
       warnings.push({

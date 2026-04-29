@@ -136,8 +136,8 @@ export function normalizeDraftForExport(draft: FeatureDraft, createdAt: string) 
       nonGoals: cleanList(draft.agentBoundaries.nonGoals),
       constraints: cleanList(draft.agentBoundaries.constraints),
       testExpectations: cleanList(draft.agentBoundaries.testExpectations),
-      qualityWarnings: cleanList(draft.agentBoundaries.risks),
-      openQuestions: cleanList(draft.agentBoundaries.openQuestions)
+      qualityWarnings: cleanList(draft.agentBoundaries.risks.map((entry) => entry.text)),
+      openQuestions: cleanList(draft.agentBoundaries.openQuestions.map((entry) => entry.text))
     }
   }
 }

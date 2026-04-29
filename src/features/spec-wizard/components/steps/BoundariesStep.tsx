@@ -35,17 +35,46 @@ export function BoundariesStep({ draft, setDraft }: BoundariesStepProps) {
         help={t("field.risksHelp")}
         helpId="risks-help"
         placeholder={t("field.risksPlaceholder")}
-        values={draft.agentBoundaries.risks}
-        onChange={(risks) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, risks } })}
+        values={draft.agentBoundaries.risks.map((entry) => entry.text)}
+        onChange={(texts) =>
+          setDraft({
+            ...draft,
+            agentBoundaries: {
+              ...draft.agentBoundaries,
+              risks: texts.map((text, index) => {
+                const previous = draft.agentBoundaries.risks[index]
+                return {
+                  id: previous?.id ?? `R-${String(index + 1).padStart(3, "0")}`,
+                  text,
+                  status: previous?.status ?? "open",
+                  ...(previous?.mitigation ? { mitigation: previous.mitigation } : {})
+                }
+              })
+            }
+          })
+        }
       />
       <FieldArray
         label={t("field.openQuestions")}
         help={t("field.openQuestionsHelp")}
         helpId="open-questions-help"
         placeholder={t("field.openQuestionsPlaceholder")}
-        values={draft.agentBoundaries.openQuestions}
-        onChange={(openQuestions) =>
-          setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, openQuestions } })
+        values={draft.agentBoundaries.openQuestions.map((entry) => entry.text)}
+        onChange={(texts) =>
+          setDraft({
+            ...draft,
+            agentBoundaries: {
+              ...draft.agentBoundaries,
+              openQuestions: texts.map((text, index) => {
+                const previous = draft.agentBoundaries.openQuestions[index]
+                return {
+                  id: previous?.id ?? `Q-${String(index + 1).padStart(3, "0")}`,
+                  text,
+                  status: previous?.status ?? "open"
+                }
+              })
+            }
+          })
         }
       />
       <FieldArray

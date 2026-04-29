@@ -57,6 +57,8 @@ describe("draftStorage helpers", () => {
     expect(draft.metadata.horizon).toBeUndefined()
     expect(draft.metadata.priority).toBeUndefined()
     expect(draft.metadata.dependsOn).toBeUndefined()
+    expect(draft.agentBoundaries.risks).toEqual([])
+    expect(draft.agentBoundaries.openQuestions).toEqual([])
   })
 
   it("migrates legacy string success signals into objects", () => {
@@ -157,6 +159,73 @@ describe("draftStorage helpers", () => {
     expect(draft.metadata.horizon).toBe("next")
     expect(draft.metadata.priority).toBe("should")
     expect(draft.metadata.dependsOn).toEqual(["FT-000"])
+  })
+
+  it("migrates legacy string risks into RaidEntry array on load", () => {
+    const legacyJson = JSON.stringify({
+      metadata: { title: "Legacy", locale: "en" },
+      summary: {},
+      goal: { statement: "x", successSignals: [] },
+      impacts: [],
+      deliverables: [],
+      userActivities: [],
+      epics: [
+        {
+          id: "EP-001",
+          title: "e",
+          stories: [{ id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }]
+        }
+      ],
+      agentBoundaries: {
+        nonGoals: [],
+        constraints: [],
+        testExpectations: [],
+        risks: ["既有查詢層在規模化下效能不足", "團隊仍回頭用試算表"],
+        openQuestions: ["儀表板 schema 由誰負責定義？"]
+      }
+    })
+
+    const draft = draftFromJson(legacyJson)
+
+    expect(draft.agentBoundaries.risks).toEqual([
+      { id: "R-001", text: "既有查詢層在規模化下效能不足", status: "open" },
+      { id: "R-002", text: "團隊仍回頭用試算表", status: "open" }
+    ])
+    expect(draft.agentBoundaries.openQuestions).toEqual([
+      { id: "Q-001", text: "儀表板 schema 由誰負責定義？", status: "open" }
+    ])
+  })
+
+  it("preserves structured RaidEntry fields when JSON already has them", () => {
+    const json = JSON.stringify({
+      metadata: { title: "Structured", locale: "en" },
+      summary: {},
+      goal: { statement: "x", successSignals: [] },
+      impacts: [],
+      deliverables: [],
+      userActivities: [],
+      epics: [
+        {
+          id: "EP-001",
+          title: "e",
+          stories: [{ id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }]
+        }
+      ],
+      agentBoundaries: {
+        nonGoals: [],
+        constraints: [],
+        testExpectations: [],
+        risks: [{ id: "R-007", text: "Token edge case", status: "validating", mitigation: "Refresh quietly" }],
+        openQuestions: [{ id: "Q-003", text: "PII rules?", status: "validated" }]
+      }
+    })
+
+    const draft = draftFromJson(json)
+
+    expect(draft.agentBoundaries.risks).toEqual([
+      { id: "R-007", text: "Token edge case", status: "validating", mitigation: "Refresh quietly" }
+    ])
+    expect(draft.agentBoundaries.openQuestions).toEqual([{ id: "Q-003", text: "PII rules?", status: "validated" }])
   })
 })
 

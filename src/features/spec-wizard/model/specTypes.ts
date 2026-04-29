@@ -96,8 +96,8 @@ export type FeatureDraft = {
     nonGoals: string[]
     constraints: string[]
     testExpectations: string[]
-    risks: string[]
-    openQuestions: string[]
+    risks: RaidEntry[]
+    openQuestions: RaidEntry[]
   }
 }
 

@@ -126,12 +126,13 @@ export function normalizeDraft(draft: any): FeatureDraft {
       }))
     })),
     agentBoundaries: {
-      nonGoals: [],
-      constraints: [],
-      testExpectations: [],
-      risks: [],
-      openQuestions: [],
-      ...draft.agentBoundaries
+      nonGoals: Array.isArray(draft.agentBoundaries?.nonGoals) ? draft.agentBoundaries.nonGoals : [],
+      constraints: Array.isArray(draft.agentBoundaries?.constraints) ? draft.agentBoundaries.constraints : [],
+      testExpectations: Array.isArray(draft.agentBoundaries?.testExpectations)
+        ? draft.agentBoundaries.testExpectations
+        : [],
+      risks: normalizeRaidEntries(draft.agentBoundaries?.risks, "R"),
+      openQuestions: normalizeRaidEntries(draft.agentBoundaries?.openQuestions, "Q")
     }
   }
 }
