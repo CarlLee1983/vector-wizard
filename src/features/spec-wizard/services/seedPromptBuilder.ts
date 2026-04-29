@@ -52,12 +52,12 @@ The output MUST be a valid JSON object with the following structure:
       }>
     }>
   }>
-- agentBoundaries: { 
-    nonGoals: string[], 
-    constraints: string[], 
+- agentBoundaries: {
+    nonGoals: string[],
+    constraints: string[],
     testExpectations: string[],
-    risks: string[],
-    openQuestions: string[]
+    risks: Array<{ id: string, text: string, status: "open" | "validating" | "validated" | "invalidated", mitigation?: string }>,
+    openQuestions: Array<{ id: string, text: string, status: "open" | "validating" | "validated" | "invalidated" }>
   }
 
 ## Guidelines
