@@ -116,32 +116,36 @@ YAML 輸出 (`yamlSerializer.ts`) 對應加入這三個欄位。`feature-seed.sc
 
 ---
 
-## 4. 假設與風險缺乏可追蹤性（RAID log 不完整）
+## 4. 假設與風險缺乏可追蹤性（RAID log 不完整）✅ 已實作 (2026-04-29)
 
-### 現況
+### 實作說明
 
-- `riskiestAssumptions`、`openQuestions` 在 schema 是平鋪 string 陣列。
-- 沒有 severity / likelihood / owner / status 欄位。
+- **Schema 升級**：`agentBoundaries.risks` 與 `agentBoundaries.openQuestions` 從 `string[]` 升為 `RaidEntry[]`（`{ id, text, status, mitigation? }`）。`RaidStatus = "open" | "validating" | "validated" | "invalidated"`。
+- **向後相容**：`normalizeDraft` 透過 `normalizeRaidEntries` 把舊 `string[]` 自動遷移為物件陣列，id 自動生成 `R-001` / `Q-001`、status 預設 `"open"`、無 mitigation。`feature-seed.schema.json` 與 `system-brief.schema.json` 改為 `oneOf`（字串或物件），既有 reference seeds 不受影響。
+- **YAML 輸出**：`agentSpec.qualityWarnings` 與 `agentSpec.openQuestions` 改寫為物件陣列，blank text / mitigation 自動省略；`schemaVersion` 維持 `"0.2"`（純加法、向後相容）。
+- **UI**：新增 `RaidArray` 元件（text + status 下拉 + 可選 mitigation textarea）取代 `BoundariesStep` 中的 `<FieldArray>`；mitigation 僅在 risks 欄顯示，questions 欄關閉。
+- **i18n**：`zh-TW` / `en` 兩語系新增 11 條欄位字串。
+- **Seed Prompt 同步**：`seedPromptBuilder` 的 schema 範例升級為 RaidEntry，避免外部 LLM 又生成舊 `string[]`。
 
-### 影響
+### 對應檔案
 
-- 敏捷下假設應「驗證 → 標記狀態 → 影響 backlog」，目前只能寫下不能追蹤。
-- 多次迭代後無法回答「上輪假設驗證結果如何？哪些已被推翻？」
+- `src/features/spec-wizard/model/specTypes.ts` — `RaidStatus` / `RaidEntry` type、`agentBoundaries` 型別 swap
+- `src/features/spec-wizard/persistence/draftStorage.ts` — `normalizeRaidEntries` 與 `normalizeDraft` 整合
+- `src/features/spec-wizard/services/yamlSerializer.ts` — `cleanRaidEntries` 物件輸出
+- `src/features/spec-wizard/model/validation.ts` — text traversal 改讀 `entry.text`
+- `src/features/spec-wizard/services/seedPromptBuilder.ts` — Seed Prompt schema 範例升級
+- `src/features/spec-wizard/components/RaidArray.tsx` — 新元件
+- `src/features/spec-wizard/components/steps/BoundariesStep.tsx` — 接 `RaidArray`
+- `src/features/spec-wizard/i18n/{messageKeys,dictionaries}.ts` — 字串補齊
+- `src/features/spec-wizard/test/fixtures.ts` — `draftWithRaid` helper
+- `docs/methodology/schemas/{feature-seed,system-brief}.schema.json` — `oneOf` 兼容
+- `tests/methodology/schemas.test.ts` — 走 oneOf 正反例
 
-### 建議
+### 設計約束守住
 
-升級結構：
-
-```json
-{
-  "id": "A-001",
-  "text": "使用者願意多花一步驟換取更快結帳",
-  "status": "open" | "validating" | "validated" | "invalidated",
-  "mitigation": "提供 fallback 流程"
-}
-```
-
-最低改動：先加 `id` 與 `status`，其他選填。對應升級 `feature-seed.schema.json`、`system-brief.schema.json`、wizard 的 `risks` 欄位。
+- **驗證仍刻意鬆**：本次未新增任何 blockingError / warning（只讓既有 openQuestions warning 改讀 `entry.text`）。YAML 下載條件不變。
+- **AI 非權威**：assistService 仍只回 suggestion，不會自動把 risks 升級為已驗證狀態。
+- **Draft 相容性**：既有 `*.json` draft 與 `*.feature-seed.json` 經 `normalizeDraft` / `oneOf` 都能升級；新 JSON Schema 同時接受字串與物件。
 
 ---
 
@@ -248,14 +252,14 @@ effort?: "xs" | "s" | "m" | "l" | "xl";
 |------|------|------------------|------------------|------|
 | 1 | #1 Roadmap 欄位（horizon/priority/dependsOn） | schema + serializer + UI 顯示 | 高 | ✅ 已實作 (2026-04-28) |
 | 2 | #2 INVEST warning | validation.ts + ReviewPanel | 高 | ✅ 已實作 (2026-04-29) |
-| 3 | #4 RAID 結構（id + status） | schema + 簡單 UI | 中 | ⬜ 未開始 |
+| 3 | #4 RAID 結構（id + status） | schema + 簡單 UI | 中 | ✅ 已實作 (2026-04-29) |
 | 4 | #3 successSignals 結構化 | schema + 選填 UI | 中 | ✅ 已實作 (2026-04-29) |
 | 5 | #6 CLI import 子命令 | bin/cli.js + Draft Manager | 中 | ⬜ 未開始 |
 | 6 | #5 YAML round-trip | services/yamlParser.ts | 中（投入較大） | ⬜ 未開始 |
 | 7 | #7 effort 欄位 | schema + UI 一個下拉 | 低工 | ⬜ 未開始 |
 | 8 | #8 Assist suggestionId | contracts + 前端記錄 | 預留型 | ⬜ 未開始 |
 
-第 1 + 第 2 是「最划算的兩刀」：打通 Pipeline B → wizard 的優先序鏈，並讓 PO 看見 INVEST 落差，但仍維持 wizard「驗證刻意鬆」的設計約束——兩項皆已於 2026-04-29 前完成，未破壞既有測試與 draft 相容性（`schemaVersion` 已升至 `0.2`）。下一個建議啟動的高 CP 值項目為 **#4 RAID 結構**（風險與假設可追蹤性）。
+第 1 + 第 2 是「最划算的兩刀」：打通 Pipeline B → wizard 的優先序鏈，並讓 PO 看見 INVEST 落差，但仍維持 wizard「驗證刻意鬆」的設計約束——兩項皆已於 2026-04-29 前完成，未破壞既有測試與 draft 相容性（`schemaVersion` 已升至 `0.2`）。RAID 結構（#4）亦於 2026-04-29 完成升級，敏捷品質三件套（INVEST / successSignals / RAID）齊備。下一個建議啟動的項目為 **#6 CLI import 子命令**（解決 Pipeline B 銜接最後一哩）。
 
 ---
 
