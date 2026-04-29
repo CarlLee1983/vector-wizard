@@ -1,6 +1,7 @@
 import { useI18n } from "../../i18n/I18nContext"
 import { WizardStep } from "../WizardStep"
 import { FieldArray } from "../FieldArray"
+import { RaidArray } from "../RaidArray"
 import type { FeatureDraft } from "../../model/specTypes"
 
 interface BoundariesStepProps {
@@ -30,51 +31,26 @@ export function BoundariesStep({ draft, setDraft }: BoundariesStepProps) {
         values={draft.agentBoundaries.nonGoals}
         onChange={(nonGoals) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, nonGoals } })}
       />
-      <FieldArray
+      <RaidArray
         label={t("field.risks")}
+        idPrefix="R"
+        allowMitigation
         help={t("field.risksHelp")}
         helpId="risks-help"
         placeholder={t("field.risksPlaceholder")}
-        values={draft.agentBoundaries.risks.map((entry) => entry.text)}
-        onChange={(texts) =>
-          setDraft({
-            ...draft,
-            agentBoundaries: {
-              ...draft.agentBoundaries,
-              risks: texts.map((text, index) => {
-                const previous = draft.agentBoundaries.risks[index]
-                return {
-                  id: previous?.id ?? `R-${String(index + 1).padStart(3, "0")}`,
-                  text,
-                  status: previous?.status ?? "open",
-                  ...(previous?.mitigation ? { mitigation: previous.mitigation } : {})
-                }
-              })
-            }
-          })
-        }
+        entries={draft.agentBoundaries.risks}
+        onChange={(risks) => setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, risks } })}
       />
-      <FieldArray
+      <RaidArray
         label={t("field.openQuestions")}
+        idPrefix="Q"
+        allowMitigation={false}
         help={t("field.openQuestionsHelp")}
         helpId="open-questions-help"
         placeholder={t("field.openQuestionsPlaceholder")}
-        values={draft.agentBoundaries.openQuestions.map((entry) => entry.text)}
-        onChange={(texts) =>
-          setDraft({
-            ...draft,
-            agentBoundaries: {
-              ...draft.agentBoundaries,
-              openQuestions: texts.map((text, index) => {
-                const previous = draft.agentBoundaries.openQuestions[index]
-                return {
-                  id: previous?.id ?? `Q-${String(index + 1).padStart(3, "0")}`,
-                  text,
-                  status: previous?.status ?? "open"
-                }
-              })
-            }
-          })
+        entries={draft.agentBoundaries.openQuestions}
+        onChange={(openQuestions) =>
+          setDraft({ ...draft, agentBoundaries: { ...draft.agentBoundaries, openQuestions } })
         }
       />
       <FieldArray
