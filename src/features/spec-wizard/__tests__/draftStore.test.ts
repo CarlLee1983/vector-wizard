@@ -10,11 +10,13 @@ import {
   getServerSnapshot,
   getSnapshot,
   importDraftJson,
+  importDraftYaml,
   renameDraft,
   selectDraft,
   setActiveDraft,
   subscribe
 } from "../persistence/draftStore"
+import { draftToYaml } from "../services/yamlSerializer"
 import { minimalValidDraft } from "../test/fixtures"
 
 describe("draftStore — bootstrap", () => {
@@ -216,5 +218,26 @@ describe("draftStore — JSON import/export", () => {
 
   it("export of unknown id throws", () => {
     expect(() => exportDraftJson("does-not-exist")).toThrow()
+  })
+})
+
+describe("importDraftYaml", () => {
+  beforeEach(() => {
+    __resetForTests()
+    localStorage.clear()
+  })
+
+  it("creates a new draft from an exported YAML string", () => {
+    const originalId = createDraft("en")
+    const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
+    const newId = importDraftYaml(yaml)
+    expect(newId).not.toBe(originalId)
+    const snapshot = getSnapshot()
+    expect(snapshot.activeDraftId).toBe(newId)
+    expect(snapshot.drafts[newId].metadata.title).toBe("Login error message improvement")
+  })
+
+  it("propagates YamlParseError on malformed YAML", () => {
+    expect(() => importDraftYaml("not yaml: [")).toThrow()
   })
 })

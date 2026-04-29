@@ -1,6 +1,7 @@
 import { createEmptyDraft } from "../model/defaultDraft"
 import type { DraftStoreState, FeatureDraft, Locale } from "../model/specTypes"
 import { draftFromJson, draftToJson, normalizeDraft } from "./draftStorage"
+import { yamlToDraft } from "../services/yamlParser"
 
 const STORAGE_KEY = "vector.draftStore.v1"
 const V1_KEY = "vector.featureDraft.v1"
@@ -227,6 +228,20 @@ export function deleteDraft(id: string): void {
 
 export function importDraftJson(raw: string): string {
   const draft = draftFromJson(raw)
+  const current = ensureHydrated()
+  const id = generateDraftId()
+  const now = Date.now()
+  setStateAndNotify({
+    ...current,
+    activeDraftId: id,
+    drafts: { ...current.drafts, [id]: draft },
+    meta: { ...current.meta, [id]: { createdAt: now, updatedAt: now } }
+  })
+  return id
+}
+
+export function importDraftYaml(raw: string): string {
+  const { draft } = yamlToDraft(raw)
   const current = ensureHydrated()
   const id = generateDraftId()
   const now = Date.now()
