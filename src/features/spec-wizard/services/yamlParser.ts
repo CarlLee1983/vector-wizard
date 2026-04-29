@@ -1,12 +1,12 @@
 export class YamlParseError extends Error {
   readonly line: number
-  readonly cause?: string
+  readonly snippet?: string
 
-  constructor(message: string, line: number, cause?: string) {
+  constructor(message: string, line: number, snippet?: string) {
     super(message)
     this.name = "YamlParseError"
     this.line = line
-    this.cause = cause
+    this.snippet = snippet
   }
 }
 
@@ -17,5 +17,6 @@ export function parseYamlDocument(raw: string): unknown {
   if (meaningful.length === 0) {
     throw new YamlParseError("YAML document is empty", 0)
   }
-  throw new Error("not implemented")
+  // TODO(#5 task 2-4): replace with real document parser.
+  throw new YamlParseError("YAML parser not yet implemented", 0)
 }
