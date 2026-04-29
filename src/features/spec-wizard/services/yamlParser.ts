@@ -10,6 +10,16 @@ export class YamlParseError extends Error {
   }
 }
 
+export function parseScalar(token: string, lineNumber: number): unknown {
+  const trimmed = token.trim()
+  if (trimmed === "[]") return []
+  try {
+    return JSON.parse(trimmed)
+  } catch (err) {
+    throw new YamlParseError(`Cannot parse scalar: ${trimmed}`, lineNumber, (err as Error).message)
+  }
+}
+
 export function parseYamlDocument(raw: string): unknown {
   const stripped = raw.replace(/\r\n?/g, "\n")
   const lines = stripped.split("\n")
