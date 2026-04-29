@@ -212,11 +212,9 @@ export function yamlToDraft(raw: string): { schemaVersion: string; draft: Featur
 
   const goal = asObject(productSpec.goal, 1, "productSpec.goal")
 
-  const {
-    createdAt: _createdAt,
-    status: _status,
-    ...metaRest
-  } = metadata as Record<string, unknown> & { createdAt?: unknown; status?: unknown }
+  const metaRest: Record<string, unknown> = Object.fromEntries(
+    Object.entries(metadata).filter(([key]) => key !== "createdAt" && key !== "status")
+  )
 
   const candidate: unknown = {
     metadata: metaRest,
