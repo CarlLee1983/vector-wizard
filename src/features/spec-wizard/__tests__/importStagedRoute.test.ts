@@ -20,8 +20,7 @@ describe("POST /api/import-staged", () => {
       drafts: [{ sourcePath: "a.json", draft: { metadata: { title: "A" } } }]
     })
 
-    const req = new Request("http://localhost/api/import-staged", { method: "POST" })
-    const res = await POST(req)
+    const res = await POST()
 
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({
@@ -33,8 +32,7 @@ describe("POST /api/import-staged", () => {
   it("returns empty drafts when nothing is staged", async () => {
     mocked.mockResolvedValueOnce({ drafts: [] })
 
-    const req = new Request("http://localhost/api/import-staged", { method: "POST" })
-    const res = await POST(req)
+    const res = await POST()
 
     expect(res.status).toBe(200)
     expect(await res.json()).toEqual({ drafts: [] })
@@ -43,8 +41,7 @@ describe("POST /api/import-staged", () => {
   it("returns 500 when consume helper throws", async () => {
     mocked.mockRejectedValueOnce(new Error("boom"))
 
-    const req = new Request("http://localhost/api/import-staged", { method: "POST" })
-    const res = await POST(req)
+    const res = await POST()
 
     expect(res.status).toBe(500)
     expect(await res.json()).toEqual({ error: "Failed to read staged drafts" })
