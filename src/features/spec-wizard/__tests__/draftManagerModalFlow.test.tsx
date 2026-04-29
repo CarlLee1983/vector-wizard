@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { DraftManagerModal } from "../components/DraftManagerModal"
 import { I18nProvider } from "../i18n/I18nContext"
 import { __resetForTests, createDraft, getSnapshot, renameDraft } from "../persistence/draftStore"
+import { draftToYaml } from "../services/yamlSerializer"
 import { minimalValidDraft } from "../test/fixtures"
 
 function renderModal(onClose = vi.fn()) {
@@ -91,5 +92,46 @@ describe("DraftManagerModal", () => {
       await new Promise((r) => setTimeout(r, 0))
     })
     expect(await screen.findByText(/匯入失敗/)).toBeInTheDocument()
+  })
+
+  it("imports a draft from a YAML file via the import-YAML button", async () => {
+    renderModal()
+    const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
+    const file = new File([yaml], "feature.yaml", { type: "text/yaml" })
+    const input = screen.getByLabelText(/匯入 YAML/) as HTMLInputElement
+    Object.defineProperty(input, "files", { value: [file] })
+    await act(async () => {
+      fireEvent.change(input)
+      await new Promise((r) => setTimeout(r, 0))
+    })
+    expect(screen.getByDisplayValue(/Login error message improvement/)).toBeInTheDocument()
+  })
+
+  it("paste textarea auto-detects YAML when content does not parse as JSON", async () => {
+    renderModal()
+    const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /直接貼上 JSON/ }))
+    })
+    const textarea = screen.getByPlaceholderText(/YAML/i) as HTMLTextAreaElement
+    await act(async () => {
+      fireEvent.change(textarea, { target: { value: yaml } })
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /確認匯入/ }))
+    })
+    expect(screen.getByDisplayValue(/Login error message improvement/)).toBeInTheDocument()
+  })
+
+  it("shows YAML error toast with line number when YAML is malformed", async () => {
+    renderModal()
+    const file = new File(["not yaml: [\nthis is broken"], "bad.yaml", { type: "text/yaml" })
+    const input = screen.getByLabelText(/匯入 YAML/) as HTMLInputElement
+    Object.defineProperty(input, "files", { value: [file] })
+    await act(async () => {
+      fireEvent.change(input)
+      await new Promise((r) => setTimeout(r, 0))
+    })
+    expect(await screen.findByText(/YAML 匯入失敗.*行/)).toBeInTheDocument()
   })
 })
