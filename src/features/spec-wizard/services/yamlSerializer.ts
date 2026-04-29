@@ -1,4 +1,4 @@
-import type { FeatureDraft, SuccessSignal } from "../model/specTypes"
+import type { FeatureDraft, RaidEntry, SuccessSignal } from "../model/specTypes"
 
 function cleanString(value: string | undefined): string {
   return value?.trim() ?? ""
@@ -19,6 +19,20 @@ function cleanSuccessSignals(signals: SuccessSignal[]) {
         ...(metric ? { metric } : {}),
         ...(threshold ? { threshold } : {}),
         ...(signal.kind ? { kind: signal.kind } : {})
+      }
+    })
+}
+
+function cleanRaidEntries(entries: RaidEntry[]) {
+  return entries
+    .filter((entry) => cleanString(entry.text).length > 0)
+    .map((entry) => {
+      const mitigation = cleanString(entry.mitigation)
+      return {
+        id: entry.id,
+        text: cleanString(entry.text),
+        status: entry.status,
+        ...(mitigation ? { mitigation } : {})
       }
     })
 }
@@ -136,8 +150,8 @@ export function normalizeDraftForExport(draft: FeatureDraft, createdAt: string) 
       nonGoals: cleanList(draft.agentBoundaries.nonGoals),
       constraints: cleanList(draft.agentBoundaries.constraints),
       testExpectations: cleanList(draft.agentBoundaries.testExpectations),
-      qualityWarnings: cleanList(draft.agentBoundaries.risks.map((entry) => entry.text)),
-      openQuestions: cleanList(draft.agentBoundaries.openQuestions.map((entry) => entry.text))
+      qualityWarnings: cleanRaidEntries(draft.agentBoundaries.risks),
+      openQuestions: cleanRaidEntries(draft.agentBoundaries.openQuestions)
     }
   }
 }

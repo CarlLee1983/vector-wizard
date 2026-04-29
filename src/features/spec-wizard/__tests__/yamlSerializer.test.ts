@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { buildHumanSummary } from "../services/summary"
 import { draftToYaml, normalizeDraftForExport } from "../services/yamlSerializer"
-import { draftWithRoadmap, minimalValidDraft } from "../test/fixtures"
+import { draftWithRaid, draftWithRoadmap, minimalValidDraft } from "../test/fixtures"
 
 describe("yamlSerializer", () => {
   it("serializes the required top-level YAML sections", () => {
@@ -103,6 +103,49 @@ describe("yamlSerializer", () => {
 
     expect(draftToYaml(withoutRoadmap, "2026-04-28")).not.toContain("dependsOn:")
     expect(draftToYaml(withEmptyArray, "2026-04-28")).not.toContain("dependsOn:")
+  })
+
+  it("emits structured RaidEntry objects in agentSpec.qualityWarnings", () => {
+    const draft = draftWithRaid()
+    const normalized = normalizeDraftForExport(draft, "2026-04-29")
+
+    expect(normalized.agentSpec.qualityWarnings).toEqual([
+      {
+        id: "R-001",
+        text: "Token expiry edge case",
+        status: "validating",
+        mitigation: "Refresh quietly in background"
+      },
+      { id: "R-002", text: "Cold-start latency on serverless", status: "open" }
+    ])
+  })
+
+  it("emits structured RaidEntry objects in agentSpec.openQuestions", () => {
+    const draft = draftWithRaid()
+    const normalized = normalizeDraftForExport(draft, "2026-04-29")
+
+    expect(normalized.agentSpec.openQuestions).toEqual([
+      { id: "Q-001", text: "Should we support kiosk printing?", status: "open" }
+    ])
+  })
+
+  it("omits blank text and blank mitigation in RAID YAML output", () => {
+    const draft = draftWithRaid()
+    draft.agentBoundaries.risks = [
+      { id: "R-001", text: "   ", status: "open" },
+      { id: "R-002", text: "Real risk", status: "open", mitigation: "   " }
+    ]
+    const normalized = normalizeDraftForExport(draft, "2026-04-29")
+
+    expect(normalized.agentSpec.qualityWarnings).toEqual([{ id: "R-002", text: "Real risk", status: "open" }])
+  })
+
+  it("returns empty arrays when RAID lists are empty", () => {
+    const draft = minimalValidDraft()
+    const normalized = normalizeDraftForExport(draft, "2026-04-29")
+
+    expect(normalized.agentSpec.qualityWarnings).toEqual([])
+    expect(normalized.agentSpec.openQuestions).toEqual([])
   })
 
   it("builds a human-readable summary", () => {

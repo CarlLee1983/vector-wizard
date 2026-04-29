@@ -87,3 +87,15 @@ export function draftWithPlainAc(): FeatureDraft {
   draft.epics[0].stories[0].examples = [{ id: "EX-001", format: "natural-language", scenario: "連續輸錯三次密碼。" }]
   return draft
 }
+
+export function draftWithRaid(): FeatureDraft {
+  const draft = minimalValidDraft()
+  draft.agentBoundaries.risks = [
+    { id: "R-001", text: "Token expiry edge case", status: "validating", mitigation: "Refresh quietly in background" },
+    { id: "R-002", text: "Cold-start latency on serverless", status: "open" }
+  ]
+  draft.agentBoundaries.openQuestions = [
+    { id: "Q-001", text: "Should we support kiosk printing?", status: "open" }
+  ]
+  return draft
+}
