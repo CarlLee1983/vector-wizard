@@ -211,3 +211,8 @@ export type MessageKey =
   | "field.riskMitigation"
   | "field.riskMitigationHelp"
   | "field.riskMitigationPlaceholder"
+  | "stagedImport.success"
+  | "stagedImport.successPlural"
+  | "stagedImport.error"
+  | "stagedImport.partial"
+  | "stagedImport.dismiss"
