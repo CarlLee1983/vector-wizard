@@ -11,6 +11,7 @@ import {
   getServerSnapshot,
   getSnapshot,
   importDraftJson as importDraftJsonAction,
+  importDraftYaml as importDraftYamlAction,
   renameDraft as renameDraftAction,
   selectDraft as selectDraftAction,
   setActiveDraft as setActiveDraftAction,
@@ -35,6 +36,7 @@ export type UseDraftStoreValue = {
   renameDraft(id: DraftId, title: string): void
   deleteDraft(id: DraftId): void
   importDraftJson(raw: string): DraftId
+  importDraftYaml(raw: string): DraftId
   exportDraftJson(id: DraftId): string
 }
 
@@ -61,6 +63,7 @@ export function useDraftStore(): UseDraftStoreValue {
     renameDraft: renameDraftAction,
     deleteDraft: deleteDraftAction,
     importDraftJson: importDraftJsonAction,
+    importDraftYaml: importDraftYamlAction,
     exportDraftJson: exportDraftJsonAction
   }
 }

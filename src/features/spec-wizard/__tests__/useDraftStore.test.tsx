@@ -1,7 +1,9 @@
-import { act, render, screen } from "@testing-library/react"
+import { act, render, renderHook, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { useDraftStore } from "../hooks/useDraftStore"
 import { __resetForTests } from "../persistence/draftStore"
+import { draftToYaml } from "../services/yamlSerializer"
+import { minimalValidDraft } from "../test/fixtures"
 
 function Probe() {
   const { activeDraftId, drafts, createDraft } = useDraftStore()
@@ -35,5 +37,17 @@ describe("useDraftStore", () => {
 
     expect(screen.getByTestId("active").textContent).not.toBe("none")
     expect(screen.getByTestId("count").textContent).toBe("1")
+  })
+
+  it("exposes importDraftYaml that creates a draft from YAML", () => {
+    const { result } = renderHook(() => useDraftStore())
+    const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
+    let newId = ""
+    act(() => {
+      newId = result.current.importDraftYaml(yaml)
+    })
+    expect(result.current.drafts.find((d) => d.id === newId)?.draft.metadata.title).toBe(
+      "Login error message improvement"
+    )
   })
 })
