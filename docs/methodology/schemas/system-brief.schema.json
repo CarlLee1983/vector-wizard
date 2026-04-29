@@ -36,7 +36,25 @@
         }
       }
     },
-    "successSignals": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "successSignals": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string", "minLength": 1 },
+          {
+            "type": "object",
+            "required": ["statement"],
+            "additionalProperties": false,
+            "properties": {
+              "statement": { "type": "string", "minLength": 1 },
+              "metric": { "type": "string" },
+              "threshold": { "type": "string" },
+              "kind": { "type": "string", "enum": ["leading", "lagging"] }
+            }
+          }
+        ]
+      }
+    },
     "uniqueValue": { "type": "string" },
     "keyMetrics": {
       "type": "array",

@@ -28,11 +28,39 @@ describe("yamlSerializer", () => {
 
   it("filters empty optional list items", () => {
     const draft = minimalValidDraft()
-    draft.goal.successSignals = ["", "Support tickets decrease", "   "]
+    draft.goal.successSignals = [{ statement: "" }, { statement: "Support tickets decrease" }, { statement: "   " }]
 
     const normalized = normalizeDraftForExport(draft, "2026-04-26")
 
-    expect(normalized.productSpec.goal.successSignals).toEqual(["Support tickets decrease"])
+    expect(normalized.productSpec.goal.successSignals).toEqual([{ statement: "Support tickets decrease" }])
+  })
+
+  it("emits measurable success signal fields when set", () => {
+    const draft = minimalValidDraft()
+    draft.goal.successSignals = [
+      {
+        statement: "Sign-up conversion rate improves by 15%",
+        metric: "signup_completion_rate",
+        threshold: "> 0.15",
+        kind: "leading"
+      }
+    ]
+
+    const yaml = draftToYaml(draft, "2026-04-29")
+
+    expect(yaml).toContain('statement: "Sign-up conversion rate improves by 15%"')
+    expect(yaml).toContain('metric: "signup_completion_rate"')
+    expect(yaml).toContain('threshold: "> 0.15"')
+    expect(yaml).toContain('kind: "leading"')
+  })
+
+  it("omits blank metric/threshold/kind in YAML output", () => {
+    const draft = minimalValidDraft()
+    draft.goal.successSignals = [{ statement: "Higher CSAT", metric: "   ", threshold: "" }]
+
+    const normalized = normalizeDraftForExport(draft, "2026-04-29")
+
+    expect(normalized.productSpec.goal.successSignals).toEqual([{ statement: "Higher CSAT" }])
   })
 
   it("emits metadata.id only when set", () => {

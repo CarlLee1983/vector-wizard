@@ -31,3 +31,6 @@ Thumbs.db
 .vector/
 docs/vector/
 docs/methodology/artifacts/
+
+# Testing
+.playwright-mcp/

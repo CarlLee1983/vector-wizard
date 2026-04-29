@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 import { createEmptyDraft } from "../model/defaultDraft"
 import { validateDraft } from "../model/validation"
-import { draftWithGwtAc, draftWithPlainAc, minimalValidDraft } from "../test/fixtures"
+import { draftWithGwtAc, draftWithMeasurableSignal, draftWithPlainAc, minimalValidDraft } from "../test/fixtures"
 
 describe("validateDraft", () => {
   it("accepts a minimal valid draft and tags story-level INVEST warnings", () => {
@@ -207,5 +207,41 @@ describe("validateDraft", () => {
 
     const result = validateDraft(draft)
     expect(result.warnings.find((w) => w.code === "story_acceptance_criteria_not_gwt")).toBeUndefined()
+  })
+
+  it("warns when success signals have no metric or threshold", () => {
+    const draft = minimalValidDraft()
+    draft.goal.successSignals = [{ statement: "Support tickets decrease" }]
+
+    const result = validateDraft(draft)
+    const warning = result.warnings.find((w) => w.code === "success_signals_not_measurable")
+
+    expect(warning).toBeDefined()
+    expect(warning?.messageKey).toBe("validation.successSignalsNotMeasurable")
+    expect(warning?.fieldPath).toBe("goal.successSignals")
+  })
+
+  it("does not warn success_signals_not_measurable when at least one signal is measurable", () => {
+    const draft = draftWithMeasurableSignal()
+
+    const result = validateDraft(draft)
+    expect(result.warnings.find((w) => w.code === "success_signals_not_measurable")).toBeUndefined()
+  })
+
+  it("threshold-only signal counts as measurable", () => {
+    const draft = minimalValidDraft()
+    draft.goal.successSignals = [{ statement: "Higher CSAT", threshold: ">= 4.5/5" }]
+
+    const result = validateDraft(draft)
+    expect(result.warnings.find((w) => w.code === "success_signals_not_measurable")).toBeUndefined()
+  })
+
+  it("does not warn success_signals_not_measurable when there are no signals at all", () => {
+    const draft = minimalValidDraft()
+    draft.goal.successSignals = []
+
+    const result = validateDraft(draft)
+    expect(result.warnings.find((w) => w.code === "success_signals_not_measurable")).toBeUndefined()
+    expect(result.warnings.map((w) => w.code)).toContain("missing_success_signals")
   })
 })

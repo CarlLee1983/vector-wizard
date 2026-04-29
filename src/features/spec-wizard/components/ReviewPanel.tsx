@@ -214,9 +214,18 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
             <section>
               <h2>Success Signals</h2>
               <ul>
-                {draft.goal.successSignals.map((signal, i) => (
-                  <li key={i}>{signal}</li>
-                ))}
+                {draft.goal.successSignals.map((signal, i) => {
+                  const meta: string[] = []
+                  if (signal.metric && signal.metric.trim()) meta.push(`metric: ${signal.metric.trim()}`)
+                  if (signal.threshold && signal.threshold.trim()) meta.push(`threshold: ${signal.threshold.trim()}`)
+                  if (signal.kind) meta.push(`kind: ${signal.kind}`)
+                  return (
+                    <li key={i}>
+                      {signal.statement || "(empty)"}
+                      {meta.length > 0 ? ` (${meta.join(", ")})` : ""}
+                    </li>
+                  )
+                })}
                 {draft.goal.successSignals.length === 0 && <li>No success signals provided</li>}
               </ul>
             </section>

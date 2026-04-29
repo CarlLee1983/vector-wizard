@@ -52,6 +52,15 @@ export type Horizon = "now" | "next" | "later"
 
 export type Priority = "must" | "should" | "could" | "wont"
 
+export type SuccessSignalKind = "leading" | "lagging"
+
+export type SuccessSignal = {
+  statement: string
+  metric?: string
+  threshold?: string
+  kind?: SuccessSignalKind
+}
+
 export type FeatureDraft = {
   metadata: {
     title: string
@@ -68,7 +77,7 @@ export type FeatureDraft = {
   }
   goal: {
     statement: string
-    successSignals: string[]
+    successSignals: SuccessSignal[]
   }
   impacts: Impact[]
   deliverables: Deliverable[]

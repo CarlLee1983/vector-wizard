@@ -49,58 +49,70 @@ YAML 輸出 (`yamlSerializer.ts`) 對應加入這三個欄位。`feature-seed.sc
 
 ---
 
-## 2. INVEST / Definition of Ready 沒被驗證 ⭐ 高 CP 值
+## 2. INVEST / Definition of Ready 沒被驗證 ✅ 已實作 (2026-04-29)
 
-### 現況
+### 實作說明
 
-- `validation.ts` 只 block 三條：`metadata.title`、`goal.statement`、至少一個 user story。
-- Story 可以沒有 acceptance criteria、沒有 example，仍能通過驗證並下載 YAML。
-- AGENTS.md 明文「Validation is intentionally loose」是設計選擇，不應改為 blocking。
+維持「驗證刻意鬆」的設計約束（不進 `blockingErrors`），新增 4 條 `category: "invest"` 的 warning，並在 ReviewPanel 以獨立分群置頂顯示。
 
-### 影響
+| Warning code | 觸發條件 | 訊息 key |
+|--------------|----------|----------|
+| `story_missing_acceptance_criteria` | Story 完全沒有 AC | `validation.storyMissingAcceptanceCriteria` |
+| `story_orphan_examples` | Story 有 example 但沒有 AC | `validation.storyOrphanExamples` |
+| `draft_acceptance_criteria_without_examples` | 整份 draft 有 ≥1 條 AC 但無任何 example | `validation.draftAcceptanceCriteriaWithoutExamples` |
+| `story_acceptance_criteria_not_gwt` | Story 的 AC 全數未含 Given/When/Then 三段（中英文關鍵字皆支援） | `validation.storyAcceptanceCriteriaNotGwt` |
 
-- 違背 Story 的 Ready 最低標準（INVEST 中 Testable / Negotiable）。
-- AI coding agent 拿到沒有 AC 的 story 時，要不就拒絕、要不就自行腦補（破壞「AI 非權威」原則的下游版本）。
+### 對應檔案
 
-### 建議
+- `src/features/spec-wizard/model/validation.ts` — 新增 4 條 warning，全部標 `category: "invest"`
+- `src/features/spec-wizard/__tests__/validation.test.ts` — 11 條 INVEST 相關測試（含正反例與中英 GWT）
+- `src/features/spec-wizard/components/ReviewPanel.tsx` — `warning--invest` 區塊置頂，標題 `review.investHeading`
+- `src/features/spec-wizard/i18n/dictionaries.ts` — `zh-TW` / `en` 兩語系訊息齊全
 
-維持「不阻擋下載」，但**新增 warning 等級的提示**並在 ReviewPanel 醒目顯示：
+### 設計約束守住
 
-- Story 沒有任何 AC → warning「建議至少一條驗收條件」
-- AC 數量為 0 但有 example → warning「examples 應對應到 AC」
-- 整份 draft 有 ≥1 個 AC 但無任何 example → warning「建議每條 AC 有具體例子」
-- （選用）支援 GWT 格式 hint：當 AC 文字未含 Given/When/Then 三段，提示可改寫為 GWT。
+- **不阻擋下載**：4 條全部進 `warnings` 而非 `blockingErrors`，YAML 下載仍可進行。
+- **AGENTS.md 「Validation is intentionally loose」精神保留**：blocking 條件仍只有 `metadata.title`、`goal.statement`、至少一個 user story 三條。
+- **AI 非權威**：warning 僅提示 PO，不會自動補 AC 或 example。
 
-對應檔案：`model/validation.ts`、`__tests__/validation.test.ts`、`components/ReviewPanel.tsx`。
+### 相關 commits
+
+`20e8f78`（orphan examples）→ `cec9ee4`（AC-without-examples）→ `8d375bd`（GWT）→ `6d924a8`（ReviewPanel 分群置頂）→ `2755a2f`（prettier 同步）。
 
 ---
 
-## 3. successSignals 沒有可量測契約
+## 3. successSignals 沒有可量測契約 ✅ 已實作 (2026-04-29)
 
-### 現況
+### 實作說明
 
-- Frame 階段沉澱的 `successSignals` 一路流到 wizard，但在 `system-brief.schema.json` 與 `feature-seed.schema.json` 中都是字串陣列，無結構。
-- Wizard 內也沒有對應的 metric / threshold / measurement 欄位。
+- **Schema 升級**：`SuccessSignal` 升為結構 `{ statement, metric?, threshold?, kind? }`，`kind` 為 `"leading" | "lagging"`。`FeatureDraft.goal.successSignals` 改採新型別。
+- **向後相容**：`normalizeDraft` 把舊版 `string[]` 自動遷移成 `[{ statement }]`；`feature-seed.schema.json`、`system-brief.schema.json` 改成 `oneOf`（字串或物件），既有 reference seeds 不受影響。
+- **YAML 輸出**：每條成功訊號改寫為物件，blank metric/threshold/kind 自動省略；`schemaVersion` 維持 `"0.2"`。
+- **可量測 warning**：新增 `success_signals_not_measurable` warning（`messageKey: validation.successSignalsNotMeasurable`），當 draft 已有 ≥1 條成功訊號但全部都沒附 metric/threshold 時觸發；維持 non-blocking，與 #2 設計約束一致。
+- **UI**：GoalStep 改成自訂陣列編輯器（statement / metric / threshold / kind 下拉）；ReviewPanel 摘要把 `(metric: ..., threshold: ..., kind: ...)` 附在 statement 之後。
+- **i18n**：`zh-TW` / `en` 兩語系新增 14 條欄位字串與 `validation.successSignalsNotMeasurable`。
+- **AssistService 提示**：`seedPromptBuilder.ts` 的 schema 範例同步成新物件結構，避免外部 LLM 又生成舊 `string[]`。
 
-### 影響
+### 對應檔案
 
-- 「成功訊號」不可被否證 → 違背敏捷的 build–measure–learn。
-- 回顧 sprint 時，無法以這份 spec 作為「達成 vs 未達成」的判斷基準。
+- `src/features/spec-wizard/model/specTypes.ts` — `SuccessSignal` / `SuccessSignalKind` type
+- `src/features/spec-wizard/model/validation.ts` — 新 warning + 重構讀取路徑
+- `src/features/spec-wizard/services/yamlSerializer.ts` — `cleanSuccessSignals` 物件輸出
+- `src/features/spec-wizard/services/summary.ts` — markdown 摘要附帶 metric/threshold/kind
+- `src/features/spec-wizard/services/seedPromptBuilder.ts` — Seed Prompt schema 範例升級
+- `src/features/spec-wizard/persistence/draftStorage.ts` — 舊 `string[]` 遷移
+- `src/features/spec-wizard/components/steps/GoalStep.tsx` — 4 欄位 UI
+- `src/features/spec-wizard/components/ReviewPanel.tsx` — 顯示新欄位
+- `src/features/spec-wizard/i18n/{messageKeys,dictionaries}.ts` — 字串補齊
+- `src/features/spec-wizard/test/fixtures.ts` — `draftWithMeasurableSignal` helper 與 minimal draft 形態升級
+- `docs/methodology/schemas/{feature-seed,system-brief}.schema.json` — `oneOf` 兼容
+- `tests/methodology/schemas.test.ts` — 走 `normalizeDraft` 真實匯入路徑
 
-### 建議
+### 設計約束守住
 
-把 `successSignal` 從 `string` 升級為結構：
-
-```json
-{
-  "statement": "註冊轉換率提升 15%",
-  "metric": "signup_completion_rate",
-  "threshold": "> 0.15",
-  "kind": "leading"
-}
-```
-
-`metric` 與 `threshold` 為選填，避免讓非技術 PO 卡關。Wizard 在 ReviewPanel 應提示「未設定可量測指標」（warning，不阻擋）。
+- **驗證仍刻意鬆**：`success_signals_not_measurable` 不進 `blockingErrors`，YAML 下載不受影響。
+- **AI 非權威**：assistService 仍只回 suggestion，不會自動把模糊訊號改成可量測指標。
+- **Draft 相容性**：既有 `*.json` draft 與 `*.feature-seed.json` 經 `normalizeDraft` 都能升級；新 JSON Schema 同時接受字串與物件。
 
 ---
 
@@ -232,18 +244,18 @@ effort?: "xs" | "s" | "m" | "l" | "xl";
 
 不需要全部一起做。建議的優先順序與動工範圍：
 
-| 順序 | 項目 | 改動範圍（粗估） | 對 agile 流程價值 |
-|------|------|------------------|------------------|
-| 1 | #1 Roadmap 欄位（horizon/priority/dependsOn） | schema + serializer + UI 顯示 | 高 |
-| 2 | #2 INVEST warning | validation.ts + ReviewPanel | 高 |
-| 3 | #4 RAID 結構（id + status） | schema + 簡單 UI | 中 |
-| 4 | #3 successSignals 結構化 | schema + 選填 UI | 中 |
-| 5 | #6 CLI import 子命令 | bin/cli.js + Draft Manager | 中 |
-| 6 | #5 YAML round-trip | services/yamlParser.ts | 中（投入較大） |
-| 7 | #7 effort 欄位 | schema + UI 一個下拉 | 低工 |
-| 8 | #8 Assist suggestionId | contracts + 前端記錄 | 預留型 |
+| 順序 | 項目 | 改動範圍（粗估） | 對 agile 流程價值 | 狀態 |
+|------|------|------------------|------------------|------|
+| 1 | #1 Roadmap 欄位（horizon/priority/dependsOn） | schema + serializer + UI 顯示 | 高 | ✅ 已實作 (2026-04-28) |
+| 2 | #2 INVEST warning | validation.ts + ReviewPanel | 高 | ✅ 已實作 (2026-04-29) |
+| 3 | #4 RAID 結構（id + status） | schema + 簡單 UI | 中 | ⬜ 未開始 |
+| 4 | #3 successSignals 結構化 | schema + 選填 UI | 中 | ✅ 已實作 (2026-04-29) |
+| 5 | #6 CLI import 子命令 | bin/cli.js + Draft Manager | 中 | ⬜ 未開始 |
+| 6 | #5 YAML round-trip | services/yamlParser.ts | 中（投入較大） | ⬜ 未開始 |
+| 7 | #7 effort 欄位 | schema + UI 一個下拉 | 低工 | ⬜ 未開始 |
+| 8 | #8 Assist suggestionId | contracts + 前端記錄 | 預留型 | ⬜ 未開始 |
 
-第 1 + 第 2 是「最划算的兩刀」：打通 Pipeline B → wizard 的優先序鏈，並讓 PO 看見 INVEST 落差，但仍維持 wizard「驗證刻意鬆」的設計約束。皆可在不破壞既有測試與既有 draft 相容性的前提下完成（建議 `schemaVersion` 升 `0.2`，舊 draft 自動補 default 值）。
+第 1 + 第 2 是「最划算的兩刀」：打通 Pipeline B → wizard 的優先序鏈，並讓 PO 看見 INVEST 落差，但仍維持 wizard「驗證刻意鬆」的設計約束——兩項皆已於 2026-04-29 前完成，未破壞既有測試與 draft 相容性（`schemaVersion` 已升至 `0.2`）。下一個建議啟動的高 CP 值項目為 **#4 RAID 結構**（風險與假設可追蹤性）。
 
 ---
 

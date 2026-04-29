@@ -13,7 +13,7 @@ export function createEmptyDraft(locale: Locale = "zh-TW"): FeatureDraft {
     },
     goal: {
       statement: "",
-      successSignals: [""]
+      successSignals: [{ statement: "" }]
     },
     impacts: [{ id: "IM-001", actor: "", impact: "" }],
     deliverables: [{ id: "DE-001", name: "", description: "" }],

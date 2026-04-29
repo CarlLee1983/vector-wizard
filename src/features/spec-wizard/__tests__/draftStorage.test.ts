@@ -59,6 +59,73 @@ describe("draftStorage helpers", () => {
     expect(draft.metadata.dependsOn).toBeUndefined()
   })
 
+  it("migrates legacy string success signals into objects", () => {
+    const legacyJson = JSON.stringify({
+      metadata: { title: "Legacy", locale: "en" },
+      summary: {},
+      goal: { statement: "x", successSignals: ["Support tickets decrease", "  ", "Higher CSAT"] },
+      impacts: [],
+      deliverables: [],
+      userActivities: [],
+      epics: [
+        {
+          id: "EP-001",
+          title: "e",
+          stories: [{ id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }]
+        }
+      ],
+      agentBoundaries: { nonGoals: [], constraints: [], testExpectations: [], risks: [], openQuestions: [] }
+    })
+
+    const draft = draftFromJson(legacyJson)
+
+    expect(draft.goal.successSignals).toEqual([
+      { statement: "Support tickets decrease" },
+      { statement: "  " },
+      { statement: "Higher CSAT" }
+    ])
+  })
+
+  it("preserves measurable success signal fields when present in JSON", () => {
+    const json = JSON.stringify({
+      metadata: { title: "Measurable", locale: "en" },
+      summary: {},
+      goal: {
+        statement: "x",
+        successSignals: [
+          {
+            statement: "Sign-up conversion rate improves by 15%",
+            metric: "signup_completion_rate",
+            threshold: "> 0.15",
+            kind: "leading"
+          }
+        ]
+      },
+      impacts: [],
+      deliverables: [],
+      userActivities: [],
+      epics: [
+        {
+          id: "EP-001",
+          title: "e",
+          stories: [{ id: "US-001", title: "s", userStory: "u", acceptanceCriteria: [], examples: [] }]
+        }
+      ],
+      agentBoundaries: { nonGoals: [], constraints: [], testExpectations: [], risks: [], openQuestions: [] }
+    })
+
+    const draft = draftFromJson(json)
+
+    expect(draft.goal.successSignals).toEqual([
+      {
+        statement: "Sign-up conversion rate improves by 15%",
+        metric: "signup_completion_rate",
+        threshold: "> 0.15",
+        kind: "leading"
+      }
+    ])
+  })
+
   it("preserves roadmap fields when present in JSON", () => {
     const json = JSON.stringify({
       metadata: {

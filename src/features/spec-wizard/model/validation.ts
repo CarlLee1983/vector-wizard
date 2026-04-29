@@ -1,4 +1,4 @@
-import type { FeatureDraft, UserStory, ValidationIssue, ValidationResult } from "./specTypes"
+import type { FeatureDraft, SuccessSignal, UserStory, ValidationIssue, ValidationResult } from "./specTypes"
 
 function isBlank(value: string | undefined): boolean {
   return !value || value.trim().length === 0
@@ -6,6 +6,14 @@ function isBlank(value: string | undefined): boolean {
 
 function nonBlankItems(items: string[]): string[] {
   return items.filter((item) => item.trim().length > 0)
+}
+
+function nonBlankSignals(signals: SuccessSignal[]): SuccessSignal[] {
+  return signals.filter((signal) => !isBlank(signal.statement))
+}
+
+function signalIsMeasurable(signal: SuccessSignal): boolean {
+  return !isBlank(signal.metric) || !isBlank(signal.threshold)
 }
 
 function hasHanText(value: string | undefined): boolean {
@@ -30,7 +38,7 @@ function draftTextValues(draft: FeatureDraft): string[] {
     draft.summary.problem,
     draft.summary.desiredOutcome,
     draft.goal.statement,
-    ...draft.goal.successSignals,
+    ...draft.goal.successSignals.flatMap((signal) => [signal.statement, signal.metric, signal.threshold]),
     ...draft.impacts.flatMap((impact) => [impact.actor, impact.impact]),
     ...draft.deliverables.flatMap((deliverable) => [deliverable.name, deliverable.description]),
     ...draft.userActivities.flatMap((activity) => [activity.actor, activity.activity]),
@@ -88,11 +96,18 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
     })
   }
 
-  if (nonBlankItems(draft.goal.successSignals).length === 0) {
+  const namedSignals = nonBlankSignals(draft.goal.successSignals)
+  if (namedSignals.length === 0) {
     warnings.push({
       code: "missing_success_signals",
       fieldPath: "goal.successSignals",
       messageKey: "validation.missingSuccessSignals"
+    })
+  } else if (!namedSignals.some(signalIsMeasurable)) {
+    warnings.push({
+      code: "success_signals_not_measurable",
+      fieldPath: "goal.successSignals",
+      messageKey: "validation.successSignalsNotMeasurable"
     })
   }
 
@@ -232,7 +247,7 @@ export function validateDraft(draft: FeatureDraft): ValidationResult {
   }
 
   for (const signal of draft.goal.successSignals) {
-    const normalized = signal.trim().toLowerCase()
+    const normalized = signal.statement.trim().toLowerCase()
     if (["better", "faster", "更好", "更快", "提升"].includes(normalized)) {
       warnings.push({
         code: "vague_success_signal",

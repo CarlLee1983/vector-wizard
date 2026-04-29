@@ -3,6 +3,7 @@ import { resolve } from "node:path"
 import Ajv from "ajv"
 import { describe, expect, it } from "vitest"
 import { validateDraft } from "@/features/spec-wizard/model/validation"
+import { normalizeDraft } from "@/features/spec-wizard/persistence/draftStorage"
 import type { FeatureDraft } from "@/features/spec-wizard/model/specTypes"
 import { extractEmbeddedJson } from "./extractEmbeddedJson"
 
@@ -252,7 +253,7 @@ describe("feature-seed schema", () => {
 
   it("good fixture also passes wizard validateDraft without blocking errors", () => {
     const { schemaVersion: _v, ...draft } = goodFixture
-    const result = validateDraft(draft as FeatureDraft)
+    const result = validateDraft(normalizeDraft(draft) as FeatureDraft)
     expect(result.blockingErrors).toEqual([])
   })
 
@@ -310,7 +311,7 @@ describe("reference-case sweep", () => {
       const json = JSON.parse(readFileSync(file, "utf8"))
       expect(compiled["feature-seed"](json)).toBe(true)
       const { schemaVersion: _v, ...draft } = json
-      const result = validateDraft(draft as FeatureDraft)
+      const result = validateDraft(normalizeDraft(draft) as FeatureDraft)
       expect(result.blockingErrors).toEqual([])
     })
   }

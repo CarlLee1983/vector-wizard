@@ -1,4 +1,28 @@
-import type { FeatureDraft } from "../model/specTypes"
+import type { FeatureDraft, SuccessSignal, SuccessSignalKind } from "../model/specTypes"
+
+const SIGNAL_KINDS: readonly SuccessSignalKind[] = ["leading", "lagging"]
+
+function normalizeSuccessSignal(value: unknown): SuccessSignal {
+  if (typeof value === "string") {
+    return { statement: value }
+  }
+  if (value && typeof value === "object") {
+    const raw = value as Record<string, unknown>
+    const statement = typeof raw.statement === "string" ? raw.statement : ""
+    const signal: SuccessSignal = { statement }
+    if (typeof raw.metric === "string" && raw.metric.trim().length > 0) {
+      signal.metric = raw.metric
+    }
+    if (typeof raw.threshold === "string" && raw.threshold.trim().length > 0) {
+      signal.threshold = raw.threshold
+    }
+    if (typeof raw.kind === "string" && (SIGNAL_KINDS as readonly string[]).includes(raw.kind)) {
+      signal.kind = raw.kind as SuccessSignalKind
+    }
+    return signal
+  }
+  return { statement: "" }
+}
 
 export const DRAFT_STORAGE_KEY = "vector.featureDraft.v1"
 
@@ -47,8 +71,10 @@ export function normalizeDraft(draft: any): FeatureDraft {
     },
     goal: {
       statement: "",
-      successSignals: [],
-      ...draft.goal
+      ...draft.goal,
+      successSignals: Array.isArray(draft.goal?.successSignals)
+        ? draft.goal.successSignals.map(normalizeSuccessSignal)
+        : []
     },
     impacts: (draft.impacts || []).map((i: any) => ({
       id: i.id || "",

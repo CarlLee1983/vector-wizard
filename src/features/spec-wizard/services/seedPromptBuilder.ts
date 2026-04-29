@@ -8,7 +8,7 @@ type SeedPromptOptions = {
 
 export function buildSeedPrompt({ title, owner, locale }: SeedPromptOptions): string {
   const languageName = locale === "zh-TW" ? "Traditional Chinese (Taiwan)" : "English"
-  
+
   return `You are an expert Agile Product Manager and Business Analyst. I want you to help me generate an initial draft for a technical feature specification.
 
 ## Context
@@ -23,7 +23,15 @@ Please generate a JSON object that follows the schema below. This JSON will be i
 The output MUST be a valid JSON object with the following structure:
 - metadata: { title: string, owner: string, locale: "${locale}" }
 - summary: { problem: string, desiredOutcome: string }
-- goal: { statement: string, successSignals: string[] }
+- goal: {
+    statement: string,
+    successSignals: Array<{
+      statement: string,
+      metric?: string,
+      threshold?: string,
+      kind?: "leading" | "lagging"
+    }>
+  }
 - impacts: Array<{ id: string, actor: string, impact: string }>
 - deliverables: Array<{ id: string, name: string, description: string }>
 - userActivities: Array<{ id: string, actor: string, activity: string }>

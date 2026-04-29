@@ -1,4 +1,4 @@
-import type { FeatureDraft } from "../model/specTypes"
+import type { FeatureDraft, SuccessSignal } from "../model/specTypes"
 
 function cleanString(value: string | undefined): string {
   return value?.trim() ?? ""
@@ -6,6 +6,21 @@ function cleanString(value: string | undefined): string {
 
 function cleanList(items: string[]): string[] {
   return items.map((item) => item.trim()).filter(Boolean)
+}
+
+function cleanSuccessSignals(signals: SuccessSignal[]) {
+  return signals
+    .filter((signal) => cleanString(signal.statement).length > 0)
+    .map((signal) => {
+      const metric = cleanString(signal.metric)
+      const threshold = cleanString(signal.threshold)
+      return {
+        statement: cleanString(signal.statement),
+        ...(metric ? { metric } : {}),
+        ...(threshold ? { threshold } : {}),
+        ...(signal.kind ? { kind: signal.kind } : {})
+      }
+    })
 }
 
 function quote(value: string): string {
@@ -71,7 +86,7 @@ export function normalizeDraftForExport(draft: FeatureDraft, createdAt: string) 
     productSpec: {
       goal: {
         statement: cleanString(draft.goal.statement),
-        successSignals: cleanList(draft.goal.successSignals)
+        successSignals: cleanSuccessSignals(draft.goal.successSignals)
       },
       impacts: draft.impacts
         .filter((impact) => cleanString(impact.actor) || cleanString(impact.impact))

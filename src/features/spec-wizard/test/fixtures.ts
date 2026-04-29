@@ -13,7 +13,7 @@ export function minimalValidDraft(): FeatureDraft {
     },
     goal: {
       statement: "Help users understand what to do after a failed login.",
-      successSignals: ["Support requests about failed login decrease"]
+      successSignals: [{ statement: "Support requests about failed login decrease" }]
     },
     impacts: [{ id: "IM-001", actor: "Member", impact: "Can recover from login failure without support" }],
     deliverables: [
@@ -64,6 +64,19 @@ export function draftWithGwtAc(): FeatureDraft {
   ]
   draft.epics[0].stories[0].examples = [
     { id: "EX-001", format: "natural-language", scenario: "Wrong password three times in a row." }
+  ]
+  return draft
+}
+
+export function draftWithMeasurableSignal(): FeatureDraft {
+  const draft = minimalValidDraft()
+  draft.goal.successSignals = [
+    {
+      statement: "Sign-up conversion rate improves by 15%",
+      metric: "signup_completion_rate",
+      threshold: "> 0.15",
+      kind: "leading"
+    }
   ]
   return draft
 }
