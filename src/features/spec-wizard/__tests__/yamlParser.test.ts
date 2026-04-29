@@ -6,6 +6,71 @@ describe("parseYamlDocument", () => {
     expect(() => parseYamlDocument("")).toThrow(YamlParseError)
     expect(() => parseYamlDocument("   \n  \n")).toThrow(YamlParseError)
   })
+
+  it("parses a flat key-value document", () => {
+    const yaml = ['a: "x"', 'b: "y"'].join("\n")
+    expect(parseYamlDocument(yaml)).toEqual({ a: "x", b: "y" })
+  })
+
+  it("parses nested objects", () => {
+    const yaml = ["metadata:", '  title: "Login"', '  locale: "en"'].join("\n")
+    expect(parseYamlDocument(yaml)).toEqual({ metadata: { title: "Login", locale: "en" } })
+  })
+
+  it("parses array of scalars", () => {
+    const yaml = ["dependsOn:", '  - "FT-002"', '  - "FT-005"'].join("\n")
+    expect(parseYamlDocument(yaml)).toEqual({ dependsOn: ["FT-002", "FT-005"] })
+  })
+
+  it("parses array of objects with mixed inline + block kvs", () => {
+    const yaml = [
+      "qualityWarnings:",
+      '  - id: "R-001"',
+      '    text: "Edge"',
+      '    status: "open"',
+      '  - id: "R-002"',
+      '    text: "Cold start"',
+      '    status: "validating"',
+      '    mitigation: "Warm pool"'
+    ].join("\n")
+    expect(parseYamlDocument(yaml)).toEqual({
+      qualityWarnings: [
+        { id: "R-001", text: "Edge", status: "open" },
+        { id: "R-002", text: "Cold start", status: "validating", mitigation: "Warm pool" }
+      ]
+    })
+  })
+
+  it("parses inline empty array", () => {
+    const yaml = ["nonGoals: []", "constraints: []"].join("\n")
+    expect(parseYamlDocument(yaml)).toEqual({ nonGoals: [], constraints: [] })
+  })
+
+  it("parses deeply nested structure (epic > stories > acceptanceCriteria)", () => {
+    const yaml = [
+      "epics:",
+      '  - title: "Login"',
+      "    stories:",
+      '      - id: "US-001"',
+      '        title: "Show msg"',
+      "        acceptanceCriteria:",
+      '          - id: "AC-001"',
+      '            statement: "GWT"'
+    ].join("\n")
+    expect(parseYamlDocument(yaml)).toEqual({
+      epics: [
+        {
+          title: "Login",
+          stories: [{ id: "US-001", title: "Show msg", acceptanceCriteria: [{ id: "AC-001", statement: "GWT" }] }]
+        }
+      ]
+    })
+  })
+
+  it("throws YamlParseError when a list item appears outside any list-bearing key", () => {
+    const yaml = '- "orphan"'
+    expect(() => parseYamlDocument(yaml)).toThrow(YamlParseError)
+  })
 })
 
 describe("parseScalar", () => {
