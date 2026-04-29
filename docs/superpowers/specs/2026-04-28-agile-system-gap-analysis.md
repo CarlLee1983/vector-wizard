@@ -170,7 +170,26 @@ YAML 輸出 (`yamlSerializer.ts`) 對應加入這三個欄位。`feature-seed.sc
 
 ---
 
-## 6. Pipeline B → Wizard 的銜接摩擦過高
+## 6. Pipeline B → Wizard 的銜接摩擦過高 ✅ 已實作 (2026-04-29)
+
+### 實作說明
+
+- **CLI 子命令**：`bin/cli.js` 新增 `import <paths>` 子命令，支援單檔、多檔、整個資料夾遞迴；對應 `bin/lib/{parseImportArgs,resolveSeedFiles,validateSeedShape,stageImport}.mjs`。
+- **Stage 機制**：通過 `validateSeedShape` 的 seeds 寫入 `.vector/import/pending.json`，CLI 接著啟動 wizard。
+- **Server 端 consume-on-read**：`POST /api/import-staged` 一次回傳並刪除 pending.json，避免重複匯入。對應 `src/features/spec-wizard/services/stagedImportStore.ts`。
+- **Wizard 自動匯入**：`useStagedImport` hook 在 AppShell mount 時呼叫 API，逐份呼叫既有 `importDraftJson()` 灌入 draftStore；`StagedImportToast` 顯示匯入份數或部分失敗訊息。
+- **設計約束守住**：`.vector/` 已在 `.gitignore`；CLI 與 server 都不寫長期狀態，仍維持「單人本地工具、無 backend 持久化」。
+
+### 對應檔案
+
+- `bin/cli.js`、`bin/lib/{parseImportArgs,resolveSeedFiles,validateSeedShape,stageImport}.mjs`
+- `app/api/import-staged/route.ts`
+- `src/features/spec-wizard/services/stagedImportStore.ts`
+- `src/features/spec-wizard/hooks/useStagedImport.ts`
+- `src/features/spec-wizard/components/StagedImportToast.tsx`
+- `src/features/spec-wizard/components/AppShell.tsx`
+- `src/features/spec-wizard/i18n/{messageKeys,dictionaries}.ts`
+- `docs/methodology/pipeline-b.md`、`README.md`、`README.zh-TW.md`
 
 ### 現況
 
@@ -254,12 +273,12 @@ effort?: "xs" | "s" | "m" | "l" | "xl";
 | 2 | #2 INVEST warning | validation.ts + ReviewPanel | 高 | ✅ 已實作 (2026-04-29) |
 | 3 | #4 RAID 結構（id + status） | schema + 簡單 UI | 中 | ✅ 已實作 (2026-04-29) |
 | 4 | #3 successSignals 結構化 | schema + 選填 UI | 中 | ✅ 已實作 (2026-04-29) |
-| 5 | #6 CLI import 子命令 | bin/cli.js + Draft Manager | 中 | ⬜ 未開始 |
+| 5 | #6 CLI import 子命令 | bin/cli.js + Draft Manager | 中 | ✅ 已實作 (2026-04-29) |
 | 6 | #5 YAML round-trip | services/yamlParser.ts | 中（投入較大） | ⬜ 未開始 |
 | 7 | #7 effort 欄位 | schema + UI 一個下拉 | 低工 | ⬜ 未開始 |
 | 8 | #8 Assist suggestionId | contracts + 前端記錄 | 預留型 | ⬜ 未開始 |
 
-第 1 + 第 2 是「最划算的兩刀」：打通 Pipeline B → wizard 的優先序鏈，並讓 PO 看見 INVEST 落差，但仍維持 wizard「驗證刻意鬆」的設計約束——兩項皆已於 2026-04-29 前完成，未破壞既有測試與 draft 相容性（`schemaVersion` 已升至 `0.2`）。RAID 結構（#4）亦於 2026-04-29 完成升級，敏捷品質三件套（INVEST / successSignals / RAID）齊備。下一個建議啟動的項目為 **#6 CLI import 子命令**（解決 Pipeline B 銜接最後一哩）。
+第 1 + 第 2 是「最划算的兩刀」：打通 Pipeline B → wizard 的優先序鏈，並讓 PO 看見 INVEST 落差，但仍維持 wizard「驗證刻意鬆」的設計約束——兩項皆已於 2026-04-29 前完成，未破壞既有測試與 draft 相容性（`schemaVersion` 已升至 `0.2`）。RAID 結構（#4）亦於 2026-04-29 完成升級，敏捷品質三件套（INVEST / successSignals / RAID）齊備。下一個建議啟動的項目為 **#5 YAML round-trip**（讓 wizard 能反向吃回上一輪 YAML，閉合 inspect-adapt 迴圈）。
 
 ---
 
