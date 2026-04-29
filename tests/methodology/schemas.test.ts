@@ -74,9 +74,7 @@ describe("system-brief schema", () => {
     const validate = ajv.compile(schema)
     const fixture = {
       ...goodFixture,
-      riskiestAssumptions: [
-        { id: "R-001", text: "Query layer scales", status: "validating", mitigation: "Indexes" }
-      ],
+      riskiestAssumptions: [{ id: "R-001", text: "Query layer scales", status: "validating", mitigation: "Indexes" }],
       openQuestions: [{ id: "Q-001", text: "Who owns dashboards?", status: "open" }]
     }
     expect(validate(fixture)).toBe(true)

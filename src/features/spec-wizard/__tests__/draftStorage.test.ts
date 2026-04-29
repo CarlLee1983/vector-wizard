@@ -277,10 +277,7 @@ describe("normalizeRaidEntries", () => {
   })
 
   it("handles a mixed array of strings and objects", () => {
-    const result = normalizeRaidEntries(
-      ["legacy entry", { id: "R-007", text: "structured", status: "validated" }],
-      "R"
-    )
+    const result = normalizeRaidEntries(["legacy entry", { id: "R-007", text: "structured", status: "validated" }], "R")
     expect(result).toEqual([
       { id: "R-001", text: "legacy entry", status: "open" },
       { id: "R-007", text: "structured", status: "validated" }

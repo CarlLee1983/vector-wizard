@@ -67,9 +67,7 @@ describe("RaidArray", () => {
   it("emits onChange with updated status when user selects a new option", async () => {
     const handleChange = vi.fn()
     const entries: RaidEntry[] = [{ id: "R-001", text: "x", status: "open" }]
-    renderWithI18n(
-      <RaidArray label="Risks" idPrefix="R" allowMitigation entries={entries} onChange={handleChange} />
-    )
+    renderWithI18n(<RaidArray label="Risks" idPrefix="R" allowMitigation entries={entries} onChange={handleChange} />)
 
     await userEvent.selectOptions(screen.getByLabelText("Status R-001"), "validated")
 
@@ -79,9 +77,7 @@ describe("RaidArray", () => {
   it("appends a new entry with auto-generated id when user clicks add", async () => {
     const handleChange = vi.fn()
     const entries: RaidEntry[] = [{ id: "R-001", text: "first", status: "open" }]
-    renderWithI18n(
-      <RaidArray label="Risks" idPrefix="R" allowMitigation entries={entries} onChange={handleChange} />
-    )
+    renderWithI18n(<RaidArray label="Risks" idPrefix="R" allowMitigation entries={entries} onChange={handleChange} />)
 
     await userEvent.click(screen.getByRole("button", { name: /add/i }))
 
@@ -97,9 +93,7 @@ describe("RaidArray", () => {
       { id: "R-001", text: "first", status: "open" },
       { id: "R-002", text: "second", status: "open" }
     ]
-    renderWithI18n(
-      <RaidArray label="Risks" idPrefix="R" allowMitigation entries={entries} onChange={handleChange} />
-    )
+    renderWithI18n(<RaidArray label="Risks" idPrefix="R" allowMitigation entries={entries} onChange={handleChange} />)
 
     await userEvent.click(screen.getByRole("button", { name: /remove R-002/i }))
 

@@ -396,13 +396,15 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "field.raidId": "ID",
     "field.raidIdHelp": "Auto-generated; you can override, e.g. R-001 / Q-001.",
     "field.raidStatus": "Status",
-    "field.raidStatusHelp": "open = not yet validated; validating = under test; validated = confirmed; invalidated = disproven.",
+    "field.raidStatusHelp":
+      "open = not yet validated; validating = under test; validated = confirmed; invalidated = disproven.",
     "raidStatus.open": "open (unvalidated)",
     "raidStatus.validating": "validating (under test)",
     "raidStatus.validated": "validated (confirmed)",
     "raidStatus.invalidated": "invalidated (disproven)",
     "field.riskMitigation": "Mitigation",
-    "field.riskMitigationHelp": "If you already have a fallback or workaround, write it here so future iterations can trace it.",
+    "field.riskMitigationHelp":
+      "If you already have a fallback or workaround, write it here so future iterations can trace it.",
     "field.riskMitigationPlaceholder": "e.g. Fall back to the legacy flow until real-traffic validation passes.",
     "validation.missingTitle": "Enter a feature title.",
     "validation.missingGoal": "Enter a goal.",

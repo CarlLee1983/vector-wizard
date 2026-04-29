@@ -94,8 +94,6 @@ export function draftWithRaid(): FeatureDraft {
     { id: "R-001", text: "Token expiry edge case", status: "validating", mitigation: "Refresh quietly in background" },
     { id: "R-002", text: "Cold-start latency on serverless", status: "open" }
   ]
-  draft.agentBoundaries.openQuestions = [
-    { id: "Q-001", text: "Should we support kiosk printing?", status: "open" }
-  ]
+  draft.agentBoundaries.openQuestions = [{ id: "Q-001", text: "Should we support kiosk printing?", status: "open" }]
   return draft
 }
