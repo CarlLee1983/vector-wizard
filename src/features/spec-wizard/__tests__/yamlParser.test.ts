@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { YamlParseError, parseYamlDocument, parseScalar, tokenizeYaml } from "../services/yamlParser"
+import { YamlParseError, parseYamlDocument, parseScalar, tokenizeYaml, yamlToDraft } from "../services/yamlParser"
+import { draftToYaml } from "../services/yamlSerializer"
+import { minimalValidDraft } from "../test/fixtures"
 
 describe("parseYamlDocument", () => {
   it("throws YamlParseError on empty input", () => {
@@ -152,5 +154,81 @@ describe("tokenizeYaml", () => {
 
   it("throws on unrecognized line", () => {
     expect(() => tokenizeYaml("not a key or list")).toThrow(YamlParseError)
+  })
+})
+
+describe("yamlToDraft", () => {
+  it("requires top-level metadata, productSpec, agentSpec keys", () => {
+    expect(() =>
+      yamlToDraft('schemaVersion: "0.2"')
+    ).toThrow(YamlParseError)
+  })
+
+  it("rejects unknown schemaVersion", () => {
+    const yaml = ['schemaVersion: "9.9"', "metadata:", '  title: "x"', '  locale: "en"'].join("\n")
+    expect(() => yamlToDraft(yaml)).toThrow(YamlParseError)
+  })
+
+  it("synthesizes ids for impacts/deliverables/userActivities/epics", () => {
+    const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
+    const { draft } = yamlToDraft(yaml)
+    expect(draft.impacts[0].id).toBe("IM-001")
+    expect(draft.deliverables[0].id).toBe("DE-001")
+    expect(draft.userActivities[0].id).toBe("UA-001")
+    expect(draft.epics[0].id).toBe("EP-001")
+  })
+
+  it("preserves story / AC / example / RAID ids verbatim", () => {
+    const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
+    const { draft } = yamlToDraft(yaml)
+    expect(draft.epics[0].stories[0].id).toBe("US-001")
+  })
+
+  it("returns the schemaVersion alongside the draft", () => {
+    const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
+    const { schemaVersion } = yamlToDraft(yaml)
+    expect(schemaVersion).toBe("0.2")
+  })
+
+  it("drops export-only metadata.createdAt / metadata.status", () => {
+    const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
+    const { draft } = yamlToDraft(yaml)
+    expect((draft.metadata as Record<string, unknown>).createdAt).toBeUndefined()
+    expect((draft.metadata as Record<string, unknown>).status).toBeUndefined()
+  })
+
+  it("maps qualityWarnings/openQuestions back to agentBoundaries.risks/openQuestions", () => {
+    const yaml = [
+      'schemaVersion: "0.2"',
+      "metadata:",
+      '  title: "x"',
+      '  locale: "en"',
+      "summary:",
+      '  problem: ""',
+      '  desiredOutcome: ""',
+      "productSpec:",
+      "  goal:",
+      '    statement: "g"',
+      "    successSignals: []",
+      "  impacts: []",
+      "  deliverables: []",
+      "  userActivities: []",
+      "  epics: []",
+      "agentSpec:",
+      "  nonGoals: []",
+      "  constraints: []",
+      "  testExpectations: []",
+      "  qualityWarnings:",
+      '    - id: "R-001"',
+      '      text: "edge"',
+      '      status: "open"',
+      "  openQuestions:",
+      '    - id: "Q-001"',
+      '      text: "?"',
+      '      status: "open"'
+    ].join("\n")
+    const { draft } = yamlToDraft(yaml)
+    expect(draft.agentBoundaries.risks).toEqual([{ id: "R-001", text: "edge", status: "open" }])
+    expect(draft.agentBoundaries.openQuestions).toEqual([{ id: "Q-001", text: "?", status: "open" }])
   })
 })

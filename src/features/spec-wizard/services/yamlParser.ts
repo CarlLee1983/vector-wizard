@@ -1,3 +1,6 @@
+import type { FeatureDraft } from "../model/specTypes"
+import { normalizeDraft } from "../persistence/draftStorage"
+
 export class YamlParseError extends Error {
   readonly line: number
   readonly snippet?: string
@@ -163,4 +166,78 @@ export function parseYamlDocument(raw: string): unknown {
   }
 
   return root
+}
+
+const SUPPORTED_SCHEMA_VERSIONS = ["0.1", "0.2"] as const
+
+function asObject(value: unknown, line: number, label: string): Record<string, unknown> {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    return value as Record<string, unknown>
+  }
+  throw new YamlParseError(`Expected ${label} to be an object`, line)
+}
+
+function asArray(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value
+  return []
+}
+
+function synthesizeIds(items: unknown[], prefix: string): Record<string, unknown>[] {
+  return items.map((item, index) => {
+    const obj = (item && typeof item === "object" ? item : {}) as Record<string, unknown>
+    const fallback = `${prefix}-${String(index + 1).padStart(3, "0")}`
+    const id = typeof obj.id === "string" && obj.id.trim().length > 0 ? obj.id : fallback
+    return { ...obj, id }
+  })
+}
+
+export function yamlToDraft(raw: string): { schemaVersion: string; draft: FeatureDraft } {
+  const root = asObject(parseYamlDocument(raw), 1, "document root")
+
+  const schemaVersionRaw = root.schemaVersion
+  if (typeof schemaVersionRaw !== "string") {
+    throw new YamlParseError("Missing schemaVersion", 1)
+  }
+  if (!(SUPPORTED_SCHEMA_VERSIONS as readonly string[]).includes(schemaVersionRaw)) {
+    throw new YamlParseError(`Unsupported schemaVersion: ${schemaVersionRaw}`, 1)
+  }
+
+  const metadata = asObject(root.metadata, 1, "metadata")
+  const productSpec = asObject(root.productSpec, 1, "productSpec")
+  const agentSpec = asObject(root.agentSpec, 1, "agentSpec")
+  const summary =
+    root.summary && typeof root.summary === "object" && !Array.isArray(root.summary)
+      ? (root.summary as Record<string, unknown>)
+      : {}
+
+  const goal = asObject(productSpec.goal, 1, "productSpec.goal")
+
+  const {
+    createdAt: _createdAt,
+    status: _status,
+    ...metaRest
+  } = metadata as Record<string, unknown> & { createdAt?: unknown; status?: unknown }
+
+  const candidate: unknown = {
+    metadata: metaRest,
+    summary,
+    goal: {
+      statement: typeof goal.statement === "string" ? goal.statement : "",
+      successSignals: asArray(goal.successSignals)
+    },
+    impacts: synthesizeIds(asArray(productSpec.impacts), "IM"),
+    deliverables: synthesizeIds(asArray(productSpec.deliverables), "DE"),
+    userActivities: synthesizeIds(asArray(productSpec.userActivities), "UA"),
+    epics: synthesizeIds(asArray(productSpec.epics), "EP"),
+    agentBoundaries: {
+      nonGoals: asArray(agentSpec.nonGoals),
+      constraints: asArray(agentSpec.constraints),
+      testExpectations: asArray(agentSpec.testExpectations),
+      risks: asArray(agentSpec.qualityWarnings),
+      openQuestions: asArray(agentSpec.openQuestions)
+    }
+  }
+
+  const draft = normalizeDraft(candidate)
+  return { schemaVersion: schemaVersionRaw, draft }
 }
