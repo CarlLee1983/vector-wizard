@@ -58,7 +58,8 @@ There is no separate typecheck script — `next build` runs `tsc --noEmit` (the 
 React Wizard state (FeatureDraft)
   ├─ autosave → localStorage  (persistence/draftStorage.ts)
   ├─ POST /api/generate-spec  → normalizeDraftForExport → YAML string + summary + ValidationResult
-  └─ POST /api/assist          → assistService (rewrite | quality_check) → suggestion only, never mutates draft
+  ├─ POST /api/assist          → assistService (rewrite | quality_check) → suggestion only, never mutates draft
+  └─ Draft Manager import      → importDraftJson / importDraftYaml → normalizeDraft → new draft entry
 ```
 
 The frontend always manipulates the structured `FeatureDraft`, never YAML strings. YAML is only produced at the export boundary.
@@ -75,6 +76,7 @@ These come from the design spec; tests in `__tests__/` enforce most of them:
 - **LLM keys are server-side only.** Real provider calls go through API routes, never from the client. Current code ships a mock provider; add new providers behind the same `AssistRequest`/`AssistResponse` contract.
 - **Immutable updates.** All draft updates use spread/copy patterns (see `Wizard.tsx#updateStory`). Never mutate state in place.
 - **Drafts are portable.** They can be exported/imported as JSON files or directly pasted into the Draft Manager UI as raw JSON strings.
+- **YAML 匯入經 normalizeDraft**：反向解析 (`yamlToDraft`) 必須走與 JSON 匯入相同的 `normalizeDraft()` 路徑，讓 legacy migration 不重複實作。
 
 ### YAML serializer
 

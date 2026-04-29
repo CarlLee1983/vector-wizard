@@ -75,6 +75,14 @@ npx vector-wizard import ./seed-a.feature-seed.json ./seed-b.feature-seed.json
 
 CLI 會把通過驗證的 draft 寫入 `.vector/import/pending.json`，然後啟動 wizard。首次載入時，wizard 會自動把每份 draft 灌進 Draft Manager，並以 toast 顯示匯入結果。pending 檔案讀完即刪（consume-on-read），重新整理頁面不會造成重複匯入。
 
+### 重新匯入先前匯出的 YAML
+
+Draft Manager 支援透過「匯入 YAML」按鈕載入先前匯出的 YAML 檔案，paste 區塊
+也會自動偵測格式（JSON / YAML 任一）。匯入後會建立新的 draft；impact、
+deliverable、userActivity、epic 的 id 會以索引重新合成，story / 驗收條件 /
+範例 / RAID 的 id 則原樣保留。此功能閉合敏捷的 inspect-adapt 迴圈，讓同一份
+feature spec 可以跨 session 繼續迭代。
+
 ## 🏗 專案架構
 
 本專案採用高度自包含的功能模組架構，核心邏輯位於 `src/features/spec-wizard/`：

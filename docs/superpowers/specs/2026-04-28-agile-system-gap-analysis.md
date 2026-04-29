@@ -149,7 +149,28 @@ YAML 輸出 (`yamlSerializer.ts`) 對應加入這三個欄位。`feature-seed.sc
 
 ---
 
-## 5. 缺少回饋迴圈（Inspect & Adapt）
+## 5. 缺少回饋迴圈（Inspect & Adapt）✅ 部分實作 (2026-04-29)
+
+### 實作說明 (2026-04-29)
+
+**已實作**：YAML round-trip。Draft Manager 新增「匯入 YAML」按鈕與 paste 自動偵測；
+新增 `services/yamlParser.ts`（純解析、無第三方依賴）與 `importDraftYaml` store
+action；全 fixture round-trip 在 `__tests__/yamlRoundTrip.test.ts` 通過。
+metadata.{createdAt,status} 為 export-only，匯入時剝除；impact / deliverable /
+userActivity / epic 的 id 在反向時依索引重新合成。
+
+**未實作（後續）**：YAML 內 `feedbackLog[]` 區塊。仍只是單向 PO → agent，
+agent 端目前無法寫回。下一個迴圈再評估。
+
+### 對應檔案
+
+- `src/features/spec-wizard/services/yamlParser.ts`（新增）
+- `src/features/spec-wizard/__tests__/{yamlParser,yamlRoundTrip}.test.ts`（新增）
+- `src/features/spec-wizard/persistence/draftStore.ts`（`importDraftYaml`）
+- `src/features/spec-wizard/hooks/useDraftStore.ts`（暴露 hook 欄位）
+- `src/features/spec-wizard/components/DraftManagerModal.tsx`（YAML 按鈕 + paste auto-detect）
+- `src/features/spec-wizard/i18n/{messageKeys,dictionaries}.ts`
+- `README.md` / `README.zh-TW.md` / `AGENTS.md`
 
 ### 現況
 
@@ -274,11 +295,11 @@ effort?: "xs" | "s" | "m" | "l" | "xl";
 | 3 | #4 RAID 結構（id + status） | schema + 簡單 UI | 中 | ✅ 已實作 (2026-04-29) |
 | 4 | #3 successSignals 結構化 | schema + 選填 UI | 中 | ✅ 已實作 (2026-04-29) |
 | 5 | #6 CLI import 子命令 | bin/cli.js + Draft Manager | 中 | ✅ 已實作 (2026-04-29) |
-| 6 | #5 YAML round-trip | services/yamlParser.ts | 中（投入較大） | ⬜ 未開始 |
+| 6 | #5 YAML round-trip | services/yamlParser.ts | 中（投入較大） | ✅ 已實作 (2026-04-29) |
 | 7 | #7 effort 欄位 | schema + UI 一個下拉 | 低工 | ⬜ 未開始 |
 | 8 | #8 Assist suggestionId | contracts + 前端記錄 | 預留型 | ⬜ 未開始 |
 
-第 1 + 第 2 是「最划算的兩刀」：打通 Pipeline B → wizard 的優先序鏈，並讓 PO 看見 INVEST 落差，但仍維持 wizard「驗證刻意鬆」的設計約束——兩項皆已於 2026-04-29 前完成，未破壞既有測試與 draft 相容性（`schemaVersion` 已升至 `0.2`）。RAID 結構（#4）亦於 2026-04-29 完成升級，敏捷品質三件套（INVEST / successSignals / RAID）齊備。下一個建議啟動的項目為 **#5 YAML round-trip**（讓 wizard 能反向吃回上一輪 YAML，閉合 inspect-adapt 迴圈）。
+第 1 + 第 2 是「最划算的兩刀」：打通 Pipeline B → wizard 的優先序鏈，並讓 PO 看見 INVEST 落差，但仍維持 wizard「驗證刻意鬆」的設計約束——兩項皆已於 2026-04-29 前完成，未破壞既有測試與 draft 相容性（`schemaVersion` 已升至 `0.2`）。RAID 結構（#4）亦於 2026-04-29 完成升級，敏捷品質三件套（INVEST / successSignals / RAID）齊備。下一個建議啟動的項目為 **#7 effort 欄位**（粗估配合既有 horizon/priority/dependsOn 形成可視化 roadmap）。
 
 ---
 

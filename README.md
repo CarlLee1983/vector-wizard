@@ -75,6 +75,16 @@ npx vector-wizard import ./seed-a.feature-seed.json ./seed-b.feature-seed.json
 
 The CLI writes the resolved drafts into `.vector/import/pending.json` and then launches the wizard. On first load, the wizard auto-imports each draft into its Draft Manager and shows a toast summarising the result. The pending file is consumed atomically (read-and-deleted), so refreshing the wizard never causes duplicate imports.
 
+### Re-importing a previously exported YAML
+
+The Draft Manager also accepts YAML files exported from a previous session via
+the **Import YAML** button (or by pasting YAML into the paste box — JSON / YAML
+is auto-detected). The imported draft becomes a new entry; ids for impacts,
+deliverables, user activities and epics are re-synthesized, while story /
+acceptance-criterion / example / RAID ids are preserved verbatim. This closes
+the inspect-adapt loop so you can iterate on the same feature spec across
+sessions.
+
 ## 🏗 Architecture
 
 The project follows a self-contained feature-based architecture located in `src/features/spec-wizard/`:
