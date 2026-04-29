@@ -1,6 +1,7 @@
-import type { FeatureDraft, SuccessSignal, SuccessSignalKind } from "../model/specTypes"
+import type { FeatureDraft, RaidEntry, RaidStatus, SuccessSignal, SuccessSignalKind } from "../model/specTypes"
 
 const SIGNAL_KINDS: readonly SuccessSignalKind[] = ["leading", "lagging"]
+const RAID_STATUSES: readonly RaidStatus[] = ["open", "validating", "validated", "invalidated"]
 
 function normalizeSuccessSignal(value: unknown): SuccessSignal {
   if (typeof value === "string") {
@@ -22,6 +23,31 @@ function normalizeSuccessSignal(value: unknown): SuccessSignal {
     return signal
   }
   return { statement: "" }
+}
+
+export function normalizeRaidEntries(value: unknown, prefix: "R" | "Q"): RaidEntry[] {
+  if (!Array.isArray(value)) return []
+  return value.map((item, index): RaidEntry => {
+    const fallbackId = `${prefix}-${String(index + 1).padStart(3, "0")}`
+    if (typeof item === "string") {
+      return { id: fallbackId, text: item, status: "open" }
+    }
+    if (item && typeof item === "object") {
+      const raw = item as Record<string, unknown>
+      const id = typeof raw.id === "string" && raw.id.trim().length > 0 ? raw.id : fallbackId
+      const text = typeof raw.text === "string" ? raw.text : ""
+      const status =
+        typeof raw.status === "string" && (RAID_STATUSES as readonly string[]).includes(raw.status)
+          ? (raw.status as RaidStatus)
+          : "open"
+      const mitigation =
+        typeof raw.mitigation === "string" && raw.mitigation.trim().length > 0 ? raw.mitigation : undefined
+      const entry: RaidEntry = { id, text, status }
+      if (mitigation) entry.mitigation = mitigation
+      return entry
+    }
+    return { id: fallbackId, text: "", status: "open" }
+  })
 }
 
 export const DRAFT_STORAGE_KEY = "vector.featureDraft.v1"

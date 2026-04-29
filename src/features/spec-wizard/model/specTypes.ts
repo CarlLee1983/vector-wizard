@@ -61,6 +61,15 @@ export type SuccessSignal = {
   kind?: SuccessSignalKind
 }
 
+export type RaidStatus = "open" | "validating" | "validated" | "invalidated"
+
+export type RaidEntry = {
+  id: string
+  text: string
+  status: RaidStatus
+  mitigation?: string
+}
+
 export type FeatureDraft = {
   metadata: {
     title: string

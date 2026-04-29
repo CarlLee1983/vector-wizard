@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest"
-import { draftFromJson, draftToJson, loadDraft } from "../persistence/draftStorage"
+import { draftFromJson, draftToJson, loadDraft, normalizeRaidEntries } from "../persistence/draftStorage"
 import { minimalValidDraft } from "../test/fixtures"
 
 describe("draftStorage helpers", () => {
@@ -157,5 +157,70 @@ describe("draftStorage helpers", () => {
     expect(draft.metadata.horizon).toBe("next")
     expect(draft.metadata.priority).toBe("should")
     expect(draft.metadata.dependsOn).toEqual(["FT-000"])
+  })
+})
+
+describe("normalizeRaidEntries", () => {
+  it("converts a legacy string into a RaidEntry with default status and auto id", () => {
+    const result = normalizeRaidEntries(["既有查詢層在規模化下效能不足"], "R")
+    expect(result).toEqual([{ id: "R-001", text: "既有查詢層在規模化下效能不足", status: "open" }])
+  })
+
+  it("preserves explicit id, status and mitigation when present", () => {
+    const result = normalizeRaidEntries(
+      [{ id: "R-042", text: "Token expiry edge case", status: "validating", mitigation: "Refresh quietly" }],
+      "R"
+    )
+    expect(result).toEqual([
+      { id: "R-042", text: "Token expiry edge case", status: "validating", mitigation: "Refresh quietly" }
+    ])
+  })
+
+  it("falls back to default id when entry id is missing or empty", () => {
+    const result = normalizeRaidEntries(
+      [
+        { text: "Missing id", status: "open" },
+        { id: "", text: "Empty id" }
+      ],
+      "Q"
+    )
+    expect(result).toEqual([
+      { id: "Q-001", text: "Missing id", status: "open" },
+      { id: "Q-002", text: "Empty id", status: "open" }
+    ])
+  })
+
+  it("falls back to status 'open' when status is unknown or missing", () => {
+    const result = normalizeRaidEntries(
+      [
+        { id: "R-001", text: "Bad status", status: "bogus" },
+        { id: "R-002", text: "No status" }
+      ],
+      "R"
+    )
+    expect(result[0].status).toBe("open")
+    expect(result[1].status).toBe("open")
+  })
+
+  it("drops blank mitigation strings", () => {
+    const result = normalizeRaidEntries([{ id: "R-001", text: "x", status: "open", mitigation: "   " }], "R")
+    expect(result[0].mitigation).toBeUndefined()
+  })
+
+  it("handles a mixed array of strings and objects", () => {
+    const result = normalizeRaidEntries(
+      ["legacy entry", { id: "R-007", text: "structured", status: "validated" }],
+      "R"
+    )
+    expect(result).toEqual([
+      { id: "R-001", text: "legacy entry", status: "open" },
+      { id: "R-007", text: "structured", status: "validated" }
+    ])
+  })
+
+  it("returns an empty array for non-array input", () => {
+    expect(normalizeRaidEntries(undefined, "R")).toEqual([])
+    expect(normalizeRaidEntries(null, "R")).toEqual([])
+    expect(normalizeRaidEntries("not an array", "R")).toEqual([])
   })
 })
