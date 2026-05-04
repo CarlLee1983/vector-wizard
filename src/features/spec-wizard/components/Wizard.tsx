@@ -3,7 +3,10 @@
 import { useMemo, useState } from "react"
 import { useI18n } from "../i18n/I18nContext"
 import { useDraftStore } from "../hooks/useDraftStore"
+import { WizardContextProvider } from "../hooks/useWizardContext"
+import type { ActionStepId } from "../services/localAgent/actionRegistry"
 import { ReviewPanel } from "./ReviewPanel"
+import { WizardActionPanel } from "./WizardActionPanel"
 import { BasicStep } from "./steps/BasicStep"
 import { GoalStep } from "./steps/GoalStep"
 import { ContextStep } from "./steps/ContextStep"
@@ -63,8 +66,10 @@ export function Wizard() {
 
   if (!activeDraft) return null
 
+  const currentStepId: ActionStepId = step === "review" ? "basic" : (step as ActionStepId)
+
   return (
-    <>
+    <WizardContextProvider currentStepId={currentStepId} activeDraft={activeDraft}>
       <nav className="step-nav">
         {steps.map((s, index) => (
           <div
@@ -100,6 +105,7 @@ export function Wizard() {
           </button>
         ) : null}
       </nav>
-    </>
+      <WizardActionPanel />
+    </WizardContextProvider>
   )
 }

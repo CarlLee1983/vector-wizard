@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useI18n } from "../i18n/I18nContext"
-import { AssistantPanel } from "./AssistantPanel"
 import { AutosaveErrorToast } from "./AutosaveErrorToast"
 import { DraftManagerModal } from "./DraftManagerModal"
 import { DraftSwitcher } from "./DraftSwitcher"
@@ -33,7 +32,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <AutosaveErrorToast />
         <StagedImportToast />
       </div>
-      <AssistantPanel />
     </div>
   )
 }
