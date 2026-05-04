@@ -21,7 +21,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <h1>{t("wizard.title")}</h1>
             <p>{t("wizard.subtitle")}</p>
           </div>
-          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          <div className="header-actions">
             <DraftSwitcher onOpenManager={() => setManagerOpen(true)} />
             <LanguageSwitcher />
           </div>

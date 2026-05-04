@@ -51,15 +51,7 @@ export function BasicStep({ draft, setDraft }: BasicStepProps) {
         />
       </div>
 
-      <fieldset
-        className="field-group"
-        style={{
-          border: "1px solid var(--border)",
-          borderRadius: 6,
-          padding: "12px 16px",
-          margin: "16px 0"
-        }}
-      >
+      <fieldset className="field-group">
         <legend>{t("step.roadmap")}</legend>
 
         <div className="field">

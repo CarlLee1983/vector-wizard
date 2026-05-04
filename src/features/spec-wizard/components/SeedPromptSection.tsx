@@ -51,9 +51,9 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
       })
 
       if (!response.ok) throw new Error("Request failed")
-      
+
       setAgentState("success")
-      // We don't auto-reset success to idle because we want the user 
+      // We don't auto-reset success to idle because we want the user
       // to know it's ready until they potentially reload or something
     } catch (error) {
       console.error(error)
@@ -65,21 +65,16 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
   if (!title) return null
 
   return (
-    <div className="panel panel-ai-highlight" style={{ marginTop: "24px" }}>
-      <h3 style={{ margin: "0 0 8px 0", fontSize: "16px", color: "var(--primary)" }}>
-        {t("seedPrompt.title")}
-      </h3>
-      <p style={{ margin: "0 0 16px 0", fontSize: "13px", color: "var(--text-muted)", lineHeight: "1.5" }}>
-        {t("seedPrompt.help")}
-      </p>
-      
-      <div className="stack" style={{ gap: "8px" }}>
+    <div className="panel panel-ai-highlight">
+      <h3>{t("seedPrompt.title")}</h3>
+      <p>{t("seedPrompt.help")}</p>
+
+      <div className="stack" style={{ gap: "10px" }}>
         <button
           type="button"
           className={copied ? "success" : "secondary"}
           onClick={handleCopy}
           disabled={!title}
-          style={{ width: "100%" }}
         >
           {copied ? t("seedPrompt.button.copied") : t("seedPrompt.button.idle")}
         </button>
@@ -89,7 +84,6 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
           className={agentState === "success" ? "success" : agentState === "pending" ? "secondary" : "primary"}
           onClick={handleRequestAgent}
           disabled={!title || agentState === "pending"}
-          style={{ width: "100%" }}
         >
           {agentState === "pending"
             ? t("agentDraft.button.pending")
@@ -103,7 +97,6 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
           className={sentToPanel ? "success" : "primary"}
           onClick={handleSendToPanel}
           disabled={!title}
-          style={{ width: "100%" }}
         >
           {sentToPanel ? t("seedPrompt.button.sentToAgent") : t("seedPrompt.button.sendToAgent")}
         </button>
@@ -111,3 +104,4 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
     </div>
   )
 }
+
