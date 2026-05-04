@@ -1,7 +1,11 @@
 import { EventEmitter } from "node:events"
 import { PassThrough, Readable } from "node:stream"
 import { describe, expect, it, vi } from "vitest"
-import { createClaudeProvider, parseStreamJsonLine } from "../services/localAgent/claudeProvider"
+import {
+  createClaudeProvider,
+  parseStreamJsonLine,
+  spawnAgent
+} from "../services/localAgent/claudeProvider"
 import type { AgentEvent } from "../services/localAgent/types"
 
 describe("parseStreamJsonLine", () => {
@@ -236,5 +240,115 @@ describe("createClaudeProvider", () => {
     const events = await iterPromise
     expect(events[0]?.type).toBe("system_init")
     expect(child.kill).toHaveBeenCalled()
+  })
+})
+
+function makeFakeChildForSpawnAgent(stdoutLines: string[], exitCode = 0) {
+  const stdout = Readable.from(stdoutLines.map((l) => `${l}\n`))
+  const stderr = Readable.from([])
+  const child = new EventEmitter() as EventEmitter & {
+    stdout: Readable
+    stderr: Readable
+    killed: boolean
+    kill: (sig?: string) => boolean
+  }
+  child.stdout = stdout
+  child.stderr = stderr
+  child.killed = false
+  child.kill = () => {
+    child.killed = true
+    return true
+  }
+  setTimeout(() => child.emit("close", exitCode), 0)
+  return child
+}
+
+describe("spawnAgent", () => {
+  it("collects assistant_text from stream and returns concatenated text", async () => {
+    const lines = [
+      JSON.stringify({
+        type: "system",
+        subtype: "init",
+        session_id: "s1",
+        cwd: "/tmp",
+        model: "claude-haiku-4-5"
+      }),
+      JSON.stringify({
+        type: "assistant",
+        message: { content: [{ type: "text", text: "hello " }] }
+      }),
+      JSON.stringify({
+        type: "assistant",
+        message: { content: [{ type: "text", text: "world" }] }
+      }),
+      JSON.stringify({ type: "result", session_id: "s1", is_error: false })
+    ]
+    const fakeSpawn = vi.fn().mockReturnValue(makeFakeChildForSpawnAgent(lines))
+    const result = await spawnAgent({
+      prompt: "do thing",
+      cwd: "/tmp",
+      disallowedTools: ["Bash", "Read"],
+      spawn: fakeSpawn as never
+    })
+    expect(result.text).toBe("hello world")
+    expect(result.exitCode).toBe(0)
+  })
+
+  it("passes --disallowed-tools flag with comma-joined list to claude argv", async () => {
+    const fakeSpawn = vi.fn().mockReturnValue(
+      makeFakeChildForSpawnAgent([
+        JSON.stringify({ type: "result", session_id: "s1", is_error: false })
+      ])
+    )
+    await spawnAgent({
+      prompt: "do thing",
+      cwd: "/tmp",
+      disallowedTools: ["Bash", "Read", "Edit"],
+      spawn: fakeSpawn as never
+    })
+    const argv = fakeSpawn.mock.calls[0][1] as string[]
+    const idx = argv.indexOf("--disallowed-tools")
+    expect(idx).toBeGreaterThanOrEqual(0)
+    expect(argv[idx + 1]).toBe("Bash,Read,Edit")
+  })
+
+  it("does not pass --disallowed-tools when list is empty", async () => {
+    const fakeSpawn = vi.fn().mockReturnValue(
+      makeFakeChildForSpawnAgent([
+        JSON.stringify({ type: "result", session_id: "s1", is_error: false })
+      ])
+    )
+    await spawnAgent({
+      prompt: "x",
+      cwd: "/tmp",
+      disallowedTools: [],
+      spawn: fakeSpawn as never
+    })
+    const argv = fakeSpawn.mock.calls[0][1] as string[]
+    expect(argv).not.toContain("--disallowed-tools")
+  })
+
+  it("throws on non-zero exit with stderr message", async () => {
+    const child = makeFakeChildForSpawnAgent([], 1)
+    child.stderr = Readable.from(["fatal error\n"])
+    const fakeSpawn = vi.fn().mockReturnValue(child)
+    await expect(
+      spawnAgent({ prompt: "x", cwd: "/tmp", disallowedTools: [], spawn: fakeSpawn as never })
+    ).rejects.toThrow(/fatal error|exited with code 1/)
+  })
+
+  it("rejects when signal fires before spawn", async () => {
+    const fakeSpawn = vi.fn().mockReturnValue(makeFakeChildForSpawnAgent([]))
+    const ac = new AbortController()
+    ac.abort()
+    await expect(
+      spawnAgent({
+        prompt: "x",
+        cwd: "/tmp",
+        disallowedTools: [],
+        spawn: fakeSpawn as never,
+        signal: ac.signal
+      })
+    ).rejects.toThrow(/abort/i)
   })
 })

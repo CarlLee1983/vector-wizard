@@ -1,4 +1,4 @@
-import { spawn as defaultSpawn } from "node:child_process"
+import { spawn as defaultSpawn, type ChildProcess } from "node:child_process"
 import { createInterface } from "node:readline"
 import type { AgentEvent, LocalAgentProvider, LocalAgentRequest } from "./types"
 
@@ -186,6 +186,102 @@ export function createClaudeProvider(opts: ClaudeProviderOptions = {}): LocalAge
             // ignore
           }
         }
+      }
+    }
+  }
+}
+
+export type SpawnAgentOptions = {
+  prompt: string
+  cwd: string
+  disallowedTools?: string[]
+  signal?: AbortSignal
+  spawn?: SpawnFn
+  binPath?: string
+}
+
+export type SpawnAgentResult = {
+  text: string
+  exitCode: number
+}
+
+export async function spawnAgent(opts: SpawnAgentOptions): Promise<SpawnAgentResult> {
+  if (opts.signal?.aborted) {
+    throw new Error("Aborted before start")
+  }
+
+  const spawn = opts.spawn ?? defaultSpawn
+  const binPath = opts.binPath ?? "claude"
+  const disallowed = opts.disallowedTools ?? []
+
+  const args: string[] = [
+    "--add-dir",
+    opts.cwd,
+    "--print",
+    "--output-format",
+    "stream-json",
+    "--verbose",
+    "--permission-mode",
+    "default"
+  ]
+  if (disallowed.length > 0) {
+    args.push("--disallowed-tools", disallowed.join(","))
+  }
+  args.push(opts.prompt)
+
+  const child = spawn(binPath, args, {
+    cwd: opts.cwd,
+    stdio: ["ignore", "pipe", "pipe"]
+  }) as ChildProcess
+
+  const onAbort = () => {
+    if (!child.killed) {
+      try {
+        child.kill("SIGTERM")
+      } catch {
+        // already exited
+      }
+    }
+  }
+  opts.signal?.addEventListener("abort", onAbort)
+
+  let stderrBuf = ""
+  child.stderr?.on("data", (chunk: Buffer) => {
+    stderrBuf += chunk.toString()
+  })
+
+  const exitPromise = new Promise<number>((resolve) => {
+    child.once("close", (code) => resolve(code ?? 0))
+  })
+
+  let text = ""
+  try {
+    if (!child.stdout) {
+      throw new Error("claude process produced no stdout stream")
+    }
+    const rl = createInterface({ input: child.stdout })
+    for await (const line of rl) {
+      for (const event of parseStreamJsonLine(line)) {
+        if (event.type === "assistant_text") {
+          text += event.text
+        }
+      }
+    }
+    const code = await exitPromise
+    if (opts.signal?.aborted) {
+      throw new Error("Aborted")
+    }
+    if (code !== 0) {
+      throw new Error(stderrBuf.trim() || `claude exited with code ${code}`)
+    }
+    return { text, exitCode: code }
+  } finally {
+    opts.signal?.removeEventListener("abort", onAbort)
+    if (!child.killed) {
+      try {
+        child.kill("SIGTERM")
+      } catch {
+        // ignore
       }
     }
   }
