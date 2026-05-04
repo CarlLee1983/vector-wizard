@@ -97,6 +97,7 @@ Adding a UI string: extend the `MessageKey` union in `i18n/dictionaries.ts` and 
 
 - All commit messages, PR descriptions, code comments, and conversational responses default to **Traditional Chinese (Taiwan)**. Switch to English only on explicit request.
 - Commit format: `<type>: [<scope>] <subject>` (feat / fix / docs / refactor / test / chore / perf / ci).
+- AI 對話面板僅以「綁 step 的結構化動作」形式存在（`WizardActionPanel`）。要新增 action：在 `actionRegistry.ts` 註冊，並提供 `promptTemplate` 與 `disallowedTools` 鎖工具集。**永不在 Panel 加入自由 textarea**。
 
 ## Repository Skills
 

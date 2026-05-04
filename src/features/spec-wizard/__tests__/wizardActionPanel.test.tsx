@@ -82,7 +82,6 @@ describe("WizardActionPanel", () => {
     if (!gapsBtn) throw new Error("gaps button not found")
     for (let i = 0; i < 6; i++) {
       fireEvent.click(gapsBtn)
-      // eslint-disable-next-line no-await-in-loop
       await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(i + 1))
     }
     const cards = document.querySelectorAll(".action-card")
