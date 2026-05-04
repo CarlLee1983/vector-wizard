@@ -9,7 +9,7 @@ function withI18n(node: ReactNode) {
   return <I18nProvider initialLocale="zh-TW">{node}</I18nProvider>
 }
 
-describe.skip("ActionResultCard", () => {
+describe("ActionResultCard", () => {
   it("renders preview card with adopt and discard buttons", () => {
     const result: ActionResult = {
       kind: "preview",

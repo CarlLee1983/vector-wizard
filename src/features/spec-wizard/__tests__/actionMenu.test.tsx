@@ -8,7 +8,7 @@ function withI18n(node: ReactNode) {
   return <I18nProvider initialLocale="zh-TW">{node}</I18nProvider>
 }
 
-describe.skip("ActionMenu", () => {
+describe("ActionMenu", () => {
   it("renders 3 buttons for stories step", () => {
     render(withI18n(<ActionMenu step="stories" onRun={() => {}} isRunning={false} />))
     expect(screen.getAllByRole("button")).toHaveLength(3)
