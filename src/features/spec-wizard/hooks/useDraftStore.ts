@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from "react"
 import type { DraftId, DraftMetaEntry, FeatureDraft } from "../model/specTypes"
 import {
+  applyActionResult as applyActionResultAction,
   createDraft as createDraftAction,
   deleteDraft as deleteDraftAction,
   exportDraftJson as exportDraftJsonAction,
@@ -38,6 +39,7 @@ export type UseDraftStoreValue = {
   importDraftJson(raw: string): DraftId
   importDraftYaml(raw: string): DraftId
   exportDraftJson(id: DraftId): string
+  applyActionResult(input: { targetPath: string; mode: "insert" | "replace"; value: unknown }): void
 }
 
 export function useDraftStore(): UseDraftStoreValue {
@@ -64,6 +66,7 @@ export function useDraftStore(): UseDraftStoreValue {
     deleteDraft: deleteDraftAction,
     importDraftJson: importDraftJsonAction,
     importDraftYaml: importDraftYamlAction,
-    exportDraftJson: exportDraftJsonAction
+    exportDraftJson: exportDraftJsonAction,
+    applyActionResult: applyActionResultAction
   }
 }

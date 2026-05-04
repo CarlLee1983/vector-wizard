@@ -1,5 +1,6 @@
 import { createEmptyDraft } from "../model/defaultDraft"
 import type { DraftStoreState, FeatureDraft, Locale } from "../model/specTypes"
+import { applyActionResultToDraft, type ApplyActionResultInput } from "./applyActionResult"
 import { draftFromJson, draftToJson, normalizeDraft } from "./draftStorage"
 import { yamlToDraft } from "../services/yamlParser"
 
@@ -259,6 +260,21 @@ export function exportDraftJson(id: string): string {
   const draft = current.drafts[id]
   if (!draft) throw new Error(`No draft with id: ${id}`)
   return draftToJson(draft)
+}
+
+export function applyActionResult(input: ApplyActionResultInput): void {
+  const current = ensureHydrated()
+  const id = current.activeDraftId
+  if (id == null || !current.drafts[id]) {
+    throw new Error("no active draft")
+  }
+  const next = applyActionResultToDraft(current.drafts[id], input)
+  const now = Date.now()
+  setStateAndNotify({
+    ...current,
+    drafts: { ...current.drafts, [id]: next },
+    meta: { ...current.meta, [id]: { ...current.meta[id], updatedAt: now } }
+  })
 }
 
 export function __resetForTests(): void {

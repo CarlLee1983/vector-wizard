@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import type { FeatureDraft } from "../model/specTypes"
 import {
   __resetForTests,
+  applyActionResult,
   createDraft,
   deleteDraft,
   exportDraftJson,
@@ -239,5 +240,35 @@ describe("importDraftYaml", () => {
 
   it("propagates YamlParseError on malformed YAML", () => {
     expect(() => importDraftYaml("not yaml: [")).toThrow()
+  })
+})
+
+describe("applyActionResult action", () => {
+  beforeEach(() => {
+    localStorage.clear()
+    __resetForTests()
+  })
+
+  afterEach(() => {
+    localStorage.clear()
+    __resetForTests()
+  })
+
+  it("mutates the active draft via path + value", () => {
+    const id = createDraft()
+    const initial = getSnapshot().drafts[id]
+    setActiveDraft({ ...initial, metadata: { ...initial.metadata, title: "Original" } })
+    applyActionResult({
+      targetPath: "metadata.title",
+      mode: "replace",
+      value: "Renamed by action"
+    })
+    expect(getSnapshot().drafts[id].metadata.title).toBe("Renamed by action")
+  })
+
+  it("throws when no active draft", () => {
+    expect(() =>
+      applyActionResult({ targetPath: "metadata.title", mode: "replace", value: "x" })
+    ).toThrow(/active/i)
   })
 })
