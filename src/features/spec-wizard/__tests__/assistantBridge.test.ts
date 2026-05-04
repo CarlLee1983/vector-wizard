@@ -1,9 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
-import {
-  __resetAssistantBridge,
-  sendToAssistant,
-  subscribeAssistant
-} from "../services/localAgent/assistantBridge"
+import { __resetAssistantBridge, sendToAssistant, subscribeAssistant } from "../services/localAgent/assistantBridge"
 
 describe("assistantBridge", () => {
   afterEach(() => __resetAssistantBridge())

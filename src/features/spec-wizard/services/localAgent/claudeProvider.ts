@@ -129,14 +129,14 @@ export function createClaudeProvider(opts: ClaudeProviderOptions = {}): LocalAge
       }
 
       const args = [
+        "--add-dir",
+        cwd,
         "--print",
         "--output-format",
         "stream-json",
         "--verbose",
         "--permission-mode",
         "bypassPermissions",
-        "--add-dir",
-        cwd,
         prompt
       ]
 

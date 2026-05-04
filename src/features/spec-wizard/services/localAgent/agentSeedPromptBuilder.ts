@@ -36,9 +36,7 @@ export function buildAgentSeedRequest({ title, owner, locale, draft }: AgentSeed
       "```"
     )
   } else {
-    lines.push(
-      "目前 wizard 尚無草稿 snapshot，僅有上方標題與負責人；請從這個起點展開 stage 1 Frame。"
-    )
+    lines.push("目前 wizard 尚無草稿 snapshot，僅有上方標題與負責人；請從這個起點展開 stage 1 Frame。")
   }
 
   return lines.join("\n")
