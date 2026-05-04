@@ -1,10 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useDraftStore } from "../hooks/useDraftStore"
 import { useI18n } from "../i18n/I18nContext"
-import { buildAgentSeedRequest } from "../services/localAgent/agentSeedPromptBuilder"
-import { sendToAssistant } from "../services/localAgent/assistantBridge"
 import { buildSeedPrompt } from "../services/seedPromptBuilder"
 
 type SeedPromptSectionProps = {
@@ -14,20 +11,8 @@ type SeedPromptSectionProps = {
 
 export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
   const { locale, t } = useI18n()
-  const { activeDraft } = useDraftStore()
   const [copied, setCopied] = useState(false)
   const [agentState, setAgentState] = useState<"idle" | "pending" | "success" | "failed">("idle")
-  const [sentToPanel, setSentToPanel] = useState(false)
-
-  const handleSendToPanel = () => {
-    if (!title) return
-    const prompt = buildAgentSeedRequest({ title, owner, locale, draft: activeDraft })
-    const delivered = sendToAssistant(prompt)
-    if (delivered) {
-      setSentToPanel(true)
-      setTimeout(() => setSentToPanel(false), 2500)
-    }
-  }
 
   const handleCopy = async () => {
     if (!title) return
@@ -90,15 +75,6 @@ export function SeedPromptSection({ title, owner }: SeedPromptSectionProps) {
             : agentState === "success"
               ? t("agentDraft.button.success")
               : t("agentDraft.button.idle")}
-        </button>
-
-        <button
-          type="button"
-          className={sentToPanel ? "success" : "primary"}
-          onClick={handleSendToPanel}
-          disabled={!title}
-        >
-          {sentToPanel ? t("seedPrompt.button.sentToAgent") : t("seedPrompt.button.sendToAgent")}
         </button>
       </div>
     </div>
