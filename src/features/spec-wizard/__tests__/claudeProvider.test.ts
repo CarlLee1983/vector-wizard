@@ -1,12 +1,7 @@
 import { EventEmitter } from "node:events"
-import { PassThrough, Readable } from "node:stream"
+import { Readable } from "node:stream"
 import { describe, expect, it, vi } from "vitest"
-import {
-  createClaudeProvider,
-  parseStreamJsonLine,
-  spawnAgent
-} from "../services/localAgent/claudeProvider"
-import type { AgentEvent } from "../services/localAgent/types"
+import { parseStreamJsonLine, spawnAgent } from "../services/localAgent/claudeProvider"
 
 describe("parseStreamJsonLine", () => {
   it("parses system init", () => {
@@ -116,130 +111,6 @@ describe("parseStreamJsonLine", () => {
     expect(parseStreamJsonLine("not json")).toEqual([])
     expect(parseStreamJsonLine(JSON.stringify({ type: "unknown" }))).toEqual([])
     expect(parseStreamJsonLine(JSON.stringify({ no: "type" }))).toEqual([])
-  })
-})
-
-function makeFakeChild(stdoutLines: string[], stderrText = "", exitCode = 0) {
-  const stdout = Readable.from(stdoutLines.map((line) => line + "\n"))
-  const stderr = Readable.from(stderrText ? [stderrText] : [])
-  const child = new EventEmitter() as EventEmitter & {
-    stdout: Readable
-    stderr: Readable
-    kill: ReturnType<typeof vi.fn>
-    killed: boolean
-  }
-  child.stdout = stdout
-  child.stderr = stderr
-  child.kill = vi.fn(() => {
-    child.killed = true
-    return true
-  })
-  child.killed = false
-  setImmediate(() => child.emit("close", exitCode))
-  return child
-}
-
-describe("createClaudeProvider", () => {
-  it("yields events from stdout lines in order", async () => {
-    const fakeSpawn = vi.fn(() =>
-      makeFakeChild([
-        JSON.stringify({ type: "system", subtype: "init", session_id: "s1", cwd: "/tmp" }),
-        JSON.stringify({
-          type: "assistant",
-          message: { content: [{ type: "text", text: "Hi" }] }
-        }),
-        JSON.stringify({
-          type: "result",
-          session_id: "s1",
-          is_error: false,
-          duration_ms: 100,
-          num_turns: 1
-        })
-      ])
-    )
-    const provider = createClaudeProvider({ spawn: fakeSpawn as never })
-    const events: AgentEvent[] = []
-    for await (const ev of provider.send({ prompt: "hi", cwd: "/tmp" })) {
-      events.push(ev)
-    }
-    expect(events.map((e) => e.type)).toEqual(["system_init", "assistant_text", "result"])
-    expect(fakeSpawn).toHaveBeenCalledWith(
-      "claude",
-      expect.arrayContaining([
-        "--print",
-        "--output-format",
-        "stream-json",
-        "--permission-mode",
-        "bypassPermissions",
-        "--add-dir",
-        "/tmp",
-        "hi"
-      ]),
-      expect.objectContaining({ cwd: "/tmp" })
-    )
-  })
-
-  it("emits error event when claude exits non-zero", async () => {
-    const fakeSpawn = vi.fn(() => makeFakeChild([], "auth missing", 1))
-    const provider = createClaudeProvider({ spawn: fakeSpawn as never })
-    const events: AgentEvent[] = []
-    for await (const ev of provider.send({ prompt: "hi", cwd: "/tmp" })) {
-      events.push(ev)
-    }
-    expect(events).toEqual([{ type: "error", message: "auth missing" }])
-  })
-
-  it("yields nothing and emits aborted error when signal already aborted", async () => {
-    const fakeSpawn = vi.fn(() => makeFakeChild([]))
-    const provider = createClaudeProvider({ spawn: fakeSpawn as never })
-    const ac = new AbortController()
-    ac.abort()
-    const events: AgentEvent[] = []
-    for await (const ev of provider.send({ prompt: "hi", cwd: "/tmp", signal: ac.signal })) {
-      events.push(ev)
-    }
-    expect(events).toEqual([{ type: "error", message: "Aborted before start" }])
-    expect(fakeSpawn).not.toHaveBeenCalled()
-  })
-
-  it("kills child process when signal aborts mid-stream", async () => {
-    const stdout = new PassThrough()
-    const stderr = new PassThrough()
-    const child = new EventEmitter() as EventEmitter & {
-      stdout: PassThrough
-      stderr: PassThrough
-      kill: ReturnType<typeof vi.fn>
-      killed: boolean
-    }
-    child.stdout = stdout
-    child.stderr = stderr
-    child.killed = false
-    child.kill = vi.fn(() => {
-      child.killed = true
-      stdout.end()
-      stderr.end()
-      setImmediate(() => child.emit("close", 0))
-      return true
-    })
-
-    const fakeSpawn = vi.fn(() => child)
-    const provider = createClaudeProvider({ spawn: fakeSpawn as never })
-    const ac = new AbortController()
-
-    const iterPromise = (async () => {
-      const collected: AgentEvent[] = []
-      for await (const ev of provider.send({ prompt: "hi", cwd: "/tmp", signal: ac.signal })) {
-        collected.push(ev)
-        if (ev.type === "system_init") ac.abort()
-      }
-      return collected
-    })()
-
-    stdout.write(JSON.stringify({ type: "system", subtype: "init", session_id: "s1", cwd: "/tmp" }) + "\n")
-
-    const events = await iterPromise
-    expect(events[0]?.type).toBe("system_init")
-    expect(child.kill).toHaveBeenCalled()
   })
 })
 

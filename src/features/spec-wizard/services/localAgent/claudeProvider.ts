@@ -1,6 +1,6 @@
 import { spawn as defaultSpawn, type ChildProcess } from "node:child_process"
 import { createInterface } from "node:readline"
-import type { AgentEvent, LocalAgentProvider, LocalAgentRequest } from "./types"
+import type { AgentEvent } from "./types"
 
 type SpawnFn = typeof defaultSpawn
 
@@ -108,86 +108,6 @@ export function parseStreamJsonLine(line: string): AgentEvent[] {
     }
     default:
       return []
-  }
-}
-
-export type ClaudeProviderOptions = {
-  spawn?: SpawnFn
-  binPath?: string
-}
-
-export function createClaudeProvider(opts: ClaudeProviderOptions = {}): LocalAgentProvider {
-  const spawn = opts.spawn ?? defaultSpawn
-  const binPath = opts.binPath ?? "claude"
-
-  return {
-    name: "claude-code",
-    async *send({ prompt, cwd, signal }: LocalAgentRequest): AsyncIterable<AgentEvent> {
-      if (signal?.aborted) {
-        yield { type: "error", message: "Aborted before start" }
-        return
-      }
-
-      const args = [
-        "--add-dir",
-        cwd,
-        "--print",
-        "--output-format",
-        "stream-json",
-        "--verbose",
-        "--permission-mode",
-        "bypassPermissions",
-        prompt
-      ]
-
-      const child = spawn(binPath, args, { cwd, stdio: ["ignore", "pipe", "pipe"] })
-
-      const onAbort = () => {
-        if (!child.killed) {
-          try {
-            child.kill("SIGTERM")
-          } catch {
-            // ignore — process may already have exited
-          }
-        }
-      }
-      signal?.addEventListener("abort", onAbort)
-
-      let stderrBuf = ""
-      child.stderr?.on("data", (chunk: Buffer) => {
-        stderrBuf += chunk.toString()
-      })
-
-      const exitPromise = new Promise<number>((resolve) => {
-        child.once("close", (code) => resolve(code ?? 0))
-      })
-
-      try {
-        if (!child.stdout) {
-          yield { type: "error", message: "claude process produced no stdout stream" }
-          return
-        }
-        const rl = createInterface({ input: child.stdout })
-        for await (const line of rl) {
-          for (const event of parseStreamJsonLine(line)) {
-            yield event
-          }
-        }
-        const code = await exitPromise
-        if (code !== 0 && !signal?.aborted) {
-          yield { type: "error", message: stderrBuf.trim() || `claude exited with code ${code}` }
-        }
-      } finally {
-        signal?.removeEventListener("abort", onAbort)
-        if (!child.killed) {
-          try {
-            child.kill("SIGTERM")
-          } catch {
-            // ignore
-          }
-        }
-      }
-    }
   }
 }
 
