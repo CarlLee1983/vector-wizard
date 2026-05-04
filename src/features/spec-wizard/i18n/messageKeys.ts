@@ -155,6 +155,8 @@ export type MessageKey =
   | "seedPrompt.button.idle"
   | "seedPrompt.button.copied"
   | "seedPrompt.button.failed"
+  | "seedPrompt.button.sendToAgent"
+  | "seedPrompt.button.sentToAgent"
   | "draftSwitcher.label"
   | "draftSwitcher.untitled"
   | "draftSwitcher.new"

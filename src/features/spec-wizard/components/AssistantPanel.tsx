@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { useLocalAgent } from "../hooks/useLocalAgent"
 import { useI18n } from "../i18n/I18nContext"
+import { subscribeAssistant } from "../services/localAgent/assistantBridge"
 import type { ChatItem } from "../services/localAgent/chatItem"
 
 const COLLAPSED_KEY = "vector-wizard:assistant-collapsed"
@@ -27,6 +28,13 @@ export function AssistantPanel() {
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight })
   }, [messages])
+
+  useEffect(() => {
+    return subscribeAssistant((prompt) => {
+      setCollapsed(false)
+      void send(prompt)
+    })
+  }, [send])
 
   if (collapsed) {
     return (
