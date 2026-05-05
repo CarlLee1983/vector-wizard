@@ -251,6 +251,7 @@ export type MessageKey =
   | "actionPanel.card.parseError"
   | "actionPanel.card.runError"
   | "actionPanel.card.retry"
+  | "actionPanel.card.suggestion"
   | "actionPanel.actions.stories.rewrite.label"
   | "actionPanel.actions.stories.rewrite.help"
   | "actionPanel.actions.stories.gaps.label"

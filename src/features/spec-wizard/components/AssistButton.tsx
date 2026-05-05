@@ -2,20 +2,23 @@
 
 import { useState } from "react"
 import { useI18n } from "../i18n/I18nContext"
+import { useWizardContext } from "../hooks/useWizardContext"
 import type { AssistRequest, AssistResponse } from "../services/assistService"
 
 type AssistButtonProps = {
   mode: "rewrite" | "quality_check"
   text: string
-  onApply: (suggestedText: string) => void
+  fieldPath: string
+  onApply?: (suggestedText: string) => void
 }
 
-export function AssistButton({ mode, text, onApply }: AssistButtonProps) {
+export function AssistButton({ mode, text, fieldPath, onApply }: AssistButtonProps) {
   const { t, locale } = useI18n()
+  const { pushAssistantItem } = useWizardContext()
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle")
 
   async function handleAssist() {
-    if (!text.trim()) return
+    if (!text.trim() && mode === "rewrite") return
     
     setStatus("loading")
     try {
@@ -25,20 +28,29 @@ export function AssistButton({ mode, text, onApply }: AssistButtonProps) {
         body: JSON.stringify({
           mode,
           locale,
-          text
+          text,
+          fieldPath
         } as AssistRequest)
       })
 
       if (!response.ok) throw new Error("Assist failed")
       
       const data: AssistResponse = await response.json()
-      if (data.suggestedText) {
-        onApply(data.suggestedText)
-        setStatus("done")
-        setTimeout(() => setStatus("idle"), 2000)
-      } else {
-        setStatus("idle")
-      }
+      
+      pushAssistantItem({
+        kind: "assist",
+        actionId: mode === "rewrite" ? "AI Rewrite" : "Quality Check",
+        mode,
+        targetPath: fieldPath,
+        suggestedText: data.suggestedText,
+        rationale: data.rationale,
+        warnings: data.warnings,
+        assumptions: data.assumptions,
+        openQuestions: data.openQuestions
+      })
+
+      setStatus("done")
+      setTimeout(() => setStatus("idle"), 2000)
     } catch (error) {
       console.error(error)
       setStatus("error")

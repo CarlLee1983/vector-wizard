@@ -8,6 +8,18 @@ export type ActionResultPreview = {
   }
 }
 
+export type AssistResult = {
+  kind: "assist"
+  actionId: string
+  mode: "rewrite" | "quality_check"
+  targetPath: string
+  suggestedText?: string
+  rationale?: string
+  warnings: string[]
+  assumptions: string[]
+  openQuestions: string[]
+}
+
 export type ActionResultNotes = {
   kind: "notes"
   actionId: string
@@ -30,7 +42,12 @@ export type ActionResultRunError = {
   message: string
 }
 
-export type ActionResult = ActionResultPreview | ActionResultNotes | ActionResultParseError | ActionResultRunError
+export type ActionResult =
+  | ActionResultPreview
+  | AssistResult
+  | ActionResultNotes
+  | ActionResultParseError
+  | ActionResultRunError
 
 const FENCE_RE = /```vector-action\s*\n([\s\S]*?)\n```/
 

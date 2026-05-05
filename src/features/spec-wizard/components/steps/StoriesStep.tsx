@@ -54,7 +54,7 @@ export function StoriesStep({ draft, setDraft }: StoriesStepProps) {
           <AssistButton
             mode="rewrite"
             text={firstStory.userStory}
-            onApply={(suggestedText) => setDraft(updateStory(draft, { userStory: suggestedText }))}
+            fieldPath="epics[0].stories[0].userStory"
           />
         </div>
       </div>

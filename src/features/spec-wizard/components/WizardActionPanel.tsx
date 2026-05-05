@@ -9,30 +9,13 @@ import { useI18n } from "../i18n/I18nContext"
 import type { ActionResult } from "../services/localAgent/actionResult"
 
 const COLLAPSED_KEY = "vector-wizard:assistant-collapsed"
-const STACK_LIMIT = 5
-
-type StackItem = {
-  id: number
-  result: ActionResult
-}
-
-let nextStackId = 1
 
 export function WizardActionPanel() {
   const { t } = useI18n()
-  const { currentStepId, activeDraft } = useWizardContext()
+  const { currentStepId, activeDraft, assistantStack, pushAssistantItem, removeAssistantItem } = useWizardContext()
   const { applyActionResult } = useDraftStore()
-  const [stack, setStack] = useState<StackItem[]>([])
   const [isRunning, setIsRunning] = useState(false)
   const [collapsed, setCollapsed] = useState(false)
-
-  const pushItem = useCallback((result: ActionResult) => {
-    setStack((prev) => {
-      const next = [...prev, { id: nextStackId++, result }]
-      if (next.length > STACK_LIMIT) next.splice(0, next.length - STACK_LIMIT)
-      return next
-    })
-  }, [])
 
   const runRemote = useCallback(
     async (actionId: string) => {
@@ -45,9 +28,9 @@ export function WizardActionPanel() {
           body: JSON.stringify({ actionId, draft: activeDraft })
         })
         const json = (await res.json()) as ActionResult
-        pushItem(json)
+        pushAssistantItem(json)
       } catch (err) {
-        pushItem({
+        pushAssistantItem({
           kind: "run_error",
           actionId,
           message: err instanceof Error ? err.message : String(err)
@@ -56,33 +39,42 @@ export function WizardActionPanel() {
         setIsRunning(false)
       }
     },
-    [activeDraft, pushItem]
+    [activeDraft, pushAssistantItem]
   )
 
   const onAdopt = useCallback(
-    (result: ActionResult) => {
-      if (result.kind !== "preview") return
+    (stackId: number, result: ActionResult) => {
+      if (result.kind !== "preview" && result.kind !== "assist") return
       try {
-        applyActionResult({
-          targetPath: result.preview.targetPath,
-          mode: result.preview.mode,
-          value: result.preview.text
-        })
-        setStack((prev) => prev.filter((s) => s.result !== result))
+        const value = result.kind === "preview" ? result.preview.text : result.suggestedText
+        const targetPath = result.kind === "preview" ? result.preview.targetPath : result.targetPath
+        const mode = result.kind === "preview" ? result.preview.mode : "replace"
+
+        if (value !== undefined) {
+          applyActionResult({
+            targetPath,
+            mode,
+            value
+          })
+        }
+        removeAssistantItem(stackId)
       } catch (err) {
-        pushItem({
+        pushAssistantItem({
           kind: "run_error",
           actionId: result.actionId,
           message: err instanceof Error ? err.message : String(err)
         })
       }
     },
-    [applyActionResult, pushItem]
+    [applyActionResult, pushAssistantItem, removeAssistantItem]
   )
 
-  const onDiscard = useCallback((stackId: number) => {
-    setStack((prev) => prev.filter((s) => s.id !== stackId))
-  }, [])
+  const onDiscard = useCallback(
+    (stackId: number) => {
+      removeAssistantItem(stackId)
+    },
+    [removeAssistantItem]
+  )
 
   if (collapsed) {
     return (
@@ -116,11 +108,11 @@ export function WizardActionPanel() {
       <ActionMenu step={currentStepId} onRun={runRemote} isRunning={isRunning} />
       {isRunning ? <p>{t("actionPanel.running")}</p> : null}
       <div className="action-panel__stack">
-        {stack.map((s) => (
+        {assistantStack.map((s) => (
           <ActionResultCard
             key={s.id}
             result={s.result}
-            onAdopt={onAdopt}
+            onAdopt={() => onAdopt(s.id, s.result)}
             onDiscard={() => onDiscard(s.id)}
             onRetry={() => void runRemote(s.result.actionId)}
           />

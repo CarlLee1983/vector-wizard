@@ -51,11 +51,8 @@ export function GoalStep({ draft, setDraft }: GoalStepProps) {
           onChange={(event) => setDraft({ ...draft, goal: { ...draft.goal, statement: event.target.value } })}
         />
         <div className="field-actions">
-          <AssistButton
-            mode="rewrite"
-            text={draft.goal.statement}
-            onApply={(suggestedText) => setDraft({ ...draft, goal: { ...draft.goal, statement: suggestedText } })}
-          />
+          <AssistButton mode="rewrite" text={draft.goal.statement} fieldPath="goal.statement" />
+          <AssistButton mode="quality_check" text={draft.goal.statement} fieldPath="goal.statement" />
         </div>
       </div>
       <div className="field stack">

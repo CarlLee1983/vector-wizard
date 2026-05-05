@@ -40,8 +40,10 @@ export function DraftSwitcher({ onOpenManager }: DraftSwitcherProps) {
                 setOpen(false)
               }}
             >
-              {entry.id === activeDraftId ? "✓ " : "  "}
-              {entry.draft.metadata.title?.trim() || t("draftSwitcher.untitled")}
+              <span style={{ width: "16px", flexShrink: 0, display: "inline-block" }}>
+                {entry.id === activeDraftId ? "✓" : ""}
+              </span>
+              <span>{entry.draft.metadata.title?.trim() || t("draftSwitcher.untitled")}</span>
             </button>
           ))}
           <div className="dropdown-divider" />
@@ -53,7 +55,8 @@ export function DraftSwitcher({ onOpenManager }: DraftSwitcherProps) {
               setOpen(false)
             }}
           >
-            + {t("draftSwitcher.new")}
+            <span style={{ width: "16px", flexShrink: 0, display: "inline-block" }}>+</span>
+            <span>{t("draftSwitcher.new").replace("+ ", "").replace("+", "")}</span>
           </button>
           <button
             className="dropdown-item"
@@ -63,7 +66,8 @@ export function DraftSwitcher({ onOpenManager }: DraftSwitcherProps) {
               onOpenManager()
             }}
           >
-            ⚙ {t("draftSwitcher.manage")}
+            <span style={{ width: "16px", flexShrink: 0, display: "inline-block" }}>⚙</span>
+            <span>{t("draftSwitcher.manage").replace("⚙ ", "").replace("⚙", "")}</span>
           </button>
         </div>
       )}
