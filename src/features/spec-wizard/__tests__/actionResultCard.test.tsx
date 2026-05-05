@@ -47,11 +47,7 @@ describe("ActionResultCard", () => {
       raw: "free-form claude reply"
     }
     const onRetry = vi.fn()
-    render(
-      withI18n(
-        <ActionResultCard result={result} onAdopt={() => {}} onDiscard={() => {}} onRetry={onRetry} />
-      )
-    )
+    render(withI18n(<ActionResultCard result={result} onAdopt={() => {}} onDiscard={() => {}} onRetry={onRetry} />))
     expect(screen.getByText(/free-form claude reply/)).toBeInTheDocument()
     fireEvent.click(screen.getByRole("button", { name: /重試|retry/i }))
     expect(onRetry).toHaveBeenCalled()

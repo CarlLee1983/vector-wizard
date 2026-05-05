@@ -6,8 +6,7 @@ export function storiesRewriteTemplate({ draft }: { draft: FeatureDraft }): stri
     throw new Error("storiesRewriteTemplate requires epics[0].stories[0] to exist")
   }
   const locale = draft.metadata.locale ?? "zh-TW"
-  const localeInstruction =
-    locale === "en" ? "Respond in English." : "請以繁體中文（zh-TW）作答。"
+  const localeInstruction = locale === "en" ? "Respond in English." : "請以繁體中文（zh-TW）作答。"
   return [
     "你是一個敏捷產品教練，協助使用者改寫 user story 使其更精確、可驗證。",
     `Feature 標題：${draft.metadata.title || "(未填)"}`,

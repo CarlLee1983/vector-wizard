@@ -51,16 +51,26 @@ export function Wizard() {
     }
 
     switch (step) {
-      case "basic": return <BasicStep draft={draft} setDraft={setDraft} />
-      case "goal": return <GoalStep draft={draft} setDraft={setDraft} />
-      case "context": return <ContextStep draft={draft} setDraft={setDraft} />
-      case "deliverables": return <DeliverablesStep draft={draft} setDraft={setDraft} />
-      case "stories": return <StoriesStep draft={draft} setDraft={setDraft} />
-      case "criteria": return <CriteriaStep draft={draft} setDraft={setDraft} />
-      case "examples": return <ExamplesStep draft={draft} setDraft={setDraft} />
-      case "boundaries": return <BoundariesStep draft={draft} setDraft={setDraft} />
-      case "review": return <ReviewPanel draft={draft} />
-      default: return null
+      case "basic":
+        return <BasicStep draft={draft} setDraft={setDraft} />
+      case "goal":
+        return <GoalStep draft={draft} setDraft={setDraft} />
+      case "context":
+        return <ContextStep draft={draft} setDraft={setDraft} />
+      case "deliverables":
+        return <DeliverablesStep draft={draft} setDraft={setDraft} />
+      case "stories":
+        return <StoriesStep draft={draft} setDraft={setDraft} />
+      case "criteria":
+        return <CriteriaStep draft={draft} setDraft={setDraft} />
+      case "examples":
+        return <ExamplesStep draft={draft} setDraft={setDraft} />
+      case "boundaries":
+        return <BoundariesStep draft={draft} setDraft={setDraft} />
+      case "review":
+        return <ReviewPanel draft={draft} />
+      default:
+        return null
     }
   }, [activeDraft, setActiveDraft, step])
 

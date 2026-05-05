@@ -267,8 +267,6 @@ describe("applyActionResult action", () => {
   })
 
   it("throws when no active draft", () => {
-    expect(() =>
-      applyActionResult({ targetPath: "metadata.title", mode: "replace", value: "x" })
-    ).toThrow(/active/i)
+    expect(() => applyActionResult({ targetPath: "metadata.title", mode: "replace", value: "x" })).toThrow(/active/i)
   })
 })

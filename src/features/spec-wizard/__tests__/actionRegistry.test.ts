@@ -4,11 +4,7 @@ import { getActionsForStep, getActionById } from "../services/localAgent/actionR
 describe("actionRegistry", () => {
   it("registers 3 actions on stories step", () => {
     const actions = getActionsForStep("stories")
-    expect(actions.map((a) => a.id).sort()).toEqual([
-      "stories.consistency",
-      "stories.gaps",
-      "stories.rewrite"
-    ])
+    expect(actions.map((a) => a.id).sort()).toEqual(["stories.consistency", "stories.gaps", "stories.rewrite"])
   })
 
   it("stories.rewrite has mutationKind preview", () => {

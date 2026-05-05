@@ -15,16 +15,8 @@ export type WizardContextProviderProps = WizardContextValue & {
   children: ReactNode
 }
 
-export function WizardContextProvider({
-  currentStepId,
-  activeDraft,
-  children
-}: WizardContextProviderProps) {
-  return (
-    <WizardContext.Provider value={{ currentStepId, activeDraft }}>
-      {children}
-    </WizardContext.Provider>
-  )
+export function WizardContextProvider({ currentStepId, activeDraft, children }: WizardContextProviderProps) {
+  return <WizardContext.Provider value={{ currentStepId, activeDraft }}>{children}</WizardContext.Provider>
 }
 
 export function useWizardContext(): WizardContextValue {

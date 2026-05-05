@@ -52,7 +52,7 @@ export function useDraftStore(): UseDraftStoreValue {
     meta: state.meta[id]
   }))
 
-  const activeDraft = state.activeDraftId != null ? state.drafts[state.activeDraftId] ?? null : null
+  const activeDraft = state.activeDraftId != null ? (state.drafts[state.activeDraftId] ?? null) : null
 
   return {
     activeDraftId: state.activeDraftId,

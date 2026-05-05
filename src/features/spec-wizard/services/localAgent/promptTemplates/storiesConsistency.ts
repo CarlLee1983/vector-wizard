@@ -3,10 +3,7 @@ import type { FeatureDraft } from "../../../model/specTypes"
 export function storiesConsistencyTemplate({ draft }: { draft: FeatureDraft }): string {
   const story = draft.epics?.[0]?.stories?.[0]
   const ac = story?.acceptanceCriteria ?? []
-  const acText =
-    ac.length === 0
-      ? "(尚未填寫)"
-      : ac.map((c, i) => `${i + 1}. ${c.statement}`).join("\n")
+  const acText = ac.length === 0 ? "(尚未填寫)" : ac.map((c, i) => `${i + 1}. ${c.statement}`).join("\n")
   const locale = draft.metadata.locale ?? "zh-TW"
   const localeInstruction = locale === "en" ? "Respond in English." : "請以繁體中文作答。"
   return [

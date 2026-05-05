@@ -10,12 +10,7 @@ export type ActionResultCardProps = {
   onRetry?: () => void
 }
 
-export function ActionResultCard({
-  result,
-  onAdopt,
-  onDiscard,
-  onRetry
-}: ActionResultCardProps) {
+export function ActionResultCard({ result, onAdopt, onDiscard, onRetry }: ActionResultCardProps) {
   const { t } = useI18n()
   if (result.kind === "preview") {
     return (

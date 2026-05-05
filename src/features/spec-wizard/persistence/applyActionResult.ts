@@ -8,10 +8,7 @@ export type ApplyActionResultInput = {
 
 type Segment = { kind: "key"; key: string } | { kind: "index"; index: number }
 
-export function applyActionResultToDraft(
-  draft: FeatureDraft,
-  input: ApplyActionResultInput
-): FeatureDraft {
+export function applyActionResultToDraft(draft: FeatureDraft, input: ApplyActionResultInput): FeatureDraft {
   if (input.mode === "insert") {
     throw new Error("insert mode is not supported in v1")
   }

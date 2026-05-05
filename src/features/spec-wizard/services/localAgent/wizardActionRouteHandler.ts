@@ -21,10 +21,7 @@ function badRequest(message: string): Response {
   })
 }
 
-export async function handleWizardAction(
-  req: Request,
-  deps: WizardActionDeps = {}
-): Promise<Response> {
+export async function handleWizardAction(req: Request, deps: WizardActionDeps = {}): Promise<Response> {
   const runAction = deps.runAction ?? defaultRunAction
   const cwd = deps.cwd ?? process.cwd()
 

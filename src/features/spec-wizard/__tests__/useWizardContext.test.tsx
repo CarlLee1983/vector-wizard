@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { render, screen } from "@testing-library/react"
-import {
-  WizardContextProvider,
-  useWizardContext
-} from "../hooks/useWizardContext"
+import { WizardContextProvider, useWizardContext } from "../hooks/useWizardContext"
 import type { ActionStepId } from "../services/localAgent/actionRegistry"
 import { minimalValidDraft } from "../test/fixtures"
 

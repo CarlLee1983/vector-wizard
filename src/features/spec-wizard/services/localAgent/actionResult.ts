@@ -30,11 +30,7 @@ export type ActionResultRunError = {
   message: string
 }
 
-export type ActionResult =
-  | ActionResultPreview
-  | ActionResultNotes
-  | ActionResultParseError
-  | ActionResultRunError
+export type ActionResult = ActionResultPreview | ActionResultNotes | ActionResultParseError | ActionResultRunError
 
 const FENCE_RE = /```vector-action\s*\n([\s\S]*?)\n```/
 
