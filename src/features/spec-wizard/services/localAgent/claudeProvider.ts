@@ -147,12 +147,15 @@ export async function spawnAgent(opts: SpawnAgentOptions): Promise<SpawnAgentRes
   if (disallowed.length > 0) {
     args.push("--disallowed-tools", disallowed.join(","))
   }
-  args.push(opts.prompt)
 
   const child = spawn(binPath, args, {
     cwd: opts.cwd,
-    stdio: ["ignore", "pipe", "pipe"]
+    stdio: ["pipe", "pipe", "pipe"]
   }) as ChildProcess
+
+  if (child.stdin) {
+    child.stdin.end(opts.prompt)
+  }
 
   const onAbort = () => {
     if (!child.killed) {

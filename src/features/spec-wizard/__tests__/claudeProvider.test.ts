@@ -117,12 +117,21 @@ describe("parseStreamJsonLine", () => {
 function makeFakeChildForSpawnAgent(stdoutLines: string[], exitCode = 0) {
   const stdout = Readable.from(stdoutLines.map((l) => `${l}\n`))
   const stderr = Readable.from([])
+  const stdinChunks: string[] = []
+  const stdin = {
+    end(chunk?: string) {
+      if (typeof chunk === "string") stdinChunks.push(chunk)
+    }
+  }
   const child = new EventEmitter() as EventEmitter & {
+    stdin: typeof stdin
     stdout: Readable
     stderr: Readable
     killed: boolean
     kill: (sig?: string) => boolean
+    stdinChunks: string[]
   }
+  child.stdin = stdin
   child.stdout = stdout
   child.stderr = stderr
   child.killed = false
@@ -130,6 +139,7 @@ function makeFakeChildForSpawnAgent(stdoutLines: string[], exitCode = 0) {
     child.killed = true
     return true
   }
+  child.stdinChunks = stdinChunks
   setTimeout(() => child.emit("close", exitCode), 0)
   return child
 }
@@ -166,11 +176,11 @@ describe("spawnAgent", () => {
   })
 
   it("passes --disallowed-tools flag with comma-joined list to claude argv", async () => {
-    const fakeSpawn = vi.fn().mockReturnValue(
-      makeFakeChildForSpawnAgent([
-        JSON.stringify({ type: "result", session_id: "s1", is_error: false })
-      ])
-    )
+    const fakeSpawn = vi
+      .fn()
+      .mockReturnValue(
+        makeFakeChildForSpawnAgent([JSON.stringify({ type: "result", session_id: "s1", is_error: false })])
+      )
     await spawnAgent({
       prompt: "do thing",
       cwd: "/tmp",
@@ -183,12 +193,26 @@ describe("spawnAgent", () => {
     expect(argv[idx + 1]).toBe("Bash,Read,Edit")
   })
 
+  it("writes prompt to child stdin and does not include it in argv", async () => {
+    const child = makeFakeChildForSpawnAgent([JSON.stringify({ type: "result", session_id: "s1", is_error: false })])
+    const fakeSpawn = vi.fn().mockReturnValue(child)
+    await spawnAgent({
+      prompt: "PROMPT-PAYLOAD",
+      cwd: "/tmp",
+      disallowedTools: ["Bash"],
+      spawn: fakeSpawn as never
+    })
+    const argv = fakeSpawn.mock.calls[0][1] as string[]
+    expect(argv).not.toContain("PROMPT-PAYLOAD")
+    expect(child.stdinChunks).toEqual(["PROMPT-PAYLOAD"])
+  })
+
   it("does not pass --disallowed-tools when list is empty", async () => {
-    const fakeSpawn = vi.fn().mockReturnValue(
-      makeFakeChildForSpawnAgent([
-        JSON.stringify({ type: "result", session_id: "s1", is_error: false })
-      ])
-    )
+    const fakeSpawn = vi
+      .fn()
+      .mockReturnValue(
+        makeFakeChildForSpawnAgent([JSON.stringify({ type: "result", session_id: "s1", is_error: false })])
+      )
     await spawnAgent({
       prompt: "x",
       cwd: "/tmp",
