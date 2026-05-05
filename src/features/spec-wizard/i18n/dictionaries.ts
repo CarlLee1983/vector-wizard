@@ -212,6 +212,11 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "agentDraft.button.idle": "呼叫 Agent 寫草稿",
     "agentDraft.button.pending": "Agent 正在思考中...",
     "agentDraft.button.success": "草稿已就緒 ✓",
+    "agentDraft.button.failed": "失敗，重試",
+    "agentDraft.error.parse": "Agent 回傳格式無法解析，請重試",
+    "agentDraft.error.run": "Agent 執行失敗",
+    "agentDraft.error.network": "網路錯誤，請重試",
+    "agentDraft.error.invalidDraft": "Agent 產出的草稿不完整，請重試",
     "agentDraft.load": "載入 Agent 草稿",
     "seedPrompt.title": "AI 快速生成草稿",
     "seedPrompt.help":
@@ -529,6 +534,11 @@ At the end, list the top 3 items you would prioritize fixing.
     "agentDraft.button.idle": "Ask Agent for Draft",
     "agentDraft.button.pending": "Agent is thinking...",
     "agentDraft.button.success": "Draft Ready ✓",
+    "agentDraft.button.failed": "Failed, retry",
+    "agentDraft.error.parse": "Agent output could not be parsed. Please retry.",
+    "agentDraft.error.run": "Agent failed to run",
+    "agentDraft.error.network": "Network error. Please retry.",
+    "agentDraft.error.invalidDraft": "Agent produced an incomplete draft. Please retry.",
     "agentDraft.load": "Load Agent Draft",
     "seedPrompt.title": "AI Quick Draft",
     "seedPrompt.help":
