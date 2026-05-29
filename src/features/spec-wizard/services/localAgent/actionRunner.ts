@@ -36,7 +36,7 @@ export async function runAction(input: RunActionInput): Promise<ActionResult> {
     const { text } = await spawn({
       prompt,
       cwd: input.cwd,
-      disallowedTools: action.disallowedTools,
+      readonly: action.readonly,
       signal: input.signal
     })
     return parseActionResult(text, action.id)

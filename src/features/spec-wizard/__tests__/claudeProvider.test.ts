@@ -168,14 +168,14 @@ describe("spawnAgent", () => {
     const result = await spawnAgent({
       prompt: "do thing",
       cwd: "/tmp",
-      disallowedTools: ["Bash", "Read"],
+      readonly: true,
       spawn: fakeSpawn as never
     })
     expect(result.text).toBe("hello world")
     expect(result.exitCode).toBe(0)
   })
 
-  it("passes --disallowed-tools flag with comma-joined list to claude argv", async () => {
+  it("passes --disallowed-tools with the full lock list (incl Read) when readonly", async () => {
     const fakeSpawn = vi
       .fn()
       .mockReturnValue(
@@ -184,13 +184,16 @@ describe("spawnAgent", () => {
     await spawnAgent({
       prompt: "do thing",
       cwd: "/tmp",
-      disallowedTools: ["Bash", "Read", "Edit"],
+      readonly: true,
       spawn: fakeSpawn as never
     })
     const argv = fakeSpawn.mock.calls[0][1] as string[]
     const idx = argv.indexOf("--disallowed-tools")
     expect(idx).toBeGreaterThanOrEqual(0)
-    expect(argv[idx + 1]).toBe("Bash,Read,Edit")
+    const list = argv[idx + 1].split(",")
+    for (const tool of ["Bash", "Read", "Edit", "Write", "MultiEdit", "WebFetch", "WebSearch", "NotebookEdit", "TodoWrite", "Glob", "Grep"]) {
+      expect(list).toContain(tool)
+    }
   })
 
   it("writes prompt to child stdin and does not include it in argv", async () => {
@@ -199,7 +202,7 @@ describe("spawnAgent", () => {
     await spawnAgent({
       prompt: "PROMPT-PAYLOAD",
       cwd: "/tmp",
-      disallowedTools: ["Bash"],
+      readonly: true,
       spawn: fakeSpawn as never
     })
     const argv = fakeSpawn.mock.calls[0][1] as string[]
@@ -207,7 +210,7 @@ describe("spawnAgent", () => {
     expect(child.stdinChunks).toEqual(["PROMPT-PAYLOAD"])
   })
 
-  it("does not pass --disallowed-tools when list is empty", async () => {
+  it("does not pass --disallowed-tools when readonly is not set", async () => {
     const fakeSpawn = vi
       .fn()
       .mockReturnValue(
@@ -216,7 +219,6 @@ describe("spawnAgent", () => {
     await spawnAgent({
       prompt: "x",
       cwd: "/tmp",
-      disallowedTools: [],
       spawn: fakeSpawn as never
     })
     const argv = fakeSpawn.mock.calls[0][1] as string[]
@@ -228,7 +230,7 @@ describe("spawnAgent", () => {
     child.stderr = Readable.from(["fatal error\n"])
     const fakeSpawn = vi.fn().mockReturnValue(child)
     await expect(
-      spawnAgent({ prompt: "x", cwd: "/tmp", disallowedTools: [], spawn: fakeSpawn as never })
+      spawnAgent({ prompt: "x", cwd: "/tmp", readonly: true, spawn: fakeSpawn as never })
     ).rejects.toThrow(/fatal error|exited with code 1/)
   })
 
@@ -240,7 +242,7 @@ describe("spawnAgent", () => {
       spawnAgent({
         prompt: "x",
         cwd: "/tmp",
-        disallowedTools: [],
+        readonly: true,
         spawn: fakeSpawn as never,
         signal: ac.signal
       })

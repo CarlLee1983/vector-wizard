@@ -22,7 +22,7 @@ export type ActionDefinition = {
   helpKey: string
   mutationKind: ActionMutationKind
   promptTemplate: (input: { draft: FeatureDraft }) => string
-  disallowedTools: string[]
+  readonly: boolean
 }
 
 const REGISTRY: ActionDefinition[] = []
@@ -42,20 +42,6 @@ export function getActionById(id: string): ActionDefinition | undefined {
   return REGISTRY.find((a) => a.id === id)
 }
 
-const FULL_TOOL_LOCK = [
-  "Bash",
-  "Read",
-  "Edit",
-  "Write",
-  "MultiEdit",
-  "WebFetch",
-  "WebSearch",
-  "NotebookEdit",
-  "TodoWrite",
-  "Glob",
-  "Grep"
-]
-
 registerAction({
   id: "stories.rewrite",
   step: "stories",
@@ -63,7 +49,7 @@ registerAction({
   helpKey: "actionPanel.actions.stories.rewrite.help",
   mutationKind: "preview",
   promptTemplate: storiesRewriteTemplate,
-  disallowedTools: FULL_TOOL_LOCK
+  readonly: true
 })
 
 registerAction({
@@ -73,7 +59,7 @@ registerAction({
   helpKey: "actionPanel.actions.stories.gaps.help",
   mutationKind: "notes",
   promptTemplate: storiesGapsTemplate,
-  disallowedTools: FULL_TOOL_LOCK
+  readonly: true
 })
 
 registerAction({
@@ -83,5 +69,5 @@ registerAction({
   helpKey: "actionPanel.actions.stories.consistency.help",
   mutationKind: "notes",
   promptTemplate: storiesConsistencyTemplate,
-  disallowedTools: FULL_TOOL_LOCK
+  readonly: true
 })

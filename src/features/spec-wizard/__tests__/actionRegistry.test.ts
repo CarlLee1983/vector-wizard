@@ -19,18 +19,9 @@ describe("actionRegistry", () => {
     expect(getActionById("stories.consistency")?.mutationKind).toBe("notes")
   })
 
-  it("all stories actions have a non-empty disallowedTools list", () => {
+  it("all stories actions are readonly (tool-locked)", () => {
     const actions = getActionsForStep("stories")
-    expect(actions.every((a) => a.disallowedTools.length > 0)).toBe(true)
-  })
-
-  it("disallowedTools includes Bash, Read, Edit at minimum", () => {
-    const actions = getActionsForStep("stories")
-    for (const a of actions) {
-      expect(a.disallowedTools).toContain("Bash")
-      expect(a.disallowedTools).toContain("Read")
-      expect(a.disallowedTools).toContain("Edit")
-    }
+    expect(actions.every((a) => a.readonly === true)).toBe(true)
   })
 
   it("returns empty array for steps with no actions", () => {

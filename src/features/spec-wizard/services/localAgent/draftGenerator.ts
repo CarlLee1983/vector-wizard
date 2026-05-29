@@ -18,20 +18,6 @@ export type GenerateDraftInput = {
   spawnAgent?: (opts: SpawnAgentOptions) => Promise<SpawnAgentResult>
 }
 
-const DRAFT_TOOL_LOCK = [
-  "Bash",
-  "Read",
-  "Edit",
-  "Write",
-  "MultiEdit",
-  "WebFetch",
-  "WebSearch",
-  "NotebookEdit",
-  "TodoWrite",
-  "Glob",
-  "Grep"
-]
-
 export async function generateDraft(input: GenerateDraftInput): Promise<DraftGenerationResult> {
   const title = input.title?.trim() ?? ""
   if (!title) {
@@ -44,7 +30,7 @@ export async function generateDraft(input: GenerateDraftInput): Promise<DraftGen
     const out = await spawn({
       prompt,
       cwd: input.cwd,
-      disallowedTools: DRAFT_TOOL_LOCK,
+      readonly: true,
       signal: input.signal
     })
     text = out.text

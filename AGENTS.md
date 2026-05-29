@@ -14,7 +14,8 @@ Package manager: **bun** (`bun.lock` is committed). `npm`/`pnpm` will work but b
 
 ```bash
 bun install
-bun run dev              # next dev
+bun run dev              # next dev（in-app local agent 預設用 claude）
+VECTOR_AGENT=codex bun run dev   # 改用 codex CLI 跑 AI 草稿 / WizardActionPanel actions
 bun run build            # next build
 bun run lint             # next lint
 bun run test             # vitest run (one-shot)
@@ -102,4 +103,6 @@ Adding a UI string: extend the `MessageKey` union in `i18n/dictionaries.ts` and 
 ## Repository Skills
 
 - `.agents/skills/vector-analyzer/` — Tool-assisted deep feature analysis using the Vector schema. Use `vector:analyze` to reverse-engineer existing code into Roadmap specifications.
-- `.agents/skills/vector-pipeline-b/` — Walk a system idea through a four-stage methodology pipeline (Frame → Decompose → Slice → Handoff) and emit `feature-seed.json` files compatible with the Vector wizard's Draft Manager. Use when starting from "I want to build system X" and you need to produce N feature specs ready for npx vector-wizard.
+- `.agents/skills/vector-pipeline-b/` — Path B 方法論四階段流水線（Frame → Decompose → Slice → Handoff），產出與 Vector wizard Draft Manager 相容的 `feature-seed.json`。
+  - **Claude Code**：以 skill 形式自動載入，使用者可請求「跑 vector-pipeline-b」或自然語句呼叫，agent 直接執行。
+  - **Codex CLI**：不會自動載入；當使用者要求跑 Path B / 方法論 pipeline 時，請 Read `.agents/skills/vector-pipeline-b/SKILL.md` 並依其指示執行（含 stage-1～4 stub 與 `docs/methodology/stages/*/agent-script.md`）。
