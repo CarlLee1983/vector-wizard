@@ -83,8 +83,6 @@ describe("generateDraft", () => {
     expect(call.prompt).toContain("Z")
     expect(call.prompt).toContain("Bob")
     expect(call.prompt).toContain("Traditional Chinese")
-    for (const tool of ["Bash", "Edit", "Write", "MultiEdit", "WebFetch"]) {
-      expect(call.disallowedTools).toContain(tool)
-    }
+    expect(call.readonly).toBe(true)
   })
 })

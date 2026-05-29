@@ -27,7 +27,7 @@ describe("runAction", () => {
     expect(result.kind).toBe("preview")
     expect(fakeSpawnAgent).toHaveBeenCalledTimes(1)
     const call = fakeSpawnAgent.mock.calls[0][0]
-    expect(call.disallowedTools).toContain("Bash")
+    expect(call.readonly).toBe(true)
     expect(call.cwd).toBe("/tmp")
     expect(typeof call.prompt).toBe("string")
     expect(call.prompt.length).toBeGreaterThan(0)
