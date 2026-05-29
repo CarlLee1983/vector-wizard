@@ -191,7 +191,19 @@ describe("spawnAgent", () => {
     const idx = argv.indexOf("--disallowed-tools")
     expect(idx).toBeGreaterThanOrEqual(0)
     const list = argv[idx + 1].split(",")
-    for (const tool of ["Bash", "Read", "Edit", "Write", "MultiEdit", "WebFetch", "WebSearch", "NotebookEdit", "TodoWrite", "Glob", "Grep"]) {
+    for (const tool of [
+      "Bash",
+      "Read",
+      "Edit",
+      "Write",
+      "MultiEdit",
+      "WebFetch",
+      "WebSearch",
+      "NotebookEdit",
+      "TodoWrite",
+      "Glob",
+      "Grep"
+    ]) {
       expect(list).toContain(tool)
     }
   })
@@ -229,9 +241,9 @@ describe("spawnAgent", () => {
     const child = makeFakeChildForSpawnAgent([], 1)
     child.stderr = Readable.from(["fatal error\n"])
     const fakeSpawn = vi.fn().mockReturnValue(child)
-    await expect(
-      spawnAgent({ prompt: "x", cwd: "/tmp", readonly: true, spawn: fakeSpawn as never })
-    ).rejects.toThrow(/fatal error|exited with code 1/)
+    await expect(spawnAgent({ prompt: "x", cwd: "/tmp", readonly: true, spawn: fakeSpawn as never })).rejects.toThrow(
+      /fatal error|exited with code 1/
+    )
   })
 
   it("rejects when signal fires before spawn", async () => {

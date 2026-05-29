@@ -40,7 +40,9 @@ describe("parseCodexJsonLine", () => {
   it("ignores lifecycle and non-agent_message items", () => {
     expect(parseCodexJsonLine(JSON.stringify({ type: "thread.started", thread_id: "x" }))).toEqual([])
     expect(parseCodexJsonLine(JSON.stringify({ type: "turn.started" }))).toEqual([])
-    expect(parseCodexJsonLine(JSON.stringify({ type: "item.completed", item: { type: "reasoning", text: "..." } }))).toEqual([])
+    expect(
+      parseCodexJsonLine(JSON.stringify({ type: "item.completed", item: { type: "reasoning", text: "..." } }))
+    ).toEqual([])
   })
 
   it("ignores blank lines, malformed JSON, and shapes without a type", () => {
@@ -100,9 +102,7 @@ describe("codexProvider.spawn", () => {
   })
 
   it("builds the expected argv and uses read-only sandbox when readonly", async () => {
-    const fakeSpawn = vi
-      .fn()
-      .mockReturnValue(makeFakeCodexChild([JSON.stringify({ type: "turn.completed" })]))
+    const fakeSpawn = vi.fn().mockReturnValue(makeFakeCodexChild([JSON.stringify({ type: "turn.completed" })]))
     await codexProvider.spawn({
       prompt: "x",
       cwd: "/path/to/project",
@@ -124,9 +124,7 @@ describe("codexProvider.spawn", () => {
   })
 
   it("uses workspace-write sandbox when not readonly", async () => {
-    const fakeSpawn = vi
-      .fn()
-      .mockReturnValue(makeFakeCodexChild([JSON.stringify({ type: "turn.completed" })]))
+    const fakeSpawn = vi.fn().mockReturnValue(makeFakeCodexChild([JSON.stringify({ type: "turn.completed" })]))
     await codexProvider.spawn({ prompt: "x", cwd: "/tmp", spawn: fakeSpawn as never })
     const argv = fakeSpawn.mock.calls[0][1] as string[]
     const idx = argv.indexOf("--sandbox")
@@ -146,9 +144,9 @@ describe("codexProvider.spawn", () => {
     const child = makeFakeCodexChild([], 1)
     child.stderr = Readable.from(["Not logged in. Run 'codex login'\n"])
     const fakeSpawn = vi.fn().mockReturnValue(child)
-    await expect(
-      codexProvider.spawn({ prompt: "x", cwd: "/tmp", spawn: fakeSpawn as never })
-    ).rejects.toThrow(/Not logged in|exited with code 1/)
+    await expect(codexProvider.spawn({ prompt: "x", cwd: "/tmp", spawn: fakeSpawn as never })).rejects.toThrow(
+      /Not logged in|exited with code 1/
+    )
   })
 
   it("rejects when signal fires before spawn", async () => {
