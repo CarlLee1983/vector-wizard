@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vector | Agile Roadmap Wizard</title>
+<meta name="description" content="Vector walks non-technical decision-makers through an agile roadmap interview and exports a YAML feature spec that AI coding agents can execute.">
+<link rel="alternate" hreflang="en" href="https://carllee1983.github.io/vector-wizard/">
+<link rel="alternate" hreflang="zh-TW" href="https://carllee1983.github.io/vector-wizard/zh-TW/">
+<style>
+/* Vector Design System — tokens mirror app/globals.css. Keep them in sync;
+   tests/docs/userDocs.test.ts fails the build if they drift. */
+:root {
+  color-scheme: light;
+  --primary: #D97757;
+  --secondary: #635C55;
+  --background: #F9F5F1;
+  --surface: #FFFFFF;
+  --border: #E5E0DA;
+  --text-main: #2D2621;
+  --text-muted: #8C847D;
+  --deep-espresso: #332F2E;
+  --font-sans: "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Roboto Mono", monospace;
+  --radius: 6px;
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- header ---------- */
+header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 16px 0;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -0.02em; }
+.mark {
+  width: 28px; height: 28px; border-radius: var(--radius);
+  background: var(--primary); color: #fff;
+  display: grid; place-items: center; font-weight: 800; font-size: 15px;
+}
+.lang { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+.lang a { color: var(--primary); }
+
+/* ---------- type ---------- */
+h1 {
+  font-size: clamp(2rem, 5vw, 2.9rem); line-height: 1.15;
+  letter-spacing: -0.03em; margin: 0 0 16px; font-weight: 800;
+}
+h2 {
+  font-size: 1.35rem; letter-spacing: -0.01em; margin: 0 0 8px; font-weight: 700;
+}
+h3 { font-size: 1rem; margin: 0 0 6px; font-weight: 700; }
+p { margin: 0 0 16px; color: var(--secondary); }
+.lede { font-size: 1.12rem; color: var(--secondary); max-width: 62ch; }
+.eyebrow {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted);
+  margin: 0 0 12px;
+}
+a { color: var(--primary); }
+
+section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+section:last-of-type { border-bottom: none; }
+
+/* ---------- buttons ---------- */
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.btn {
+  display: inline-block; padding: 10px 20px; border-radius: var(--radius);
+  font-weight: 700; font-size: 0.95rem; text-decoration: none;
+  border: 1px solid var(--primary); background: var(--primary); color: #fff;
+}
+.btn.ghost { background: var(--surface); color: var(--text-main); border-color: var(--border); }
+
+/* ---------- cards ---------- */
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-card);
+}
+.card p { margin: 0; font-size: 0.92rem; }
+
+/* ---------- code ---------- */
+pre {
+  background: var(--deep-espresso); color: #E8E2DC;
+  border-radius: var(--radius); padding: 20px; overflow-x: auto;
+  font-family: var(--font-mono); font-size: 12.5px; line-height: 1.65; margin: 0 0 16px;
+}
+code { font-family: var(--font-mono); font-size: 0.88em; }
+p code, li code {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px; color: var(--text-main);
+}
+
+/* ---------- misc ---------- */
+figure { margin: 0 0 24px; }
+figure img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-card);
+}
+figcaption { font-size: 0.82rem; color: var(--text-muted); margin-top: 8px; }
+ul { margin: 0 0 16px; padding-left: 20px; color: var(--secondary); }
+li { margin-bottom: 8px; }
+.steps { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+footer { padding: 32px 0 48px; font-size: 0.85rem; color: var(--text-muted); }
+footer a { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <span class="brand"><span class="mark">V</span> Vector</span>
+    <span class="lang">EN · <a href="zh-TW/">繁體中文</a></span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="overview">
+    <p class="eyebrow">Agile Roadmap Wizard</p>
+    <h1>Turn a rough idea into a spec an AI agent can actually build.</h1>
+    <p class="lede">
+      Vector interviews you about a feature the way a good tech lead would — goal, impact, stories,
+      acceptance criteria, boundaries — and exports a structured YAML spec that Claude Code or Codex
+      can execute without guessing.
+    </p>
+    <div class="actions">
+      <a class="btn" href="#getting-started">Get started</a>
+      <a class="btn ghost" href="https://github.com/CarlLee1983/vector-wizard">GitHub</a>
+    </div>
+  </section>
+
+  <section id="problem">
+    <p class="eyebrow">The problem</p>
+    <h2>Vague prompts produce vague code.</h2>
+    <p>
+      Hand an AI coding agent a one-line request and it will confidently invent the parts you left out:
+      the edge cases, the non-goals, the constraint you assumed was obvious. The gap is not the model —
+      it is that nobody wrote down what "done" means.
+    </p>
+    <p>
+      Vector is the interview that fills that gap. It is deliberately structured, so a non-technical
+      decision-maker can complete it alone, and the result is precise enough to hand straight to an agent.
+    </p>
+    <figure>
+      <img src="assets/wizard-en.webp" alt="The Vector wizard on the user story step, with three AI actions listed in the side panel" width="1440" height="900" loading="lazy">
+      <figcaption>Nine steps, one at a time. Only a title, a goal and one user story are mandatory — everything else is a non-blocking warning. The side panel offers a fixed set of AI actions scoped to the current step, never a free-text prompt box.</figcaption>
+    </figure>
+  </section>
+
+  <section id="why">
+    <p class="eyebrow">Why Vector</p>
+    <h2>Built for the handoff, not the demo.</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>Agent-agnostic</h3>
+        <p>Runs local CLI agents through one contract. Switch with <code>VECTOR_AGENT=claude</code> or <code>VECTOR_AGENT=codex</code> — the same spec, the same actions, no rewrite.</p>
+      </div>
+      <div class="card">
+        <h3>AI is advisory, never authoritative</h3>
+        <p>Assist returns suggestions, warnings and open questions. It never edits your draft behind your back, and the wizard works fully without it.</p>
+      </div>
+      <div class="card">
+        <h3>RAID is part of the spec</h3>
+        <p>Risks and open questions travel with the feature, each with its own status, instead of being lost in a comment thread.</p>
+      </div>
+      <div class="card">
+        <h3>Paper-like, high density</h3>
+        <p>Warm neutrals and fine rules rather than a glowing dashboard — the interface is built for long drafting sessions, not screenshots.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="methodology">
+    <p class="eyebrow">Two paths</p>
+    <h2>Start from code, or start from nothing.</h2>
+    <div class="steps">
+      <div>
+        <h3 id="path-a">Path A — Code to Spec</h3>
+        <p>Point the <code>vector-analyzer</code> skill at an existing repository and it reverse-engineers a Feature Draft you can refine in the wizard.</p>
+        <pre><code>Use the vector-analyzer skill to analyze this
+repo and produce a FeatureDraft JSON.</code></pre>
+      </div>
+      <div>
+        <h3 id="path-b">Path B — Idea to Spec</h3>
+        <p>Run the <code>vector-pipeline-b</code> skill to take a raw system idea through four stages — Frame, Decompose, Slice, Handoff — ending in Feature Seeds.</p>
+        <pre><code>npx vector-wizard import \
+  docs/methodology/reference-case/04-handoff/</code></pre>
+      </div>
+    </div>
+    <p>
+      A worked example of all four stages ships with the repo under
+      <code>docs/methodology/reference-case/</code>, including two finished Feature Seeds you can import today.
+    </p>
+  </section>
+
+  <section id="spec">
+    <p class="eyebrow">The output</p>
+    <h2>A spec, not a summary.</h2>
+    <p>
+      Every draft exports to the same shape: <code>metadata</code> for roadmap placement,
+      <code>productSpec</code> for what to build, and <code>agentSpec</code> for the boundaries the agent
+      must respect. Below is genuine wizard output for the example above, abridged for length.
+    </p>
+    <pre><code>schemaVersion: "0.2"
+metadata:
+  title: "SSO one-click sign-in"
+  locale: "en"
+  id: "FT-001"
+  horizon: "now"
+  priority: "must"
+  status: "draft"
+productSpec:
+  goal:
+    statement: "Let internal users sign in with corporate SSO and reach a personalised dashboard."
+    successSignals:
+      - statement: "First sign-in completes in under 30 seconds"
+      - statement: "Monthly password-reset tickets drop by 80%"
+  epics:
+    - title: "Identity and access"
+      stories:
+        - id: "US-001"
+          title: "SSO one-click sign-in"
+          userStory: "As an Ops Analyst, I want to sign in with corporate SSO so that I do not need another password."
+          acceptanceCriteria:
+            - id: "AC-001"
+              statement: "An unauthenticated visitor is redirected to the corporate IdP."
+agentSpec:
+  nonGoals:
+    - "External customer sign-in is out of scope"
+  constraints:
+    - "Must reuse the existing Snowflake warehouse"
+  testExpectations:
+    - "Integration test covers the IdP redirect round-trip"
+  openQuestions:
+    - id: "Q-001"
+      text: "Who owns the dashboard schema?"
+      status: "open"</code></pre>
+    <p>
+      YAML keys stay English whichever language you draft in, so the same spec is portable across teams
+      and agents. A human-readable Markdown summary is exported alongside it for review.
+    </p>
+    <figure>
+      <img src="assets/yaml-export-en.webp" alt="The review step showing INVEST readiness warnings above the generated YAML source" width="1440" height="900" loading="lazy">
+      <figcaption>The review step surfaces INVEST readiness warnings and unanswered questions first, then lets you copy the YAML, download it, or hand it straight to your local agent.</figcaption>
+    </figure>
+  </section>
+
+  <section id="getting-started">
+    <p class="eyebrow">Getting started</p>
+    <h2>Run it locally in two commands.</h2>
+    <pre><code># run the wizard without installing anything
+npx vector-wizard
+
+# or clone and develop
+bun install
+bun run dev            # uses the claude agent by default
+VECTOR_AGENT=codex bun run dev</code></pre>
+    <p>
+      The wizard opens at <code>http://localhost:3000</code>. Drafts are stored in your browser's
+      <code>localStorage</code> and can be exported as JSON — there is no backend and nothing leaves your machine
+      except the calls your chosen local agent makes.
+    </p>
+    <ul>
+      <li>Full setup and skill-installation instructions: <a href="https://github.com/CarlLee1983/vector-wizard#readme">README</a></li>
+      <li>Product vocabulary: <a href="https://github.com/CarlLee1983/vector-wizard/blob/master/CONTEXT.md"><code>CONTEXT.md</code></a></li>
+      <li>Contributor and agent guide: <a href="https://github.com/CarlLee1983/vector-wizard/blob/master/AGENTS.md"><code>AGENTS.md</code></a></li>
+    </ul>
+    <div class="actions">
+      <a class="btn" href="https://github.com/CarlLee1983/vector-wizard">View on GitHub</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  © 2026 Carl Lee ·
+  <a href="https://github.com/CarlLee1983/vector-wizard/blob/master/LICENSE">MIT licensed</a> ·
+  <a href="https://github.com/CarlLee1983/vector-wizard">Source</a>
+</footer>
+
+</body>
+</html>

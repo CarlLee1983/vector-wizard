@@ -1,8 +1,10 @@
 # Vector Agile Roadmap Wizard
 
-[English](README.md) | 繁體中文
+[English](README.md) | 繁體中文 · [網站](https://carllee1983.github.io/vector-wizard/zh-TW/)
 
 Vector 是一款高密度、專業的技術設計工具，旨在橋接「非技術決策者」與「AI 程式代理人」。它引導用戶完成敏捷路線圖（Agile Roadmap）訪談，並匯出可供 AI 代理人直接讀取的 YAML 功能規格書。
+
+產品的正式詞彙（`Feature Draft`、`Feature Spec`、`Feature Seed`、`Wizard Action`、`Agent Provider`）定義在 [`CONTEXT.md`](CONTEXT.md)。
 
 ## 🚀 核心功能
 
@@ -141,4 +143,4 @@ Vector 內附兩大核心技能，協助 AI 代理橋接構思、程式碼與路
 
 ## 📄 授權
 
-本專案為內部使用之私有專案。
+[MIT](LICENSE) © 2026 Carl Lee
