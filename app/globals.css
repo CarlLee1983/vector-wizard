@@ -331,26 +331,22 @@ button:disabled {
   right: 16px;
   width: 380px;
   height: calc(100vh - 32px);
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
+  /* 紙感：面板底用 background，卡片用 surface，靠色差分層（DESIGN.md §2）。
+     不用毛玻璃／不用大陰影／不用滑入——動效只做不透明度淡入（DESIGN.md §4）。 */
+  background: var(--background);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: var(--radius);
   display: flex;
   flex-direction: column;
   z-index: 50;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-card);
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   overflow: hidden;
-}
-
-@keyframes slideInRight {
-  from { transform: translateX(120%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
 }
 
 .action-panel__header {
   padding: 16px 20px;
-  background: rgba(0, 0, 0, 0.02);
+  background: var(--surface);
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -538,15 +534,16 @@ button:disabled {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   cursor: pointer;
-  box-shadow: 0 10px 20px rgba(217, 119, 87, 0.2);
+  box-shadow: var(--shadow-card);
   z-index: 50;
   transition: all 0.2s ease;
 }
 
+/* 與其他按鈕採同一組 hover 處理，不放大、不發光（DESIGN.md §3）。 */
 .assistant-toggle:hover {
-  transform: scale(1.05) translateY(-2px);
-  filter: brightness(1.1);
-  box-shadow: 0 15px 30px rgba(217, 119, 87, 0.4);
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 4px 8px rgba(217, 119, 87, 0.15);
 }
 
 /* Draft Switcher & Dropdowns */

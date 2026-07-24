@@ -56,6 +56,18 @@ store 是純函式，所有不變式（active fallback、v1 遷移、autosave、
 動作集合封閉、每個動作綁定 step 並鎖死工具集。這不是為了限制使用者，是為了讓 agent 的
 輸出可預測、可套用到指定的 dot-notation 路徑上。要加動作就進 `actionRegistry.ts` 註冊。
 
+**設計系統只有一套：紙感。毛玻璃已於 2026-07-25 撤除。**
+2026-05-05 的 integrated-ai-assistant 設計曾明文要求 "Modernize with Glassmorphism"，
+並實際進了程式碼——`.assistant-panel` 一度是 `rgba(255,255,255,0.85)` + `backdrop-filter: blur(12px)`
+＋ 12px 圓角、大投影、`translateX(120%)` 滑入。這與 `DESIGN.md` v0.2.0 的紙感契約直接牴觸，
+且外溢造成舊版對外落地頁整頁毛玻璃、還宣稱產品「已從紙感轉化」。
+
+裁決是**回歸 `DESIGN.md`**：面板底改 `var(--background)`、卡片維持 `var(--surface)`，
+靠 Surface / Background 色差分層（DESIGN.md §2）；圓角回 `var(--radius)`、投影回
+`var(--shadow-card)`、動效改為不透明度淡入（DESIGN.md §4「如翻頁般自然，避免戲劇性滑動」）。
+`.assistant-toggle` 的放大與發光一併移除，改用與其他按鈕相同的 hover 處理。
+全檔已無 `backdrop-filter` 與 `blur()`。
+
 **Codex provider 保留 `claudeProvider.ts` re-export shim。**
 避免既有 import 路徑變動觸發大量測試改動。`selectProvider` 會 `toLowerCase`，
 `VECTOR_AGENT` 亂值一律 fallback 回 claude。
@@ -95,17 +107,6 @@ Project 分組（Draft 之上再一層）、跨功能分析、多分頁 `storage
 ---
 
 ## 4. 未解決的矛盾
-
-**設計系統：紙感 vs 毛玻璃。**
-`DESIGN.md` v0.2.0 宣告紙感（暖米白 `#F9F5F1` / 赤陶橘 `#D97757`），但 2026-05-05 的
-integrated-ai-assistant 設計明文要求 "Modernize with Glassmorphism"，且**已經進了程式碼**——
-`app/globals.css` 的 `.assistant-panel` 用 `rgba(255,255,255,0.85)` + `backdrop-filter: blur(12px)`。
-
-這條矛盾外溢過一次：舊版對外落地頁整頁採毛玻璃藍，並宣稱產品「已從紙感轉化」，
-與實際產品不符（見 2026-07 的落地頁重寫）。目前的處置是**落地頁一律以 `globals.css` 的
-色票為準**，並由 `tests/docs/userDocs.test.ts` 強制。但 `DESIGN.md` 與 `.assistant-panel`
-之間的矛盾**尚未裁決**：要嘛把毛玻璃納入 DESIGN.md 成為正式的一種表面處理，
-要嘛把 `.assistant-panel` 改回紙感。在裁決之前，別拿任一方當作「設計的真相」。
 
 **估算資訊在 Path B → Wizard 之間掉了。**
 Slice 階段評估 INVEST 的 Small 與 T-shirt sizing，但 `FeatureDraft` 沒有欄位接住，
