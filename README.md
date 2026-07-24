@@ -1,8 +1,10 @@
 # Vector Agile Roadmap Wizard
 
-English | [繁體中文](README.zh-TW.md)
+English | [繁體中文](README.zh-TW.md) · [Website](https://carllee1983.github.io/vector-wizard/)
 
 Vector is a high-density, professional technical design tool that bridges the gap between non-technical decision-makers and AI coding agents. It walks users through an agile roadmap interview and exports an AI-ready YAML feature specification.
+
+The canonical vocabulary for the product — `Feature Draft`, `Feature Spec`, `Feature Seed`, `Wizard Action`, `Agent Provider` — lives in [`CONTEXT.md`](CONTEXT.md).
 
 ## 🚀 Key Features
 
@@ -144,4 +146,4 @@ If you haven't cloned the repo yet, use this prompt:
 
 ## 📄 License
 
-This project is private and intended for internal use.
+[MIT](LICENSE) © 2026 Carl Lee

@@ -4,7 +4,9 @@ This file provides shared guidance for all coding agents (Claude Code, Codex, Cu
 
 ## Project
 
-`vector-agile-roadmap-wizard` — an internal Next.js (App Router) tool that walks non-technical users through an agile roadmap interview and exports an AI-coding-agent-ready YAML feature spec. Single-user, no backend persistence; drafts live in `localStorage` and as importable JSON.
+`vector-agile-roadmap-wizard` — an open-source (MIT) Next.js (App Router) tool that walks non-technical users through an agile roadmap interview and exports an AI-coding-agent-ready YAML feature spec. Runs locally and single-user, with no backend persistence; drafts live in `localStorage` and as importable JSON.
+
+The canonical product vocabulary is `CONTEXT.md` at the repo root — read it before naming anything user-facing, and update it when a term is added or sharpened. `docs/methodology/glossary.md` is a separate, narrower table covering Path B methodology terms only.
 
 The authoritative product/architecture spec is `docs/superpowers/specs/2026-04-26-agile-roadmap-wizard-design.md`. The implementation plan it executes from is `docs/superpowers/plans/2026-04-26-agile-roadmap-wizard.md`. Read the design doc before changing data model, validation, or YAML semantics.
 
