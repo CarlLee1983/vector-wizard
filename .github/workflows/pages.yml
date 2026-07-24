@@ -1,0 +1,48 @@
+# Publishes the public landing page to GitHub Pages.
+#
+# Why an Actions workflow instead of pointing Pages at the `docs/` folder?
+# The `docs/` folder source publishes ALL of `docs/`, which would put the internal
+# design specs and implementation plans in `docs/superpowers/` on the open web,
+# and would leave the site root at 404 because `docs/index.html` does not exist.
+# Uploading only `docs/user/` keeps the published surface to exactly the landing
+# page, and makes `docs/user/index.html` the site root.
+#
+# Site layout: `/` is English, `/zh-TW/` is Traditional Chinese — the same
+# convention as README.md / README.zh-TW.md.
+name: Deploy landing page
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "docs/user/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let an in-flight deploy finish rather than cancelling it; queue the next one.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/user
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
