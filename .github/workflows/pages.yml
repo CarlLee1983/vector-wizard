@@ -38,10 +38,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 注意：Pages 必須先由人在 Settings → Pages → Source 選 "GitHub Actions"，
-      # 這一步無法自動化。試過 `enablement: true`，會失敗於
-      # "Create Pages site failed: Resource not accessible by integration"——
-      # 建立 Pages site 需要 admin 權限，預設的 GITHUB_TOKEN 沒有，別再重試。
+      # Pages site 必須先存在，這個 step 才不會失敗。
+      # 別在這裡加 `enablement: true`——它會失敗於 "Create Pages site failed:
+      # Resource not accessible by integration"，因為 Actions 預設的 GITHUB_TOKEN
+      # 刻意不帶 admin 權限（與 token scope 無關）。
+      # 改用本機憑證一次建好即可（已於 2026-07-25 執行）：
+      #   gh api -X POST repos/CarlLee1983/vector-wizard/pages -f build_type=workflow
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
