@@ -1,4 +1,12 @@
-import type { FeatureDraft, RaidEntry, RaidStatus, SuccessSignal, SuccessSignalKind } from "../model/specTypes"
+import { ESTIMATED_SIZES } from "../model/specTypes"
+import type {
+  EstimatedSize,
+  FeatureDraft,
+  RaidEntry,
+  RaidStatus,
+  SuccessSignal,
+  SuccessSignalKind
+} from "../model/specTypes"
 
 const SIGNAL_KINDS: readonly SuccessSignalKind[] = ["leading", "lagging"]
 const RAID_STATUSES: readonly RaidStatus[] = ["open", "validating", "validated", "invalidated"]
@@ -79,15 +87,31 @@ export function draftFromJson(raw: string): FeatureDraft {
   return normalizeDraft(parsed)
 }
 
+/**
+ * Path B 的 Stage 3 產出大寫的 S / M / L / XL；Stage 4 交接時應轉小寫，
+ * 但就算漏轉也不能讓估算掉在地上——這正是這個欄位存在的理由。
+ * 值域外的輸入一律丟棄，不讓它污染型別。
+ */
+function normalizeEstimatedSize(raw: unknown): { estimatedSize?: EstimatedSize } {
+  if (typeof raw !== "string") return {}
+  const lowered = raw.trim().toLowerCase()
+  return (ESTIMATED_SIZES as readonly string[]).includes(lowered) ? { estimatedSize: lowered as EstimatedSize } : {}
+}
+
 export function normalizeDraft(draft: any): FeatureDraft {
+  // estimatedSize 必須先從展開中剔除，否則值域外的原始值（例如 "xs"）會直接
+  // 穿過 `...draft.metadata`，而正規化回傳的空物件蓋不掉已存在的鍵。
+  const { estimatedSize: rawEstimatedSize, ...restMetadata } = draft.metadata ?? {}
+
   return {
     ...draft,
     metadata: {
       owner: "",
-      ...draft.metadata,
+      ...restMetadata,
       ...(draft.metadata?.id ? { id: draft.metadata.id } : {}),
       ...(draft.metadata?.horizon ? { horizon: draft.metadata.horizon } : {}),
       ...(draft.metadata?.priority ? { priority: draft.metadata.priority } : {}),
+      ...normalizeEstimatedSize(rawEstimatedSize),
       ...(Array.isArray(draft.metadata?.dependsOn) ? { dependsOn: draft.metadata.dependsOn } : {})
     },
     summary: {

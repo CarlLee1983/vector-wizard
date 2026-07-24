@@ -19,13 +19,18 @@ One `<feature-id>-<short-slug>.feature-seed.json` file per `must` / `should` fea
 
    a. **Construct the seed prompt** by mirroring `src/features/spec-wizard/services/seedPromptBuilder.ts`. Pass `{ title: feature.title, owner: "", locale }` where `locale` is the user-declared locale (`zh-TW` or `en`). Send the prompt to the LLM and parse the returned JSON.
 
-   b. **Generate the FeatureDraft fields.** Set `schemaVersion` to `"0.1"`. Set `metadata.title` from `feature.title`. Set `metadata.owner` to `""` (a human fills this later in the wizard). Set `metadata.locale` from input. Set `goal.statement` from `feature.oneLineGoal`. Populate `summary`, `impacts`, `deliverables`, `userActivities`, and `epics[].stories[]` from the LLM output, keeping their content but discarding any of the LLM's own `acceptanceCriteria` or `examples` items (see step d).
+   b. **Generate the FeatureDraft fields.** Set `schemaVersion` to `"0.3"` (must match the `const` in `docs/methodology/schemas/feature-seed.schema.json` — a mismatch fails validation). Set `metadata.title` from `feature.title`. Set `metadata.owner` to `""` (a human fills this later in the wizard). Set `metadata.locale` from input. Set `goal.statement` from `feature.oneLineGoal`. Populate `summary`, `impacts`, `deliverables`, `userActivities`, and `epics[].stories[]` from the LLM output, keeping their content but discarding any of the LLM's own `acceptanceCriteria` or `examples` items (see step d).
 
    c. **Propagate boundary fields from `system-brief`** using this mapping table (duplicated here so the agent does not need to read the guide):
 
       | Feature-seed field | Source |
       | ------------------ | ------ |
       | `metadata.title` | `feature.title` (feature-candidates) |
+      | `metadata.id` | `feature.id` (feature-candidates), verbatim — e.g. `FT-001` |
+      | `metadata.priority` | `feature.priority` (feature-candidates), verbatim — already lowercase in both schemas |
+      | `metadata.estimatedSize` | `feature.estimatedSize` (feature-candidates), **lowercased**: Stage 3 emits `S/M/L/XL`, the feature-seed schema requires `s/m/l/xl`. Omit the key entirely if Stage 3 left it unset — never guess a size here |
+      | `metadata.dependsOn` | `feature.dependsOn` (feature-candidates), verbatim. Omit if empty |
+      | `metadata.horizon` | Not a Stage 3 output. Derive a starting value from priority per `docs/methodology/pipeline-b.md`: `must → now`, `should → next`, anything else → `later`. This is a suggestion the human can override in the wizard, not a rule |
       | `goal.statement` | `feature.oneLineGoal` (feature-candidates) |
       | `agentBoundaries.constraints` | `system-brief.constraints` (**verbatim**; constraints are system-wide and never feature-scoped) |
       | `agentBoundaries.risks` | Derived from `system-brief.riskiestAssumptions`; may be reworded into feature-specific form (e.g. assumption → risk phrasing, or scoped tighter) as long as each entry traces back to a `riskiestAssumption`. Net-new feature-only risks NOT traceable to `system-brief` must go to `openQuestions` instead — never silently into `risks` |

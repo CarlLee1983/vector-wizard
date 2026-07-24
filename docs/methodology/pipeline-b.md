@@ -27,16 +27,17 @@ Pipeline B 是這份方法論手冊唯一在 MVP 範圍內實作的路徑。它�
 
 Pipeline B 的設計重點之一，是讓 Frame 階段沉澱的判斷一路流到最終的 feature-seed，不要讓使用者在每個階段重新回答同一組問題。具體來說：`system-brief` 裡的 `successSignals` 會作為 Slice 階段排優先順序的依據，並在 Handoff 階段被原樣帶進每一個 feature-seed 的成功訊號欄位；`constraints` 會跟著進到 wizard 的 `agentBoundaries.constraints`，提醒後續實作時要受哪些技術／法務／預算限制；`riskiestAssumptions` 在 Decompose 與 Slice 階段是優先級判斷的紅旗，到 Handoff 階段轉為 wizard 的 `risks`；`openQuestions` 則一路被保留——Frame 階段沒答案的問題，到 Handoff 階段仍然以 `openQuestions` 的形式留給人類在 wizard 裡確認。整條 pipeline 不會主動「補全」這些開放問題，而是讓它們可被追蹤。
 
-從 v0.2 起，Slice 階段在 `feature-candidates.json` 排出的 `priority`、`dependsOn` 與 feature `id`，會在 Handoff 階段一併寫入每份 `feature-seed.json` 的 `metadata` 區塊：
+從 v0.2 起，Slice 階段在 `feature-candidates.json` 排出的 `priority`、`dependsOn` 與 feature `id`，會在 Handoff 階段一併寫入每份 `feature-seed.json` 的 `metadata` 區塊。自 v0.3 起再加上 `estimatedSize`：
 
 | feature-candidates 欄位 | feature-seed.metadata 對應欄位 | 說明 |
 |------------------------|-------------------------------|------|
 | `id` (FT-XXX) | `id` | 保留追溯，wizard 內可顯示與編輯 |
 | `priority` (must/should/could/wont) | `priority` | MoSCoW 優先級原樣帶下游 |
+| `estimatedSize` (S/M/L/XL) | `estimatedSize` (s/m/l/xl) | T-shirt 相對工時，**交接時轉小寫**。Stage 3 用大寫、wizard 的 metadata enum 一律小寫，轉換點就在這裡。Stage 3 沒填就整個省略，不要在此猜一個尺碼 |
 | `dependsOn` (FT-XXX 陣列) | `dependsOn` | 依賴關係原樣帶下游 |
 | _（Slice 階段新判斷）_ | `horizon` (now/next/later) | 由執行者在 Slice 結尾或 Handoff 開始時依 priority 決定預設值；`must→now`、`should→next`、其他→`later` 可作為起始建議，但不強制。 |
 
-這四個欄位在 wizard 是選填的，未填時 YAML 會省略對應 key。Pipeline B 跑完之後若這幾個值都沒填，wizard 仍可正常運作，只是失去跨 feature 的排序資訊。
+這五個欄位在 wizard 都是選填的，未填時 YAML 會省略對應 key。Pipeline B 跑完之後若這幾個值都沒填，wizard 仍可正常運作，只是失去跨 feature 的排序與估算資訊。
 
 ## 跑完整段大概多久
 

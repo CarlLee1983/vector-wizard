@@ -194,7 +194,7 @@ describe("feature-candidates schema", () => {
 
 describe("feature-seed schema", () => {
   const goodFixture = {
-    schemaVersion: "0.2",
+    schemaVersion: "0.3",
     metadata: { title: "SSO sign-in", owner: "", locale: "zh-TW" },
     summary: { problem: "缺少統一登入。", desiredOutcome: "SSO 一鍵進入儀表板。" },
     goal: {
@@ -240,6 +240,39 @@ describe("feature-seed schema", () => {
     const ajv = newAjv()
     const schema = loadSchema("feature-seed.schema.json")
     expect(ajv.compile(schema)(goodFixture)).toBe(true)
+  })
+
+  // estimatedSize 是 Slice 階段評出的相對工時。在補上這個欄位之前，交接契約
+  // 沒有地方接住它，估算會在 Stage 3 → Stage 4 之間蒸發
+  // （見 docs/project-history.md）。
+  it("accepts feature-seed carrying a lowercase estimatedSize", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const validate = ajv.compile(schema)
+    for (const size of ["s", "m", "l", "xl"]) {
+      const withSize = { ...goodFixture, metadata: { ...goodFixture.metadata, estimatedSize: size } }
+      expect(validate(withSize), `expected ${size} to validate`).toBe(true)
+    }
+  })
+
+  it("rejects the uppercase estimatedSize that Stage 3 emits", () => {
+    // 交接契約刻意從嚴：Stage 4 必須把 feature-candidates 的 S/M/L/XL 轉小寫。
+    // Wizard 端的 normalizeDraft 仍會寬鬆接受大寫作為兜底，但那是最後一道網，
+    // 不是讓 Stage 4 可以偷懶的理由。
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const bad = { ...goodFixture, metadata: { ...goodFixture.metadata, estimatedSize: "M" } }
+    expect(ajv.compile(schema)(bad)).toBe(false)
+  })
+
+  it("rejects an estimatedSize outside the T-shirt range", () => {
+    const ajv = newAjv()
+    const schema = loadSchema("feature-seed.schema.json")
+    const validate = ajv.compile(schema)
+    for (const bogus of ["xs", "xxl", "medium"]) {
+      const bad = { ...goodFixture, metadata: { ...goodFixture.metadata, estimatedSize: bogus } }
+      expect(validate(bad), `expected ${bogus} to be rejected`).toBe(false)
+    }
   })
 
   it("rejects feature-seed missing metadata.title", () => {

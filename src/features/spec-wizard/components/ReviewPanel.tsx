@@ -168,6 +168,7 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
             {(draft.metadata.id ||
               draft.metadata.horizon ||
               draft.metadata.priority ||
+              draft.metadata.estimatedSize ||
               (draft.metadata.dependsOn?.length ?? 0) > 0) && (
               <section>
                 <h2>{t("review.roadmap")}</h2>
@@ -185,6 +186,11 @@ export function ReviewPanel({ draft }: ReviewPanelProps) {
                   {draft.metadata.priority && (
                     <li>
                       {t("field.priority")}: <strong>{t(`priority.${draft.metadata.priority}` as const)}</strong>
+                    </li>
+                  )}
+                  {draft.metadata.estimatedSize && (
+                    <li>
+                      {t("field.estimatedSize")}: <strong>{t(`size.${draft.metadata.estimatedSize}` as const)}</strong>
                     </li>
                   )}
                   {(draft.metadata.dependsOn?.length ?? 0) > 0 && (

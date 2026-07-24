@@ -113,3 +113,7 @@ _Avoid_: Timeline、Phase、Sprint
 **Priority**：
 MoSCoW 分級：`must` / `should` / `could` / `wont`。
 _Avoid_: Severity、Importance、P0/P1
+
+**Estimated Size**：
+T-shirt 相對工時：`s` / `m` / `l` / `xl`，不換算成小時。比 XL 還大的切片應先拆，因此沒有更大的尺碼，也沒有 XS。Path B 的 Stage 3 用大寫 `S`/`M`/`L`/`XL`，在 Handoff 交接時轉為小寫。
+_Avoid_: Effort、Story Point、Estimate、工時

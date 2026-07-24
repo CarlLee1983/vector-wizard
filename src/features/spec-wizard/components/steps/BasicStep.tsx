@@ -124,6 +124,31 @@ export function BasicStep({ draft, setDraft }: BasicStepProps) {
         </div>
 
         <div className="field">
+          <label htmlFor="estimatedSize">{t("field.estimatedSize")}</label>
+          <small id="estimatedSize-help">{t("field.estimatedSizeHelp")}</small>
+          <select
+            id="estimatedSize"
+            aria-describedby="estimatedSize-help"
+            value={draft.metadata.estimatedSize ?? ""}
+            onChange={(event) =>
+              setDraft({
+                ...draft,
+                metadata: {
+                  ...draft.metadata,
+                  estimatedSize: (event.target.value || undefined) as typeof draft.metadata.estimatedSize
+                }
+              })
+            }
+          >
+            <option value="">{t("size.unset")}</option>
+            <option value="s">{t("size.s")}</option>
+            <option value="m">{t("size.m")}</option>
+            <option value="l">{t("size.l")}</option>
+            <option value="xl">{t("size.xl")}</option>
+          </select>
+        </div>
+
+        <div className="field">
           <label htmlFor="dependsOn">{t("field.dependsOn")}</label>
           <small id="dependsOn-help">{t("field.dependsOnHelp")}</small>
           <input

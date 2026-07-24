@@ -298,6 +298,8 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "field.horizonHelp": "三層粗略時序：現在做 / 下一輪做 / 之後再考慮。",
     "field.priority": "MoSCoW 優先級（選填）",
     "field.priorityHelp": "Must（必要）、Should（應該）、Could（可以）、Won’t（這次不做）。",
+    "field.estimatedSize": "T-shirt 估算（選填）",
+    "field.estimatedSizeHelp": "相對工時，不換算成小時。單刀不超過一個 sprint；覺得比 XL 還大就先拆。不確定就填 M。",
     "field.dependsOn": "依賴的 Feature ID（選填）",
     "field.dependsOnHelp": "用逗號分隔，列出本 feature 需要先完成的其他 feature ID。",
     "field.dependsOnPlaceholder": "例：FT-002, FT-005",
@@ -311,7 +313,12 @@ export const dictionaries: Record<Locale, Record<MessageKey, string>> = {
     "priority.should": "Should",
     "priority.could": "Could",
     "priority.wont": "Won’t",
-    "priority.unset": "未設定"
+    "priority.unset": "未設定",
+    "size.s": "S（小）",
+    "size.m": "M（中）",
+    "size.l": "L（大）",
+    "size.xl": "XL（很大，接近該拆）",
+    "size.unset": "未設定"
   },
   en: {
     "wizard.title": "Agile Roadmap Wizard",
@@ -622,6 +629,9 @@ At the end, list the top 3 items you would prioritize fixing.
     "field.horizonHelp": "Coarse-grained schedule: do now / do next / consider later.",
     "field.priority": "MoSCoW priority (optional)",
     "field.priorityHelp": "Must, Should, Could, or Won’t (not this round).",
+    "field.estimatedSize": "T-shirt size (optional)",
+    "field.estimatedSizeHelp":
+      "Relative effort, never converted to hours. Keep a slice under one sprint; split anything that feels bigger than XL. Default to M when unsure.",
     "field.dependsOn": "Depends on (optional)",
     "field.dependsOnHelp": "Comma-separated list of other feature ids this one needs first.",
     "field.dependsOnPlaceholder": "e.g. FT-002, FT-005",
@@ -635,6 +645,11 @@ At the end, list the top 3 items you would prioritize fixing.
     "priority.should": "Should",
     "priority.could": "Could",
     "priority.wont": "Won’t",
-    "priority.unset": "Not set"
+    "priority.unset": "Not set",
+    "size.s": "S (small)",
+    "size.m": "M (medium)",
+    "size.l": "L (large)",
+    "size.xl": "XL (close to needing a split)",
+    "size.unset": "Not set"
   }
 }

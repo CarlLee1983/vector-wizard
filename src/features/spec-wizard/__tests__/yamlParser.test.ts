@@ -187,7 +187,7 @@ describe("yamlToDraft", () => {
   it("returns the schemaVersion alongside the draft", () => {
     const yaml = draftToYaml(minimalValidDraft(), "2026-04-29")
     const { schemaVersion } = yamlToDraft(yaml)
-    expect(schemaVersion).toBe("0.2")
+    expect(schemaVersion).toBe("0.3")
   })
 
   it("drops export-only metadata.createdAt / metadata.status", () => {

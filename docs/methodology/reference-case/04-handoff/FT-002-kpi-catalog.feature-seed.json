@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "0.2",
+  "schemaVersion": "0.3",
   "metadata": {
     "title": "預建 KPI 目錄 v1",
     "owner": "",
@@ -7,7 +7,10 @@
     "id": "FT-002",
     "horizon": "next",
     "priority": "should",
-    "dependsOn": ["FT-001"]
+    "estimatedSize": "m",
+    "dependsOn": [
+      "FT-001"
+    ]
   },
   "summary": {
     "problem": "Ops Analyst 想看 KPI 必須請工程師寫 SQL，導致週報循環延遲。",
@@ -21,14 +24,30 @@
     ]
   },
   "impacts": [
-    { "id": "IM-001", "actor": "Ops Analyst", "impact": "免於排隊請工程師寫查詢" }
+    {
+      "id": "IM-001",
+      "actor": "Ops Analyst",
+      "impact": "免於排隊請工程師寫查詢"
+    }
   ],
   "deliverables": [
-    { "id": "DE-001", "name": "KPI 目錄 UI", "description": "可瀏覽、搜尋、加入儀表板" },
-    { "id": "DE-002", "name": "10 個基準 KPI 定義", "description": "包含營收、流失率、庫存週轉等" }
+    {
+      "id": "DE-001",
+      "name": "KPI 目錄 UI",
+      "description": "可瀏覽、搜尋、加入儀表板"
+    },
+    {
+      "id": "DE-002",
+      "name": "10 個基準 KPI 定義",
+      "description": "包含營收、流失率、庫存週轉等"
+    }
   ],
   "userActivities": [
-    { "id": "UA-001", "actor": "Ops Analyst", "activity": "從 KPI 目錄挑選並加進儀表板" }
+    {
+      "id": "UA-001",
+      "actor": "Ops Analyst",
+      "activity": "從 KPI 目錄挑選並加進儀表板"
+    }
   ],
   "epics": [
     {
@@ -46,10 +65,19 @@
     }
   ],
   "agentBoundaries": {
-    "nonGoals": ["不支援自定義 KPI 公式", "不取代既有 BI 工具"],
-    "constraints": ["必須使用既有 Snowflake 倉儲", "儀表板不得顯示原始 PII"],
+    "nonGoals": [
+      "不支援自定義 KPI 公式",
+      "不取代既有 BI 工具"
+    ],
+    "constraints": [
+      "必須使用既有 Snowflake 倉儲",
+      "儀表板不得顯示原始 PII"
+    ],
     "testExpectations": [],
-    "risks": ["既有查詢層在規模化下效能不足", "預建 KPI 無法覆蓋 70% 週報需求"],
+    "risks": [
+      "既有查詢層在規模化下效能不足",
+      "預建 KPI 無法覆蓋 70% 週報需求"
+    ],
     "openQuestions": [
       "儀表板 schema 由誰負責定義？",
       "歷史 Excel 檔是否需要遷移？",

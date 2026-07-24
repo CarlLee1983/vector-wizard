@@ -17,21 +17,69 @@
   ],
   "additionalProperties": false,
   "properties": {
-    "schemaVersion": { "type": "string", "const": "0.2" },
+    "schemaVersion": {
+      "type": "string",
+      "const": "0.3"
+    },
     "metadata": {
       "type": "object",
-      "required": ["title", "locale"],
+      "required": [
+        "title",
+        "locale"
+      ],
       "additionalProperties": false,
       "properties": {
-        "title": { "type": "string", "minLength": 1 },
-        "owner": { "type": "string" },
-        "locale": { "type": "string", "enum": ["zh-TW", "en"] },
-        "id": { "type": "string", "pattern": "^FT-\\d{3}$" },
-        "horizon": { "type": "string", "enum": ["now", "next", "later"] },
-        "priority": { "type": "string", "enum": ["must", "should", "could", "wont"] },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string"
+        },
+        "locale": {
+          "type": "string",
+          "enum": [
+            "zh-TW",
+            "en"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^FT-\\d{3}$"
+        },
+        "horizon": {
+          "type": "string",
+          "enum": [
+            "now",
+            "next",
+            "later"
+          ]
+        },
+        "priority": {
+          "type": "string",
+          "enum": [
+            "must",
+            "should",
+            "could",
+            "wont"
+          ]
+        },
+        "estimatedSize": {
+          "type": "string",
+          "enum": [
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "description": "T-shirt relative effort carried over from Stage 3 feature-candidates. Lowercased at handoff: Stage 3 emits S/M/L/XL."
+        },
         "dependsOn": {
           "type": "array",
-          "items": { "type": "string", "pattern": "^FT-\\d{3}$" }
+          "items": {
+            "type": "string",
+            "pattern": "^FT-\\d{3}$"
+          }
         }
       }
     },
@@ -39,30 +87,57 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "problem": { "type": "string" },
-        "desiredOutcome": { "type": "string" }
+        "problem": {
+          "type": "string"
+        },
+        "desiredOutcome": {
+          "type": "string"
+        }
       }
     },
     "goal": {
       "type": "object",
-      "required": ["statement", "successSignals"],
+      "required": [
+        "statement",
+        "successSignals"
+      ],
       "additionalProperties": false,
       "properties": {
-        "statement": { "type": "string", "minLength": 1 },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
         "successSignals": {
           "type": "array",
           "items": {
             "oneOf": [
-              { "type": "string" },
+              {
+                "type": "string"
+              },
               {
                 "type": "object",
-                "required": ["statement"],
+                "required": [
+                  "statement"
+                ],
                 "additionalProperties": false,
                 "properties": {
-                  "statement": { "type": "string", "minLength": 1 },
-                  "metric": { "type": "string" },
-                  "threshold": { "type": "string" },
-                  "kind": { "type": "string", "enum": ["leading", "lagging"] }
+                  "statement": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "metric": {
+                    "type": "string"
+                  },
+                  "threshold": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "enum": [
+                      "leading",
+                      "lagging"
+                    ]
+                  }
                 }
               }
             ]
@@ -74,12 +149,23 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "actor", "impact"],
+        "required": [
+          "id",
+          "actor",
+          "impact"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^IM-\\d{3}$" },
-          "actor": { "type": "string" },
-          "impact": { "type": "string" }
+          "id": {
+            "type": "string",
+            "pattern": "^IM-\\d{3}$"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "impact": {
+            "type": "string"
+          }
         }
       }
     },
@@ -87,12 +173,23 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "name", "description"],
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^DE-\\d{3}$" },
-          "name": { "type": "string" },
-          "description": { "type": "string" }
+          "id": {
+            "type": "string",
+            "pattern": "^DE-\\d{3}$"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
         }
       }
     },
@@ -100,12 +197,23 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "actor", "activity"],
+        "required": [
+          "id",
+          "actor",
+          "activity"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^UA-\\d{3}$" },
-          "actor": { "type": "string" },
-          "activity": { "type": "string" }
+          "id": {
+            "type": "string",
+            "pattern": "^UA-\\d{3}$"
+          },
+          "actor": {
+            "type": "string"
+          },
+          "activity": {
+            "type": "string"
+          }
         }
       }
     },
@@ -114,31 +222,62 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["id", "title", "stories"],
+        "required": [
+          "id",
+          "title",
+          "stories"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string", "pattern": "^EP-\\d{3}$" },
-          "title": { "type": "string" },
+          "id": {
+            "type": "string",
+            "pattern": "^EP-\\d{3}$"
+          },
+          "title": {
+            "type": "string"
+          },
           "stories": {
             "type": "array",
             "minItems": 1,
             "items": {
               "type": "object",
-              "required": ["id", "title", "userStory", "acceptanceCriteria", "examples"],
+              "required": [
+                "id",
+                "title",
+                "userStory",
+                "acceptanceCriteria",
+                "examples"
+              ],
               "additionalProperties": false,
               "properties": {
-                "id": { "type": "string", "pattern": "^US-\\d{3}$" },
-                "title": { "type": "string", "minLength": 1 },
-                "userStory": { "type": "string" },
+                "id": {
+                  "type": "string",
+                  "pattern": "^US-\\d{3}$"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "userStory": {
+                  "type": "string"
+                },
                 "acceptanceCriteria": {
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "required": ["id", "statement"],
+                    "required": [
+                      "id",
+                      "statement"
+                    ],
                     "additionalProperties": false,
                     "properties": {
-                      "id": { "type": "string", "pattern": "^AC-\\d{3}$" },
-                      "statement": { "type": "string" }
+                      "id": {
+                        "type": "string",
+                        "pattern": "^AC-\\d{3}$"
+                      },
+                      "statement": {
+                        "type": "string"
+                      }
                     }
                   }
                 },
@@ -146,15 +285,35 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "required": ["id", "format"],
+                    "required": [
+                      "id",
+                      "format"
+                    ],
                     "additionalProperties": false,
                     "properties": {
-                      "id": { "type": "string", "pattern": "^EX-\\d{3}$" },
-                      "format": { "type": "string", "enum": ["given-when-then", "natural-language"] },
-                      "given": { "type": "string" },
-                      "when": { "type": "string" },
-                      "then": { "type": "string" },
-                      "scenario": { "type": "string" }
+                      "id": {
+                        "type": "string",
+                        "pattern": "^EX-\\d{3}$"
+                      },
+                      "format": {
+                        "type": "string",
+                        "enum": [
+                          "given-when-then",
+                          "natural-language"
+                        ]
+                      },
+                      "given": {
+                        "type": "string"
+                      },
+                      "when": {
+                        "type": "string"
+                      },
+                      "then": {
+                        "type": "string"
+                      },
+                      "scenario": {
+                        "type": "string"
+                      }
                     }
                   }
                 }
@@ -166,26 +325,69 @@
     },
     "agentBoundaries": {
       "type": "object",
-      "required": ["nonGoals", "constraints", "testExpectations", "risks", "openQuestions"],
+      "required": [
+        "nonGoals",
+        "constraints",
+        "testExpectations",
+        "risks",
+        "openQuestions"
+      ],
       "additionalProperties": false,
       "properties": {
-        "nonGoals": { "type": "array", "items": { "type": "string" } },
-        "constraints": { "type": "array", "items": { "type": "string" } },
-        "testExpectations": { "type": "array", "items": { "type": "string" } },
+        "nonGoals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "testExpectations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "risks": {
           "type": "array",
           "items": {
             "oneOf": [
-              { "type": "string" },
+              {
+                "type": "string"
+              },
               {
                 "type": "object",
-                "required": ["id", "text", "status"],
+                "required": [
+                  "id",
+                  "text",
+                  "status"
+                ],
                 "additionalProperties": false,
                 "properties": {
-                  "id": { "type": "string", "minLength": 1 },
-                  "text": { "type": "string", "minLength": 1 },
-                  "status": { "type": "string", "enum": ["open", "validating", "validated", "invalidated"] },
-                  "mitigation": { "type": "string" }
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "validating",
+                      "validated",
+                      "invalidated"
+                    ]
+                  },
+                  "mitigation": {
+                    "type": "string"
+                  }
                 }
               }
             ]
@@ -195,16 +397,38 @@
           "type": "array",
           "items": {
             "oneOf": [
-              { "type": "string" },
+              {
+                "type": "string"
+              },
               {
                 "type": "object",
-                "required": ["id", "text", "status"],
+                "required": [
+                  "id",
+                  "text",
+                  "status"
+                ],
                 "additionalProperties": false,
                 "properties": {
-                  "id": { "type": "string", "minLength": 1 },
-                  "text": { "type": "string", "minLength": 1 },
-                  "status": { "type": "string", "enum": ["open", "validating", "validated", "invalidated"] },
-                  "mitigation": { "type": "string" }
+                  "id": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "text": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "open",
+                      "validating",
+                      "validated",
+                      "invalidated"
+                    ]
+                  },
+                  "mitigation": {
+                    "type": "string"
+                  }
                 }
               }
             ]

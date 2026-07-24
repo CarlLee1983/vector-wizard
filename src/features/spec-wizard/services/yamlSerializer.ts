@@ -79,7 +79,7 @@ function renderYaml(value: unknown, indent = 0): string {
 
 export function normalizeDraftForExport(draft: FeatureDraft, createdAt: string) {
   return {
-    schemaVersion: "0.2",
+    schemaVersion: "0.3",
     metadata: {
       title: cleanString(draft.metadata.title),
       owner: cleanString(draft.metadata.owner),
@@ -87,6 +87,7 @@ export function normalizeDraftForExport(draft: FeatureDraft, createdAt: string) 
       ...(draft.metadata.id ? { id: draft.metadata.id } : {}),
       ...(draft.metadata.horizon ? { horizon: draft.metadata.horizon } : {}),
       ...(draft.metadata.priority ? { priority: draft.metadata.priority } : {}),
+      ...(draft.metadata.estimatedSize ? { estimatedSize: draft.metadata.estimatedSize } : {}),
       ...(draft.metadata.dependsOn && draft.metadata.dependsOn.length > 0
         ? { dependsOn: draft.metadata.dependsOn }
         : {}),

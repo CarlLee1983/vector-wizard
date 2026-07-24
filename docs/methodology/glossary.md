@@ -20,6 +20,6 @@
 | feature 種子 | Feature Seed | Handoff | 部分填妥的 FeatureDraft，貼入 Vector wizard。 |
 | INVEST 原則 | INVEST | Slice | Independent / Negotiable / Valuable / Estimable / Small / Testable 的切片自檢清單。 |
 | MoSCoW 分級 | MoSCoW | Slice | must / should / could / wont 四桶優先序，本階段必填。 |
-| T-shirt 估算 | T-shirt Sizing | Slice | 用 S / M / L / XL 表達相對工時，不換算成小時。 |
+| T-shirt 估算 | T-shirt Sizing | Slice | 用 S / M / L / XL 表達相對工時，不換算成小時。Stage 3 的 `estimatedSize` 用大寫；Handoff 轉小寫寫入 feature-seed 的 `metadata.estimatedSize`（見 [`CONTEXT.md`](../../CONTEXT.md) 的 Estimated Size）。 |
 | 相依關係圖 | dependsOn DAG | Slice | feature 之間只列直接前置的有向無環圖。 |
 | WSJF / RICE 量化排序 | WSJF / RICE | Slice | 同一 priority 桶內的選填細排，需要可信速率與觸及資料才用。 |

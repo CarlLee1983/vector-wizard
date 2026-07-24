@@ -168,7 +168,7 @@ export function parseYamlDocument(raw: string): unknown {
   return root
 }
 
-const SUPPORTED_SCHEMA_VERSIONS = ["0.1", "0.2"] as const
+const SUPPORTED_SCHEMA_VERSIONS = ["0.1", "0.2", "0.3"] as const
 
 function asObject(value: unknown, line: number, label: string): Record<string, unknown> {
   if (value && typeof value === "object" && !Array.isArray(value)) {

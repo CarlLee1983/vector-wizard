@@ -68,6 +68,14 @@ store 是純函式，所有不變式（active fallback、v1 遷移、autosave、
 `.assistant-toggle` 的放大與發光一併移除，改用與其他按鈕相同的 hover 處理。
 全檔已無 `backdrop-filter` 與 `blur()`。
 
+**`estimatedSize` 沿用 Path B 的名稱與值域，只改大小寫。**
+2026-04-28 的 gap 分析原本提案叫 `effort`、值域 `xs`–`xl`，但那份提案早於 Path B 的
+`feature-candidates.schema.json` 定案。實際採用的是 `estimatedSize` 與 `s/m/l/xl`：
+同一個概念不該有兩個名字，而 `XS` 是 Path B 永遠產不出來的值（方法論只定義
+S/M/L/XL，並要求「比 XL 大就先拆」）。大小寫的落差收在兩處：Stage 4 交接時轉小寫
+（feature-seed schema 從嚴，只收小寫），而 wizard 的 `normalizeDraft` 大小寫不敏感
+作為兜底——就算 agent 漏轉，估算也不會掉在地上。
+
 **Codex provider 保留 `claudeProvider.ts` re-export shim。**
 避免既有 import 路徑變動觸發大量測試改動。`selectProvider` 會 `toLowerCase`，
 `VECTOR_AGENT` 亂值一律 fallback 回 claude。
@@ -86,7 +94,6 @@ schema 命名不綁 stage 順序。跳關與重排是未來能力，不是現在
 
 | 項目 | 內容 | 規模 |
 |------|------|------|
-| `effort` 欄位 | 選填 `"xs" \| "s" \| "m" \| "l" \| "xl"`。配合既有 `horizon` / `priority` / `dependsOn` 才能形成可視化 roadmap。Path B 的 Slice 階段已評估過 INVEST 的 Small，該結果目前遺失 | schema + 一個下拉 |
 | Assist `suggestionId` | `AssistResponse` 加 `suggestionId`，前端記錄 `acceptedSuggestionIds[]` 一併回傳（server 可暫不處理）。**預留型改動**——未來接真實 LLM 要做 prompt 校準時，沒有這條鏈就得破壞性改動 | contracts + 前端記錄 |
 | 草稿變更歷程 | 每份 draft 無 changelog / edit history。敏捷重視可見的決策軌跡，可在 `localStorage` 另存輕量 `revisionLog` | 中 |
 
@@ -108,9 +115,8 @@ Project 分組（Draft 之上再一層）、跨功能分析、多分頁 `storage
 
 ## 4. 未解決的矛盾
 
-**估算資訊在 Path B → Wizard 之間掉了。**
-Slice 階段評估 INVEST 的 Small 與 T-shirt sizing，但 `FeatureDraft` 沒有欄位接住，
-資訊在交接時蒸發。這是 §3.1 `effort` 欄位存在的理由。
+目前沒有。前兩項（紙感 vs 毛玻璃、估算在交接時蒸發）皆已於 2026-07-25 裁決並落地，
+結論記在 §2。
 
 ---
 

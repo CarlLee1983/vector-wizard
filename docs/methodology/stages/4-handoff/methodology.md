@@ -19,7 +19,7 @@ Vector 的核心不變式是「AI 非權威」（見 `AGENTS.md` 中的 invarian
 
 ## 與 Vector wizard 的銜接
 
-`feature-seed.schemaVersion` 永遠追蹤 wizard 端的 `schemaVersion`，目前固定為 `"0.1"`。當 wizard 端的 YAML schema bump 時（例：增加新的 metadata 欄位、調整 epic 結構），`feature-seed.schema.json` 必須一同 bump 並對應修正 lint 規則；schema 升版必須是顯式行為，不是 silent migration。
+`feature-seed.schemaVersion` 永遠追蹤 wizard 端的 `schemaVersion`，目前固定為 `"0.3"`。當 wizard 端的 YAML schema bump 時（例：增加新的 metadata 欄位、調整 epic 結構），`feature-seed.schema.json` 必須一同 bump 並對應修正 lint 規則；schema 升版必須是顯式行為，不是 silent migration。
 
 實務操作：把 seed 檔貼進 wizard 的方式有兩種——一是 Draft Manager UI 的「Paste JSON」按鈕，二是「Import JSON file」按鈕。兩種都會走 wizard 內既有的 import 流程（`src/features/spec-wizard/persistence/draftStorage.ts`），所以 schema 對齊的要求是雙向的：seed 要能被 wizard 讀進來而不報錯，wizard 也必須維持向下相容直到下次 schema bump。
 

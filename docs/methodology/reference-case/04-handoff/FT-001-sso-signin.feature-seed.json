@@ -1,12 +1,13 @@
 {
-  "schemaVersion": "0.2",
+  "schemaVersion": "0.3",
   "metadata": {
     "title": "SSO 一鍵登入",
     "owner": "",
     "locale": "zh-TW",
     "id": "FT-001",
     "horizon": "now",
-    "priority": "must"
+    "priority": "must",
+    "estimatedSize": "m"
   },
   "summary": {
     "problem": "內部使用者目前缺乏統一登入入口，每個工具都要重設密碼。",
@@ -20,15 +21,35 @@
     ]
   },
   "impacts": [
-    { "id": "IM-001", "actor": "Ops Analyst", "impact": "免於記憶另一組密碼" },
-    { "id": "IM-002", "actor": "Finance Lead", "impact": "登入後直接看到團隊儀表板" }
+    {
+      "id": "IM-001",
+      "actor": "Ops Analyst",
+      "impact": "免於記憶另一組密碼"
+    },
+    {
+      "id": "IM-002",
+      "actor": "Finance Lead",
+      "impact": "登入後直接看到團隊儀表板"
+    }
   ],
   "deliverables": [
-    { "id": "DE-001", "name": "SSO 登入流程", "description": "整合企業 IdP 的 OIDC / SAML 流程" },
-    { "id": "DE-002", "name": "個人化儀表板首頁", "description": "依登入身分顯示對應團隊儀表板入口" }
+    {
+      "id": "DE-001",
+      "name": "SSO 登入流程",
+      "description": "整合企業 IdP 的 OIDC / SAML 流程"
+    },
+    {
+      "id": "DE-002",
+      "name": "個人化儀表板首頁",
+      "description": "依登入身分顯示對應團隊儀表板入口"
+    }
   ],
   "userActivities": [
-    { "id": "UA-001", "actor": "Ops Analyst", "activity": "用企業帳號登入內部報表平台" }
+    {
+      "id": "UA-001",
+      "actor": "Ops Analyst",
+      "activity": "用企業帳號登入內部報表平台"
+    }
   ],
   "epics": [
     {
@@ -46,10 +67,22 @@
     }
   ],
   "agentBoundaries": {
-    "nonGoals": ["不支援外部客戶登入", "不取代現有人資系統"],
-    "constraints": ["必須使用既有 Snowflake 倉儲", "儀表板不得顯示原始 PII"],
+    "nonGoals": [
+      "不支援外部客戶登入",
+      "不取代現有人資系統"
+    ],
+    "constraints": [
+      "必須使用既有 Snowflake 倉儲",
+      "儀表板不得顯示原始 PII"
+    ],
     "testExpectations": [],
-    "risks": ["既有查詢層在規模化下效能不足", "團隊仍回頭用試算表"],
-    "openQuestions": ["儀表板 schema 由誰負責定義？", "歷史 Excel 檔是否需要遷移？"]
+    "risks": [
+      "既有查詢層在規模化下效能不足",
+      "團隊仍回頭用試算表"
+    ],
+    "openQuestions": [
+      "儀表板 schema 由誰負責定義？",
+      "歷史 Excel 檔是否需要遷移？"
+    ]
   }
 }

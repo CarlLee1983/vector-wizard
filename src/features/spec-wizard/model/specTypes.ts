@@ -52,6 +52,15 @@ export type Horizon = "now" | "next" | "later"
 
 export type Priority = "must" | "should" | "could" | "wont"
 
+/**
+ * T-shirt 相對工時。值域刻意與 Path B 的 `feature-candidates.schema.json`
+ * 對齊（S / M / L / XL，無 XS），只是改為小寫以符合本檔其他 metadata enum。
+ * 大於 XL 的切片依方法論應先拆，不另設尺碼。
+ */
+export const ESTIMATED_SIZES = ["s", "m", "l", "xl"] as const
+
+export type EstimatedSize = (typeof ESTIMATED_SIZES)[number]
+
 export type SuccessSignalKind = "leading" | "lagging"
 
 export type SuccessSignal = {
@@ -78,6 +87,7 @@ export type FeatureDraft = {
     id?: string
     horizon?: Horizon
     priority?: Priority
+    estimatedSize?: EstimatedSize
     dependsOn?: string[]
   }
   summary: {
