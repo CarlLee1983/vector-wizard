@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vector | 敏捷路線圖規格精靈</title>
+<meta name="description" content="Vector 引導非技術決策者完成敏捷路線圖訪談，匯出 AI coding agent 能直接執行的 YAML 功能規格。">
+<link rel="alternate" hreflang="en" href="https://carllee1983.github.io/vector-wizard/">
+<link rel="alternate" hreflang="zh-TW" href="https://carllee1983.github.io/vector-wizard/zh-TW/">
+<style>
+/* Vector Design System — token 對應 app/globals.css。兩者必須一致；
+   若漂移，tests/docs/userDocs.test.ts 會讓測試失敗。 */
+:root {
+  color-scheme: light;
+  --primary: #D97757;
+  --secondary: #635C55;
+  --background: #F9F5F1;
+  --surface: #FFFFFF;
+  --border: #E5E0DA;
+  --text-main: #2D2621;
+  --text-muted: #8C847D;
+  --deep-espresso: #332F2E;
+  --font-sans: "Outfit", "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Roboto Mono", monospace;
+  --radius: 6px;
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+/* ---------- header ---------- */
+header {
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.bar {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; padding: 16px 0;
+}
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 800; letter-spacing: -0.02em; }
+.mark {
+  width: 28px; height: 28px; border-radius: var(--radius);
+  background: var(--primary); color: #fff;
+  display: grid; place-items: center; font-weight: 800; font-size: 15px;
+}
+.lang { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+.lang a { color: var(--primary); }
+
+/* ---------- type ---------- */
+h1 {
+  font-size: clamp(1.9rem, 5vw, 2.7rem); line-height: 1.3;
+  letter-spacing: -0.02em; margin: 0 0 16px; font-weight: 800;
+}
+h2 {
+  font-size: 1.35rem; letter-spacing: -0.01em; margin: 0 0 8px; font-weight: 700;
+}
+h3 { font-size: 1rem; margin: 0 0 6px; font-weight: 700; }
+p { margin: 0 0 16px; color: var(--secondary); }
+.lede { font-size: 1.08rem; color: var(--secondary); max-width: 40em; }
+.eyebrow {
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted);
+  margin: 0 0 12px;
+}
+a { color: var(--primary); }
+
+section { padding: 56px 0; border-bottom: 1px solid var(--border); }
+section:last-of-type { border-bottom: none; }
+
+/* ---------- buttons ---------- */
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+.btn {
+  display: inline-block; padding: 10px 20px; border-radius: var(--radius);
+  font-weight: 700; font-size: 0.95rem; text-decoration: none;
+  border: 1px solid var(--primary); background: var(--primary); color: #fff;
+}
+.btn.ghost { background: var(--surface); color: var(--text-main); border-color: var(--border); }
+
+/* ---------- cards ---------- */
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow-card);
+}
+.card p { margin: 0; font-size: 0.92rem; }
+
+/* ---------- code ---------- */
+pre {
+  background: var(--deep-espresso); color: #E8E2DC;
+  border-radius: var(--radius); padding: 20px; overflow-x: auto;
+  font-family: var(--font-mono); font-size: 12.5px; line-height: 1.65; margin: 0 0 16px;
+}
+code { font-family: var(--font-mono); font-size: 0.88em; }
+p code, li code {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px; padding: 1px 5px; color: var(--text-main);
+}
+
+/* ---------- misc ---------- */
+figure { margin: 0 0 24px; }
+figure img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-card);
+}
+figcaption { font-size: 0.82rem; color: var(--text-muted); margin-top: 8px; }
+ul { margin: 0 0 16px; padding-left: 20px; color: var(--secondary); }
+li { margin-bottom: 8px; }
+.steps { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+footer { padding: 32px 0 48px; font-size: 0.85rem; color: var(--text-muted); }
+footer a { color: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <span class="brand"><span class="mark">V</span> Vector</span>
+    <span class="lang"><a href="../">English</a> · 繁體中文</span>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="overview">
+    <p class="eyebrow">Agile Roadmap Wizard</p>
+    <h1>把一個粗略的想法，變成 AI agent 真的做得出來的規格。</h1>
+    <p class="lede">
+      Vector 用一位好技術主管會問的方式訪談你——目標、影響、使用者故事、驗收條件、邊界——
+      最後匯出一份結構化的 YAML 規格，讓 Claude Code 或 Codex 不必自己猜。
+    </p>
+    <div class="actions">
+      <a class="btn" href="#getting-started">開始使用</a>
+      <a class="btn ghost" href="https://github.com/CarlLee1983/vector-wizard">GitHub</a>
+    </div>
+  </section>
+
+  <section id="problem">
+    <p class="eyebrow">問題</p>
+    <h2>模糊的指令，只會換來模糊的程式碼。</h2>
+    <p>
+      丟一句話給 AI coding agent，它會很有自信地把你沒講的部分自己補完：那些邊界案例、
+      那些你不想要的東西、那個你以為理所當然的限制。問題不在模型，而在於<strong>沒有人寫下「做完」是什麼意思</strong>。
+    </p>
+    <p>
+      Vector 就是補上這一段的訪談。它刻意設計成有結構，讓非技術的決策者能獨力完成，
+      而產出的精確度又足以直接交給 agent。
+    </p>
+    <figure>
+      <img src="../assets/wizard-zh-TW.webp" alt="Vector 精靈的使用者故事步驟，側欄列出三個 AI 動作" width="1440" height="900" loading="lazy">
+      <figcaption>九個步驟，一次只問一步。只有標題、目標與一則使用者故事是必填，其餘都只是不擋路的警告。側欄提供的是綁定當前步驟的固定動作集，不會有一個讓你自由輸入的 prompt 框。</figcaption>
+    </figure>
+  </section>
+
+  <section id="why">
+    <p class="eyebrow">為什麼是 Vector</p>
+    <h2>為了交接而設計，不是為了展示。</h2>
+    <div class="grid">
+      <div class="card">
+        <h3>不綁定單一 agent</h3>
+        <p>本機 CLI agent 走同一套契約。用 <code>VECTOR_AGENT=claude</code> 或 <code>VECTOR_AGENT=codex</code> 切換——同一份規格、同一組動作，不必重寫。</p>
+      </div>
+      <div class="card">
+        <h3>AI 只提建議，不做主</h3>
+        <p>Assist 回傳的是建議、警告與待答問題。它不會偷改你的草稿，而且沒有它精靈照樣走得完。</p>
+      </div>
+      <div class="card">
+        <h3>RAID 是規格的一部分</h3>
+        <p>風險與待答問題跟著 feature 一起走，各自帶有狀態，不會消失在某串留言裡。</p>
+      </div>
+      <div class="card">
+        <h3>紙感、高資訊密度</h3>
+        <p>用溫暖中性色與細線，而不是會發光的儀表板——這個介面是為了長時間撰寫規格，不是為了截圖好看。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="methodology">
+    <p class="eyebrow">雙路徑</p>
+    <h2>從既有程式碼開始，或從零開始。</h2>
+    <div class="steps">
+      <div>
+        <h3 id="path-a">路徑 A — 程式碼轉規格</h3>
+        <p>把 <code>vector-analyzer</code> skill 指向既有的 repository，它會逆向產出一份 Feature Draft，你再進精靈裡細修。</p>
+        <pre><code>請使用 vector-analyzer 技能分析這個 repo，
+並產出 FeatureDraft JSON。</code></pre>
+      </div>
+      <div>
+        <h3 id="path-b">路徑 B — 構想轉規格</h3>
+        <p>用 <code>vector-pipeline-b</code> skill 讓一個原始的系統構想走過四個階段——Frame、Decompose、Slice、Handoff——最後產出 Feature Seed。</p>
+        <pre><code>npx vector-wizard import \
+  docs/methodology/reference-case/04-handoff/</code></pre>
+      </div>
+    </div>
+    <p>
+      四個階段的完整範例就附在 repo 的 <code>docs/methodology/reference-case/</code> 底下，
+      包含兩份已完成、現在就能匯入的 Feature Seed。
+    </p>
+  </section>
+
+  <section id="spec">
+    <p class="eyebrow">產出</p>
+    <h2>是規格，不是摘要。</h2>
+    <p>
+      每一份草稿都匯出成同一種結構：<code>metadata</code> 決定它在路線圖上的位置、
+      <code>productSpec</code> 說明要做什麼、<code>agentSpec</code> 界定 agent 必須遵守的邊界。
+      以下是參考案例 <code>FT-001</code> 的真實產出，為了篇幅有所節錄。
+    </p>
+    <pre><code>schemaVersion: "0.2"
+metadata:
+  title: "SSO 一鍵登入"
+  locale: "zh-TW"
+  id: "FT-001"
+  horizon: "now"
+  priority: "must"
+  status: "draft"
+productSpec:
+  goal:
+    statement: "讓內部使用者透過企業 SSO 登入並抵達個人化儀表板。"
+    successSignals:
+      - statement: "新使用者首次登入時間少於 30 秒"
+      - statement: "支援團隊每月密碼重設工單下降 80%"
+  epics:
+    - title: "登入與身分"
+      stories:
+        - id: "US-001"
+          title: "SSO 一鍵登入"
+          userStory: "身為 Ops Analyst，我希望用企業 SSO 一鍵登入，這樣就不必再記另一組密碼。"
+          acceptanceCriteria: []
+agentSpec:
+  nonGoals:
+    - "不支援外部客戶登入"
+  constraints:
+    - "必須使用既有 Snowflake 倉儲"
+  openQuestions:
+    - id: "Q-001"
+      text: "儀表板 schema 由誰負責定義？"
+      status: "open"</code></pre>
+    <p>
+      不論你用哪種語言撰寫，YAML 的 key 一律維持英文，因此同一份規格可以跨團隊、跨 agent 流通。
+      匯出時會同時產生一份給人閱讀的 Markdown 摘要。
+    </p>
+    <figure>
+      <img src="../assets/yaml-export-zh-TW.webp" alt="檢視與匯出步驟：INVEST 就緒檢查顯示於產生的 YAML 源碼上方" width="1440" height="900" loading="lazy">
+      <figcaption>檢視步驟會先攤開 INVEST 就緒檢查與待釐清問題，再讓你複製 YAML、下載，或直接交給本機 agent 實作。</figcaption>
+    </figure>
+  </section>
+
+  <section id="getting-started">
+    <p class="eyebrow">快速入門</p>
+    <h2>兩行指令就能在本機跑起來。</h2>
+    <pre><code># 不安裝任何東西，直接跑精靈
+npx vector-wizard
+
+# 或是 clone 下來開發
+bun install
+bun run dev            # 預設使用 claude agent
+VECTOR_AGENT=codex bun run dev</code></pre>
+    <p>
+      精靈會開在 <code>http://localhost:3000</code>。草稿存在瀏覽器的 <code>localStorage</code>，
+      也可以匯出成 JSON——沒有後端，除了你所選的本機 agent 自己發出的請求之外，
+      沒有任何資料離開你的電腦。
+    </p>
+    <ul>
+      <li>完整安裝與 skill 設定說明：<a href="https://github.com/CarlLee1983/vector-wizard/blob/master/README.zh-TW.md">README</a></li>
+      <li>產品詞彙表：<a href="https://github.com/CarlLee1983/vector-wizard/blob/master/CONTEXT.md"><code>CONTEXT.md</code></a></li>
+      <li>貢獻者與 agent 指南：<a href="https://github.com/CarlLee1983/vector-wizard/blob/master/AGENTS.md"><code>AGENTS.md</code></a></li>
+    </ul>
+    <div class="actions">
+      <a class="btn" href="https://github.com/CarlLee1983/vector-wizard">前往 GitHub</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="wrap">
+  © 2026 Carl Lee ·
+  <a href="https://github.com/CarlLee1983/vector-wizard/blob/master/LICENSE">MIT 授權</a> ·
+  <a href="https://github.com/CarlLee1983/vector-wizard">原始碼</a>
+</footer>
+
+</body>
+</html>
