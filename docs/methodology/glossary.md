@@ -2,6 +2,8 @@
 
 本表是 Path B 方法論文件群的中英文名詞對照入口：A／B 層敘事文（`methodology.md`、`guide.md`）以繁體中文為主，C 層 `agent-script.md` 與所有 JSON schema／欄位名則使用英文。當你在中文章節看到「故事脊」而下游 schema 出現 `storySpine`，請以這張表查到的對應關係為準。
 
+> 本表只涵蓋 **Path B 方法論**的名詞。Vector 產品本身的詞彙（Feature Draft、Feature Spec、Wizard Action、Agent Provider…）定義在根目錄的 [`CONTEXT.md`](../../CONTEXT.md)。兩份的交集只有 **Feature Seed** 一詞，以 `CONTEXT.md` 的定義為準。
+
 | 中文 | English | 出處階段 | 一行解釋 |
 | --- | --- | --- | --- |
 | 系統定錨書 | System Brief | Frame | Stage 1 的 10 欄輸出。 |
