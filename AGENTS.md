@@ -8,7 +8,7 @@ This file provides shared guidance for all coding agents (Claude Code, Codex, Cu
 
 The canonical product vocabulary is `CONTEXT.md` at the repo root — read it before naming anything user-facing, and update it when a term is added or sharpened. `docs/methodology/glossary.md` is a separate, narrower table covering Path B methodology terms only.
 
-The authoritative product/architecture spec is `docs/superpowers/specs/2026-04-26-agile-roadmap-wizard-design.md`. The implementation plan it executes from is `docs/superpowers/plans/2026-04-26-agile-roadmap-wizard.md`. Read the design doc before changing data model, validation, or YAML semantics.
+There is no separate authoritative spec: the code and `src/features/spec-wizard/__tests__/` are the behavioural truth, and the invariants below are binding. Before changing the data model, validation, or YAML semantics, read those invariants — and `docs/project-history.md` for why each one is the way it is, what is still unbuilt, and which design tensions remain unresolved.
 
 ## Commands
 

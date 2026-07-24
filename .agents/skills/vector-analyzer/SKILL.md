@@ -20,7 +20,8 @@ Reverse-engineer an existing project into a `FeatureDraft` JSON the Vector wizar
 - Empty skeleton: `src/features/spec-wizard/model/defaultDraft.ts`
 - Loose validation rules: `src/features/spec-wizard/model/validation.ts`
 - Seed prompt template: `src/features/spec-wizard/services/seedPromptBuilder.ts`
-- Design invariants: `docs/superpowers/specs/2026-04-26-agile-roadmap-wizard-design.md`
+- Design invariants: `AGENTS.md` § "Invariants — do not break these"
+- Canonical vocabulary: `CONTEXT.md`
 - Shared agent rules: `AGENTS.md` (commands, architecture, invariants)
 
 ## Workflow
@@ -115,4 +116,4 @@ Sync this file when these change:
 - `src/features/spec-wizard/model/validation.ts` — blocking errors or warning codes added/removed → update Invariants and Acceptance checklist.
 - `src/features/spec-wizard/services/seedPromptBuilder.ts` — output shape changed → confirm this skill still aligns.
 - `bin/cli.js` or `package.json` `bin` name changed → update the CLI name in "Integration with vector-wizard".
-- `docs/superpowers/specs/*.md` — new design invariants → fold into Invariants.
+- `AGENTS.md` or `CONTEXT.md` — new design invariants or renamed terms → fold into Invariants.

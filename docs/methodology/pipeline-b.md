@@ -70,4 +70,4 @@ Pipeline B 跑完之後，你手上會有 N 份 `<feature-id>.feature-seed.json`
 4. 確認 BasicStep 的「Roadmap」區塊：若這份 draft 由 Pipeline B 產生，`id`、`priority`、`dependsOn` 應已預填；可視需要調整 `horizon`，或補上 Slice 階段未決定的欄位。
 5. 透過 wizard 的 Generate Spec 匯出最終 YAML，交給後續 AI coding agent。
 
-Wizard 的詳細指令、開發環境設定與不可違反的設計約束（例如 AI 非權威、YAML key 一律英文）寫在 [`AGENTS.md`](../../AGENTS.md)。在動手改任何手冊內容、schema 或 wizard 對接邏輯之前，先讀過 `AGENTS.md` 與 `docs/superpowers/specs/2026-04-26-agile-roadmap-wizard-design.md`，避免破壞既有約束。
+Wizard 的詳細指令、開發環境設定與不可違反的設計約束（例如 AI 非權威、YAML key 一律英文）寫在 [`AGENTS.md`](../../AGENTS.md)。在動手改任何手冊內容、schema 或 wizard 對接邏輯之前，先讀過 `AGENTS.md` 與 [`CONTEXT.md`](../../CONTEXT.md)（名詞定義），避免破壞既有約束。決策脈絡與未竟事項見 [`docs/project-history.md`](../project-history.md)。

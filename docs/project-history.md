@@ -1,0 +1,130 @@
+# 專案歷程與未竟事項
+
+本檔取代 `docs/superpowers/`（8 份 design spec + 11 份 implementation plan，共約 20,000 行）。
+那批文件是 2026-04-26 至 2026-05-29 間逐功能產生的設計與逐步執行計畫；**11 個計畫全部已上線**，
+其逐步指令與內嵌程式碼已被實際的程式碼與測試取代，留著只會與程式碼分歧。
+
+保留下來的是三類無法從程式碼重建的東西：**為什麼這樣決定**、**還沒做的事**、**尚未解決的矛盾**。
+
+- 行為的真相 → 程式碼與 `src/features/spec-wizard/__tests__/`
+- 不變式與工作守則 → [`AGENTS.md`](../AGENTS.md)
+- 名詞定義 → [`CONTEXT.md`](../CONTEXT.md)
+- 個別重大決策 → [`docs/adr/`](./adr/)
+- 方法論本身 → [`docs/methodology/`](./methodology/)
+
+---
+
+## 1. 交付年表
+
+上線日取自 git（各檔首次加入之日），非計畫撰寫日。
+
+| 日期 | 功能 | 現在的真相在哪 |
+|------|------|---------------|
+| 2026-04-26 | Wizard 骨幹、`FeatureDraft` 模型、自訂 YAML emitter、驗證、mock assist | `components/Wizard.tsx`、`model/`、`services/yamlSerializer.ts` |
+| 2026-04-26 | AI 審閱 prompt 複製（純前端，不串 LLM） | `services/reviewPromptBuilder.ts` |
+| 2026-04-27 | 多草稿管理：`draftStore` + `useSyncExternalStore`、v1→v2 遷移、毀損備份 | `persistence/draftStore.ts`、`components/DraftManagerModal.tsx` |
+| 2026-04-28 | Path B 方法論流水線（Frame→Decompose→Slice→Handoff）+ 4 份 JSON Schema | `docs/methodology/`、`tests/methodology/` |
+| 2026-04-28 | Roadmap 欄位 `horizon` / `priority` / `dependsOn`（`schemaVersion` 升至 `0.2`） | `model/specTypes.ts` |
+| 2026-04-29 | INVEST / Definition of Ready 警示（非阻擋） | `model/validation.ts` 的 `category: "invest"` |
+| 2026-04-29 | RAID 結構化：`id` / `status` / `mitigation` | `model/specTypes.ts` 的 `RaidEntry`、`components/RaidArray.tsx` |
+| 2026-04-29 | `successSignals` 結構化（`metric` / `threshold` / `kind`） | `model/specTypes.ts` 的 `SuccessSignal` |
+| 2026-04-29 | CLI `npx vector-wizard import` 子命令 | `bin/cli.js`、`bin/lib/` |
+| 2026-04-29 | YAML 反向解析（round-trip），走與 JSON 匯入相同的 `normalizeDraft` | `services/yamlParser.ts` |
+| 2026-05-04 | Wizard Action Panel：綁 step 的結構化動作，工具鎖死 | `services/localAgent/actionRegistry.ts`、`components/WizardActionPanel.tsx` |
+| 2026-05-29 | Codex provider：`VECTOR_AGENT` 切換 claude / codex | `services/localAgent/providers/` |
+
+---
+
+## 2. 值得記住的決策理由
+
+不變式本身寫在 `AGENTS.md`，這裡只記**當初為何這樣選**——這是程式碼看不出來的部分。
+
+**自己寫 YAML emitter，不用 js-yaml。**
+產出形狀必須逐字穩定，測試才能對字串斷言；`js-yaml` 的引號與換行策略會隨版本變。
+代價是不支援 anchor / 多行字面量 / 註解，換 library 前必須先確認既有測試。
+
+**驗證刻意鬆。**
+只有三條阻擋錯誤（缺 `metadata.title`、缺 `goal.statement`、無 user story），其餘全是非阻擋警告。
+理由是使用者是非技術決策者，被擋住就不會回來；INVEST 落差要看得見但不能擋路。
+阻擋錯誤只擋 YAML 下載，JSON 草稿匯出永遠可用。
+
+**多草稿用 `useSyncExternalStore` 而非 Context。**
+store 是純函式，所有不變式（active fallback、v1 遷移、autosave、毀損備份）都集中在
+`draftStore.ts` 一處可測；Wizard 從「自己管 state」退化成單純的消費者。
+
+**Action Panel 永不放自由 textarea。**
+動作集合封閉、每個動作綁定 step 並鎖死工具集。這不是為了限制使用者，是為了讓 agent 的
+輸出可預測、可套用到指定的 dot-notation 路徑上。要加動作就進 `actionRegistry.ts` 註冊。
+
+**Codex provider 保留 `claudeProvider.ts` re-export shim。**
+避免既有 import 路徑變動觸發大量測試改動。`selectProvider` 會 `toLowerCase`，
+`VECTOR_AGENT` 亂值一律 fallback 回 claude。
+
+**Path B 是固定順序流水線（Approach α），但為模組化（γ）留了路。**
+每個 stage 的 `agent-script.md` 只要輸入符合宣告的 schema 就能單獨執行；
+schema 命名不綁 stage 順序。跳關與重排是未來能力，不是現在的。
+
+---
+
+## 3. 尚未實作（live backlog）
+
+以下項目在原 gap 分析中明確標為未開始，或在各設計文件中列為 v2 之後。**這是本檔最不可再生的部分。**
+
+### 3.1 產品層
+
+| 項目 | 內容 | 規模 |
+|------|------|------|
+| `effort` 欄位 | 選填 `"xs" \| "s" \| "m" \| "l" \| "xl"`。配合既有 `horizon` / `priority` / `dependsOn` 才能形成可視化 roadmap。Path B 的 Slice 階段已評估過 INVEST 的 Small，該結果目前遺失 | schema + 一個下拉 |
+| Assist `suggestionId` | `AssistResponse` 加 `suggestionId`，前端記錄 `acceptedSuggestionIds[]` 一併回傳（server 可暫不處理）。**預留型改動**——未來接真實 LLM 要做 prompt 校準時，沒有這條鏈就得破壞性改動 | contracts + 前端記錄 |
+| 草稿變更歷程 | 每份 draft 無 changelog / edit history。敏捷重視可見的決策軌跡，可在 `localStorage` 另存輕量 `revisionLog` | 中 |
+
+### 3.2 Wizard Action Panel v2 之後
+
+1. **多 stories UI + `stories.draft`**：StoriesStep 可加／刪／重排 N 條 story；`stories.rewrite` 改為需先選一條；`applyActionResult` 加 `mode: "insert"` 與 `stories[id=X]` 路徑形態。
+2. **複製到其餘 7 個 step**：以 v1 的 registry / runner / Card 為模板，逐 step 設計動作。
+3. **跨 step 一致性動作**：例如 Criteria step 提供「對齊 Stories」的雙向檢查。
+4. **Action chain**：採用一張卡後預選下一張推薦動作——但**維持被動原則**，預選不等於自動執行。
+5. **動作結果持久化**：result stack 寫進 `localStorage`，跨 session 保留。
+6. **整份 feature 端到端代寫**：`SeedPromptSection` 的請求流程改走 `feature.draftAll` 動作，統一進預覽閘道。
+
+### 3.3 多草稿管理的升級路徑
+
+Project 分組（Draft 之上再一層）、跨功能分析、多分頁 `storage` event 同步、Trash + Undo、後端持久化與多人協作。
+原設計已確認這些**與現有結構相容**：加 Project 層不需重構 Wizard，多分頁同步是 store 內加 subscriber，軟刪除只是 store mutation 行為改變。
+
+---
+
+## 4. 未解決的矛盾
+
+**設計系統：紙感 vs 毛玻璃。**
+`DESIGN.md` v0.2.0 宣告紙感（暖米白 `#F9F5F1` / 赤陶橘 `#D97757`），但 2026-05-05 的
+integrated-ai-assistant 設計明文要求 "Modernize with Glassmorphism"，且**已經進了程式碼**——
+`app/globals.css` 的 `.assistant-panel` 用 `rgba(255,255,255,0.85)` + `backdrop-filter: blur(12px)`。
+
+這條矛盾外溢過一次：舊版對外落地頁整頁採毛玻璃藍，並宣稱產品「已從紙感轉化」，
+與實際產品不符（見 2026-07 的落地頁重寫）。目前的處置是**落地頁一律以 `globals.css` 的
+色票為準**，並由 `tests/docs/userDocs.test.ts` 強制。但 `DESIGN.md` 與 `.assistant-panel`
+之間的矛盾**尚未裁決**：要嘛把毛玻璃納入 DESIGN.md 成為正式的一種表面處理，
+要嘛把 `.assistant-panel` 改回紙感。在裁決之前，別拿任一方當作「設計的真相」。
+
+**估算資訊在 Path B → Wizard 之間掉了。**
+Slice 階段評估 INVEST 的 Small 與 T-shirt sizing，但 `FeatureDraft` 沒有欄位接住，
+資訊在交接時蒸發。這是 §3.1 `effort` 欄位存在的理由。
+
+---
+
+## 5. 已經沒有保存價值的部分
+
+原文件中以下內容**刻意不保留**：
+
+- **逐步執行指令**（各 plan 的 `Task N / Step N` 與 checkbox）。11 個計畫中有 10 個的 checkbox
+  從未被更新過（全部停在未勾），但功能其實都已上線——checkbox 是失效訊號，不是進度紀錄。
+- **內嵌的實作程式碼與測試碼**。程式碼與 `__tests__/` 才是真相，文件裡的副本只會分歧。
+- **已兌現的 gap 分析項目**（Roadmap 欄位、INVEST、RAID、successSignals、CLI import、
+  YAML round-trip 共 6 項）。它們的結論已寫進 §1 年表與程式碼。
+- **已被 §2 涵蓋或已寫進 `AGENTS.md` 的不變式**。
+- **當年的 deferred decisions 中已自然定案者**：UI component library（結論：自訂元件，未引入
+  shadcn/MUI）、YAML 檔名格式、`agent-script.md` 格式（結論：純 markdown 無 frontmatter）、
+  schema 驗證入口（結論：`bun run methodology:validate`）。
+- **未定案但已無實際意義者**：內部部署目標（Vercel / Docker / 公司主機）——專案已於
+  2026-07 轉為 MIT 公開、以 GitHub Pages 發佈落地頁，本機執行為主，此題失效。
