@@ -13,6 +13,8 @@ export type AssistResult = {
   actionId: string
   mode: "rewrite" | "quality_check"
   targetPath: string
+  /** 對應 AssistResponse.suggestionId；用來把採用／拒絕結果記回這則建議。 */
+  suggestionId?: string
   suggestedText?: string
   rationale?: string
   warnings: string[]
@@ -43,11 +45,7 @@ export type ActionResultRunError = {
 }
 
 export type ActionResult =
-  | ActionResultPreview
-  | AssistResult
-  | ActionResultNotes
-  | ActionResultParseError
-  | ActionResultRunError
+  ActionResultPreview | AssistResult | ActionResultNotes | ActionResultParseError | ActionResultRunError
 
 const FENCE_RE = /```vector-action\s*\n([\s\S]*?)\n```/
 

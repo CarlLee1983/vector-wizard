@@ -21,4 +21,21 @@ describe("assistDraft", () => {
     )
     expect(response.openQuestions).toContain("Are there security, privacy, or compliance constraints for this feature?")
   })
+
+  it("stamps a rewrite suggestion with a suggestionId so its outcome can be tracked", async () => {
+    const response = await assistDraft({ mode: "rewrite", locale: "en", text: "login error" })
+    expect(response.suggestionId).toBeTypeOf("string")
+    expect(response.suggestionId!.length).toBeGreaterThan(0)
+  })
+
+  it("gives every rewrite a distinct suggestionId", async () => {
+    const a = await assistDraft({ mode: "rewrite", locale: "en", text: "one" })
+    const b = await assistDraft({ mode: "rewrite", locale: "en", text: "two" })
+    expect(a.suggestionId).not.toBe(b.suggestionId)
+  })
+
+  it("does not stamp quality_check — it produces no adoptable suggestion", async () => {
+    const response = await assistDraft({ mode: "quality_check", locale: "en", draft: minimalValidDraft() })
+    expect(response.suggestionId).toBeUndefined()
+  })
 })

@@ -6,6 +6,7 @@ import { ActionResultCard } from "./ActionResultCard"
 import { useWizardContext } from "../hooks/useWizardContext"
 import { useDraftStore } from "../hooks/useDraftStore"
 import { useI18n } from "../i18n/I18nContext"
+import { recordSuggestionOutcome } from "../persistence/suggestionLog"
 import type { ActionResult } from "../services/localAgent/actionResult"
 
 const COLLAPSED_KEY = "vector-wizard:assistant-collapsed"
@@ -57,6 +58,11 @@ export function WizardActionPanel() {
             value
           })
         }
+        // 只在成功套用之後才記為採用——若 applyActionResult 丟錯，建議仍留在堆疊
+        // 供重試，那就不算被採用。只有帶 suggestionId 的 assist 建議進校準分母。
+        if (result.kind === "assist" && result.suggestionId) {
+          recordSuggestionOutcome(result.suggestionId, "adopted")
+        }
         removeAssistantItem(stackId)
       } catch (err) {
         pushAssistantItem({
@@ -70,7 +76,12 @@ export function WizardActionPanel() {
   )
 
   const onDiscard = useCallback(
-    (stackId: number) => {
+    (stackId: number, result: ActionResult) => {
+      // 丟棄一則可採納的 rewrite 建議 = 拒絕，是校準的負樣本。quality_check 與
+      // wizard action preview 沒有 suggestionId，不進分母（它們是「關閉」而非「拒絕」）。
+      if (result.kind === "assist" && result.suggestionId) {
+        recordSuggestionOutcome(result.suggestionId, "rejected")
+      }
       removeAssistantItem(stackId)
     },
     [removeAssistantItem]
@@ -113,7 +124,7 @@ export function WizardActionPanel() {
             key={s.id}
             result={s.result}
             onAdopt={() => onAdopt(s.id, s.result)}
-            onDiscard={() => onDiscard(s.id)}
+            onDiscard={() => onDiscard(s.id, s.result)}
             onRetry={() => void runRemote(s.result.actionId)}
           />
         ))}

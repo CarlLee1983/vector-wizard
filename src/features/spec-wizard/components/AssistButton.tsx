@@ -19,7 +19,7 @@ export function AssistButton({ mode, text, fieldPath, onApply }: AssistButtonPro
 
   async function handleAssist() {
     if (!text.trim() && mode === "rewrite") return
-    
+
     setStatus("loading")
     try {
       const response = await fetch("/api/assist", {
@@ -34,14 +34,15 @@ export function AssistButton({ mode, text, fieldPath, onApply }: AssistButtonPro
       })
 
       if (!response.ok) throw new Error("Assist failed")
-      
+
       const data: AssistResponse = await response.json()
-      
+
       pushAssistantItem({
         kind: "assist",
         actionId: mode === "rewrite" ? "AI Rewrite" : "Quality Check",
         mode,
         targetPath: fieldPath,
+        suggestionId: data.suggestionId,
         suggestedText: data.suggestedText,
         rationale: data.rationale,
         warnings: data.warnings,
@@ -58,14 +59,12 @@ export function AssistButton({ mode, text, fieldPath, onApply }: AssistButtonPro
     }
   }
 
-  const label = 
-    status === "loading" ? t("wizard.aiAssisting") :
-    status === "done" ? t("wizard.aiAssistDone") :
-    t("wizard.aiAssist")
+  const label =
+    status === "loading" ? t("wizard.aiAssisting") : status === "done" ? t("wizard.aiAssistDone") : t("wizard.aiAssist")
 
   return (
-    <button 
-      type="button" 
+    <button
+      type="button"
       className="ai-assist-button secondary"
       disabled={status === "loading" || !text.trim()}
       onClick={handleAssist}

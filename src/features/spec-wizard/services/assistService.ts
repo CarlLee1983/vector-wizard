@@ -11,6 +11,13 @@ export type AssistRequest = {
 }
 
 export type AssistResponse = {
+  /**
+   * 唯一識別這則建議，用來把後續的採用／拒絕結果對回到它身上。只有 rewrite 模式
+   * （會產出可採納的 suggestedText）才有；quality_check 不是可採納的建議，故無此欄位。
+   * 這是這條校準鏈裡唯一「事後補不回來」的部分——歷史建議無從回填 id，所以由產生端
+   * （目前是 mock，未來是真實 LLM）在產出當下就打上。
+   */
+  suggestionId?: string
   suggestedText?: string
   rationale?: string
   warnings: string[]
@@ -18,9 +25,17 @@ export type AssistResponse = {
   openQuestions: string[]
 }
 
+function generateSuggestionId(): string {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID()
+  }
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10)
+}
+
 export async function assistDraft(request: AssistRequest): Promise<AssistResponse> {
   if (request.mode === "rewrite") {
     return {
+      suggestionId: generateSuggestionId(),
       suggestedText:
         request.locale === "zh-TW"
           ? "釐清登入錯誤提示，讓使用者知道下一步該如何復原。"

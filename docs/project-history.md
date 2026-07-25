@@ -68,6 +68,18 @@ store 是純函式，所有不變式（active fallback、v1 遷移、autosave、
 `.assistant-toggle` 的放大與發光一併移除，改用與其他按鈕相同的 hover 處理。
 全檔已無 `backdrop-filter` 與 `blur()`。
 
+**Assist 建議的採用／拒絕記錄是純本機的，且刻意不外送。**
+`assistService` 的 rewrite 回應打上 `suggestionId`，`WizardActionPanel` 在採用時記
+`adopted`、丟棄時記 `rejected`，存 `localStorage`（`persistence/suggestionLog.ts`）。
+消費入口是 `getSuggestionStats()`——接受率 = 採用 / (採用 + 拒絕)，供未來接真實 LLM
+時校準 prompt。
+原提案還要「把 `acceptedSuggestionIds[]` 回傳給 server」，**沒有做**：server 是無狀態
+mock，往它送等於寫到虛無，正是該避免的 write-only 反模式。這條鏈唯一「事後補不回來」
+的部分是回應上的 `suggestionId`（歷史建議無從回填 id），那個有做；本機記錄隨時可加、
+加了也不破壞任何契約。整條鏈受 AGENTS.md「no backend persistence」與對外「資料不離開
+你的電腦」承諾約束，因此永遠不會有外送。只有 rewrite 計入；quality_check 沒有可採納的
+建議，不進分母。
+
 **`estimatedSize` 沿用 Path B 的名稱與值域，只改大小寫。**
 2026-04-28 的 gap 分析原本提案叫 `effort`、值域 `xs`–`xl`，但那份提案早於 Path B 的
 `feature-candidates.schema.json` 定案。實際採用的是 `estimatedSize` 與 `s/m/l/xl`：
@@ -94,7 +106,6 @@ schema 命名不綁 stage 順序。跳關與重排是未來能力，不是現在
 
 | 項目 | 內容 | 規模 |
 |------|------|------|
-| Assist `suggestionId` | `AssistResponse` 加 `suggestionId`，前端記錄 `acceptedSuggestionIds[]` 一併回傳（server 可暫不處理）。**預留型改動**——未來接真實 LLM 要做 prompt 校準時，沒有這條鏈就得破壞性改動 | contracts + 前端記錄 |
 | 草稿變更歷程 | 每份 draft 無 changelog / edit history。敏捷重視可見的決策軌跡，可在 `localStorage` 另存輕量 `revisionLog` | 中 |
 
 ### 3.2 Wizard Action Panel v2 之後

@@ -90,6 +90,10 @@ _Avoid_: Form、Editor、SpecWizard
 管理多份 Feature Draft 的介面，負責建立、切換、匯入、匯出。
 _Avoid_: Draft list、Project manager、Storage
 
+**Suggestion Outcome**：
+使用者對一則 AI rewrite 建議的終局反應：`adopted`（採用）或 `rejected`（丟棄）。以建議的 `suggestionId` 為鍵，純本機記在 `localStorage`，用來算接受率、校準未來的真實 LLM。只有 rewrite 有；quality_check 不是可採納的建議，不計入。
+_Avoid_: Feedback、Telemetry、Rating（都暗示外送或評分，本記錄兩者皆非）
+
 **Wizard Action**：
 綁定在某個 Wizard step 上、由 AI agent 執行的結構化動作（例如改寫 story、找缺口）。動作集合是封閉的，使用者不能自由輸入 prompt。
 _Avoid_: Prompt、Command、AI chat、Assist
